@@ -1,23 +1,28 @@
-Remaining items after repository path cleanup:
+AUDIT REMAINING ITEMS
 
-1. Add the large dataset CSV files to datasets/ using Git LFS:
-   - datasets/starcraft_full_dataset_v3_1_fixed.csv
-   - datasets/starcraft_full_dataset_v3_2_combatfix.csv
+Current repository status
+- The repository structure is coherent and includes scripts, artifacts, figures, manifests, paper sources, and the final PDF.
+- The large datasets are distributed in datasets/ as ZIP archives.
+- The training and evaluation scripts expect the extracted CSV files to be present in datasets/.
 
-2. Remove tracked generated cache/build files from Git history if desired:
-   - scripts/__pycache__/
-   - paper/*.aux
-   - paper/*.log
-   - paper/*.out
-   - paper/*.toc
+Dataset policy
+- ZIP archives stored in the repository:
+  - datasets/starcraft_full_dataset_v3_1_fixed.zip
+  - datasets/starcraft_full_dataset_v3_2_combatfix.zip
+- These archives must be extracted locally before running any retraining script.
+- Expected extracted files:
+  - datasets/starcraft_full_dataset_v3_1_fixed.csv
+  - datasets/starcraft_full_dataset_v3_2_combatfix.csv
+- The extracted CSV files are local runtime inputs and should not be committed back into the repository.
 
-3. After datasets are uploaded, run a fresh end-to-end verification from a clean clone:
-   - Xgboost_clean_with_json_v1.py
-   - rf_clean_aligned_v1.py
-   - mlp_torch_gpu_aligned_v3.py
-   - test1_bootstrap_xgb_vs_rf.py
-   - test2_calibration_xgb_vs_rf.py
-   - test3_compare_duration_models_v3_1.py
-   - test4_calibration_xgb_rf_mlp.py
+Remaining operational requirement
+- A user who wants to rerun training from scratch must extract the dataset ZIP files locally into datasets/ before execution.
 
-4. Optionally publish a short REPRODUCE.md with exact commands and expected output locations.
+Recommended repository cleanup
+- Remove tracked __pycache__ content from scripts/ if it is still present in Git.
+- Remove tracked extracted CSV files from Git if they were accidentally added after local extraction.
+- Keep README.txt, .gitattributes, and .gitignore aligned with the ZIP-based distribution strategy.
+
+Reproducibility note
+- The repository is suitable for audit, inspection, and reproduction of preserved artifact-based analyses.
+- Full end-to-end retraining becomes available once the dataset ZIP files are extracted into the expected CSV paths inside datasets/.

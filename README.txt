@@ -10,20 +10,43 @@ Frozen benchmark logic
 - Parser-ablation branch retained for interpretation: V3.2 combatfix
 
 Repository layout
-- datasets/  -> source CSV inputs tracked with Git LFS
+- datasets/  -> compressed dataset archives plus locally extracted CSV inputs
 - artifacts/ -> derived tables, prediction exports, JSON summaries, logs, bootstrap outputs
 - figures/   -> generated plots used by the paper and artifact audit
 - manifests/ -> frozen methodology notes for Tests 1-4
 - paper/     -> final TeX/PDF paper and appendix reference material
 - scripts/   -> training, export, parser, and evaluation scripts
 
-Important reproducibility note
-- Full end-to-end retraining requires the two dataset files to be present under datasets/:
-  * datasets/starcraft_full_dataset_v3_1_fixed.csv
-  * datasets/starcraft_full_dataset_v3_2_combatfix.csv
-- The scripts in scripts/ are now path-aligned to this repository layout and can be launched from either the repository root or from inside scripts/.
-- All prediction exports, summaries, and calibration/bootstrap outputs are read from or written to artifacts/.
-- All generated plots are read from or written to figures/.
+Datasets
+The repository stores the two large datasets as ZIP archives inside datasets/.
+
+ZIP files expected in the repository:
+- datasets/starcraft_full_dataset_v3_1_fixed.zip
+- datasets/starcraft_full_dataset_v3_2_combatfix.zip
+
+Before running any training or evaluation script that requires raw data, extract both archives locally into the same datasets/ folder so that the CSV files become available at the expected paths.
+
+After extraction, the following files must exist:
+- datasets/starcraft_full_dataset_v3_1_fixed.csv
+- datasets/starcraft_full_dataset_v3_2_combatfix.csv
+
+Important:
+- The Python scripts read the extracted CSV files, not the ZIP archives.
+- The extracted CSV files are intended for local use and should not be committed back into the repository.
+- If the CSV files are missing, retraining scripts will fail with a file-not-found error.
+- The scripts in scripts/ are path-aligned to this repository layout and can be launched from either the repository root or from inside scripts/.
+- Prediction exports, summaries, calibration outputs, bootstrap outputs, and logs are read from or written to artifacts/.
+- Generated plots are read from or written to figures/.
+
+Recommended local workflow
+1. Clone the repository.
+2. Go to the datasets/ folder.
+3. Extract both ZIP archives there.
+4. Verify that the two CSV files are present in datasets/.
+5. Run the scripts from the repository root.
+
+Example
+python scripts/Xgboost_clean_with_json_v1.py
 
 Artifact notes
 - The normalized XGBoost prediction export is artifacts/xgb_clean_v3_1_fixed_test_predictions.csv.

@@ -18,6 +18,9 @@ venv/
 *.synctex.gz
 *.toc
 
+# Locally extracted datasets (keep ZIP archives, ignore extracted CSVs)
+datasets/*.csv
+
 # OS noise
 .DS_Store
 Thumbs.db
