@@ -13,6 +13,8 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 
+from project_paths import artifact_path, dataset_path, figure_path
+
 # ============================================================
 # CONFIGURAZIONE
 # ============================================================
@@ -21,8 +23,8 @@ TARGET = 'p1_wins'
 GROUP = 'replay_id'
 TIME = 'time_sec'
 
-DATASET_PATH = "starcraft_full_dataset_v3_1_fixed.csv"
-OUTPUT_PREFIX = "xgb_clean_v3_2"
+DATASET_PATH = dataset_path("starcraft_full_dataset_v3_1_fixed.csv")
+OUTPUT_PREFIX = "xgb_clean_v3_1_fixed"
 
 # ============================================================
 # 1. CARICAMENTO DATI
@@ -215,15 +217,15 @@ plt.ylim(0.4, 1.0)
 plt.grid(True, alpha=0.3)
 plt.legend()
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_PREFIX}_accuracy_vs_duration.png')
+plt.savefig(figure_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.png'))
 plt.close()
 
 # ============================================================
 # 9. SALVATAGGIO REPORT CSV E JSON
 # ============================================================
-imp_csv = f'{OUTPUT_PREFIX}_feature_importance.csv'
-dur_csv = f'{OUTPUT_PREFIX}_accuracy_vs_duration.csv'
-summary_json = f'{OUTPUT_PREFIX}_summary.json'
+imp_csv = artifact_path(f'{OUTPUT_PREFIX}_feature_importance.csv')
+dur_csv = artifact_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.csv')
+summary_json = artifact_path(f'{OUTPUT_PREFIX}_summary.json')
 
 imp_df.to_csv(imp_csv, index=False)
 duration_stats.to_csv(dur_csv, index=False)
@@ -251,7 +253,7 @@ with open(summary_json, "w", encoding="utf-8") as f:
 
 print("\nAnalisi completata.")
 print("File salvati:")
-print(f"- {OUTPUT_PREFIX}_accuracy_vs_duration.png")
+print(f"- {figure_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.png')}")
 print(f"- {imp_csv}")
 print(f"- {dur_csv}")
 print(f"- {summary_json}")

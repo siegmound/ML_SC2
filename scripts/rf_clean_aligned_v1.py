@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from project_paths import artifact_path, dataset_path, figure_path
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GroupShuffleSplit, GroupKFold, GridSearchCV
 from sklearn.metrics import (
@@ -28,7 +30,7 @@ RANDOM_STATE = 42
 TARGET = "p1_wins"
 GROUP = "replay_id"
 TIME_COL = "time_sec"
-DATASET_PATH = "starcraft_full_dataset_v3_1_fixed.csv"  # change if needed
+DATASET_PATH = dataset_path("starcraft_full_dataset_v3_1_fixed.csv")
 OUTPUT_PREFIX = "rf_clean_v3_1"
 
 
@@ -165,7 +167,7 @@ def evaluate_model(model, parts, full_df, feature_names):
 
     print("\n--- TOP FEATURE IMPORTANCE ---")
     print(imp_df.head(15))
-    imp_df.to_csv(f"{OUTPUT_PREFIX}_feature_importance.csv", index=False)
+    imp_df.to_csv(artifact_path(f"{OUTPUT_PREFIX}_feature_importance.csv"), index=False)
 
     # Accuracy vs durata con sample count
     test_groups = parts["groups_test"]
@@ -193,7 +195,7 @@ def evaluate_model(model, parts, full_df, feature_names):
 
     print("\n--- ACCURACY VS DURATA (con sample count) ---")
     print(duration_summary)
-    duration_summary.to_csv(f"{OUTPUT_PREFIX}_accuracy_vs_duration.csv", index=False)
+    duration_summary.to_csv(artifact_path(f"{OUTPUT_PREFIX}_accuracy_vs_duration.csv"), index=False)
 
     plt.figure(figsize=(10, 5))
     plt.plot(duration_summary["duration_min_bin"], duration_summary["accuracy"], marker="o")
@@ -202,7 +204,7 @@ def evaluate_model(model, parts, full_df, feature_names):
     plt.title("Random Forest Accuracy vs Match Duration")
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(f"{OUTPUT_PREFIX}_accuracy_vs_duration.png", dpi=200)
+    plt.savefig(figure_path(f"{OUTPUT_PREFIX}_accuracy_vs_duration.png"), dpi=200)
     plt.close()
 
     summary = {
@@ -215,7 +217,7 @@ def evaluate_model(model, parts, full_df, feature_names):
         "n_replays_test": int(parts["groups_test"].nunique()),
         **metrics,
     }
-    with open(f"{OUTPUT_PREFIX}_summary.json", "w", encoding="utf-8") as f:
+    with open(artifact_path(f"{OUTPUT_PREFIX}_summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
 
@@ -230,10 +232,10 @@ def main():
 
     print("\nAnalisi completata.")
     print("File salvati:")
-    print(f"- {OUTPUT_PREFIX}_feature_importance.csv")
-    print(f"- {OUTPUT_PREFIX}_accuracy_vs_duration.csv")
-    print(f"- {OUTPUT_PREFIX}_accuracy_vs_duration.png")
-    print(f"- {OUTPUT_PREFIX}_summary.json")
+    print(f"- {artifact_path(f'{OUTPUT_PREFIX}_feature_importance.csv')}")
+    print(f"- {artifact_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.csv')}")
+    print(f"- {figure_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.png')}")
+    print(f"- {artifact_path(f'{OUTPUT_PREFIX}_summary.json')}")
 
 
 if __name__ == "__main__":

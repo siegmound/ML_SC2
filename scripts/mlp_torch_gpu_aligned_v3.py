@@ -12,6 +12,8 @@ from torch.utils.data import TensorDataset, DataLoader
 
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.preprocessing import StandardScaler
+from project_paths import artifact_path, dataset_path, figure_path
+
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -26,7 +28,7 @@ TARGET = "p1_wins"
 GROUP = "replay_id"
 TIME_COL = "time_sec"
 
-DATASET_PATH = "starcraft_full_dataset_v3_1_fixed.csv"
+DATASET_PATH = dataset_path("starcraft_full_dataset_v3_1_fixed.csv")
 OUTPUT_PREFIX = "mlp_torch_gpu_v3_1"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -291,8 +293,8 @@ def save_accuracy_vs_duration(split: SplitData, y_pred):
         .reset_index()
     )
 
-    csv_path = f"{OUTPUT_PREFIX}_accuracy_vs_duration.csv"
-    png_path = f"{OUTPUT_PREFIX}_accuracy_vs_duration.png"
+    csv_path = artifact_path(f"{OUTPUT_PREFIX}_accuracy_vs_duration.csv")
+    png_path = figure_path(f"{OUTPUT_PREFIX}_accuracy_vs_duration.png")
     summary.to_csv(csv_path, index=False)
 
     plt.figure(figsize=(8, 5))
@@ -321,7 +323,7 @@ def save_feature_importance_proxy(model, feature_names):
     proxy = np.mean(np.abs(weights), axis=0)
 
     imp_df = pd.DataFrame({"feature": feature_names, "importance_proxy": proxy}).sort_values("importance_proxy", ascending=False)
-    csv_path = f"{OUTPUT_PREFIX}_feature_importance_proxy.csv"
+    csv_path = artifact_path(f"{OUTPUT_PREFIX}_feature_importance_proxy.csv")
     imp_df.to_csv(csv_path, index=False)
     return imp_df
 
@@ -400,15 +402,15 @@ def main():
         "test_logloss": float(metrics["test_logloss"]),
     }
 
-    with open(f"{OUTPUT_PREFIX}_summary.json", "w", encoding="utf-8") as f:
+    with open(artifact_path(f"{OUTPUT_PREFIX}_summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
     print("\nAnalisi completata.")
     print("File salvati:")
-    print(f"- {OUTPUT_PREFIX}_feature_importance_proxy.csv")
-    print(f"- {OUTPUT_PREFIX}_accuracy_vs_duration.csv")
-    print(f"- {OUTPUT_PREFIX}_accuracy_vs_duration.png")
-    print(f"- {OUTPUT_PREFIX}_summary.json")
+    print(f"- {artifact_path(f'{OUTPUT_PREFIX}_feature_importance_proxy.csv')}")
+    print(f"- {artifact_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.csv')}")
+    print(f"- {figure_path(f'{OUTPUT_PREFIX}_accuracy_vs_duration.png')}")
+    print(f"- {artifact_path(f'{OUTPUT_PREFIX}_summary.json')}")
 
 if __name__ == "__main__":
     main()

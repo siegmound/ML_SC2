@@ -1,6 +1,6 @@
-SC2 Project Final Freeze Package - Revised Audit Cleanup
+SC2 Project Final Freeze Package - Public Repository Layout
 
-This package archives the final paper and the experimental artifacts used in the closing benchmark cycle.
+This repository archives the final paper, code, and frozen experimental artifacts used in the closing benchmark cycle.
 
 Frozen benchmark logic
 - Principal dataset branch: V3.1 fixed
@@ -9,20 +9,29 @@ Frozen benchmark logic
 - Neural comparison model: PyTorch MLP
 - Parser-ablation branch retained for interpretation: V3.2 combatfix
 
+Repository layout
+- datasets/  -> source CSV inputs tracked with Git LFS
+- artifacts/ -> derived tables, prediction exports, JSON summaries, logs, bootstrap outputs
+- figures/   -> generated plots used by the paper and artifact audit
+- manifests/ -> frozen methodology notes for Tests 1-4
+- paper/     -> final TeX/PDF paper and appendix reference material
+- scripts/   -> training, export, parser, and evaluation scripts
+
 Important reproducibility note
-- The large dataset CSV files are intentionally NOT bundled in this revised package because of size constraints.
-- The package is therefore artifact-complete for paper audit, metric verification, and script inspection, but full end-to-end retraining still requires the external dataset files.
-- A public repository can later attach the dataset paths or release instructions without changing the frozen result files archived here.
+- Full end-to-end retraining requires the two dataset files to be present under datasets/:
+  * datasets/starcraft_full_dataset_v3_1_fixed.csv
+  * datasets/starcraft_full_dataset_v3_2_combatfix.csv
+- The scripts in scripts/ are now path-aligned to this repository layout and can be launched from either the repository root or from inside scripts/.
+- All prediction exports, summaries, and calibration/bootstrap outputs are read from or written to artifacts/.
+- All generated plots are read from or written to figures/.
 
 Artifact notes
-- Original prediction exports and additional logs have been reintroduced at top level under artifacts/ for easier auditability.
-- Some legacy ZIP bundles are preserved, but their contents are also unpacked in artifacts/ where possible.
-- The XGBoost prediction export is normalized in this package as artifacts/xgb_clean_v3_1_fixed_test_predictions.csv. The originally uploaded filename xgb_test_clean_v3_1_fixed_test_predictions.csv is also preserved.
+- The normalized XGBoost prediction export is artifacts/xgb_clean_v3_1_fixed_test_predictions.csv.
 - Two Random Forest artifact lines are intentionally retained:
   * artifacts/rf_clean_v3_1_summary.json = aligned benchmark summary used for the cross-model comparison table.
   * artifacts/rf_test_clean_v3_1_summary.json and artifacts/rf_test_clean_v3_1_test_predictions.csv = export-preserved RF run used in Tests 1-4.
-- The parser branch now uses the corrected constants metadata and an upgrade-multiplier implementation compatible with those constants.
-- A generated XGBoost feature-importance figure is now included in figures/xgb_feature_importance_v3_1_fixed.png based on the preserved importance CSV.
+- The parser branch uses the corrected constants metadata and an upgrade-multiplier implementation compatible with those constants.
+- The XGBoost feature-importance figure is included as figures/xgb_feature_importance_v3_1_fixed.png.
 
 Recommended reading order
 1. paper/sc2_ml_paper_final.pdf

@@ -1,3 +1,2 @@
 datasets/starcraft_full_dataset_v3_1_fixed.csv filter=lfs diff=lfs merge=lfs -text
-datasets/starcraft_full_dataset_v3_2_combatfix.zip filter=lfs diff=lfs merge=lfs -text
-datasets/starcraft_full_dataset_v3_1_fixed.zip filter=lfs diff=lfs merge=lfs -text
+datasets/starcraft_full_dataset_v3_2_combatfix.csv filter=lfs diff=lfs merge=lfs -text

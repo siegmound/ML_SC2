@@ -1,12 +1,14 @@
-import os
+from pathlib import Path
+
 import pandas as pd
 import sc2reader
 from sc2_bridge_v3_counter120 import SC2Bridge
+from project_paths import dataset_path, replay_path
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-OUTPUT_FILE = "starcraft_full_dataset_v3_counter120.csv"
-REPLAY_FOLDER = "replays/"
+OUTPUT_FILE = dataset_path("starcraft_full_dataset_v3_counter120.csv")
+REPLAY_FOLDER = replay_path()
 N_JOBS = 8
 MIN_DURATION_SEC = 180
 MAX_DURATION_SEC = 1800
@@ -34,14 +36,15 @@ def worker_process(f_path):
 
 
 def main():
-    if not os.path.exists(REPLAY_FOLDER):
+    replay_dir = Path(REPLAY_FOLDER)
+    if not replay_dir.exists():
         print(f"ERRORE: La cartella {REPLAY_FOLDER} non esiste!")
         return
 
     files = [
-        os.path.join(REPLAY_FOLDER, f)
-        for f in os.listdir(REPLAY_FOLDER)
-        if f.endswith('.SC2Replay')
+        str(replay_dir / f)
+        for f in replay_dir.iterdir()
+        if f.name.endswith('.SC2Replay')
     ]
 
     if not files:

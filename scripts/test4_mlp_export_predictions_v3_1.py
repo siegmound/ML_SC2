@@ -9,6 +9,8 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.preprocessing import StandardScaler
+from project_paths import artifact_path, dataset_path
+
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -23,7 +25,7 @@ TARGET = "p1_wins"
 GROUP = "replay_id"
 TIME_COL = "time_sec"
 
-DATASET_PATH = "starcraft_full_dataset_v3_1_fixed.csv"
+DATASET_PATH = dataset_path("starcraft_full_dataset_v3_1_fixed.csv")
 OUTPUT_PREFIX = "mlp_torch_gpu_v3_1_export"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -249,7 +251,7 @@ def main():
         "y_prob_mlp": y_prob,
         "y_pred_mlp": y_pred,
     })
-    pred_csv = f"{OUTPUT_PREFIX}_test_predictions.csv"
+    pred_csv = artifact_path(f"{OUTPUT_PREFIX}_test_predictions.csv")
     pred_df.to_csv(pred_csv, index=False)
 
     summary = {
@@ -271,7 +273,7 @@ def main():
         "test_auc": float(auc),
         "test_logloss": float(ll),
     }
-    summary_json = f"{OUTPUT_PREFIX}_summary.json"
+    summary_json = artifact_path(f"{OUTPUT_PREFIX}_summary.json")
     with open(summary_json, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 

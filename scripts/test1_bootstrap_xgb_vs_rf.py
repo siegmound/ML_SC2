@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, roc_auc_score, log_loss
 
-XGB_PRED_PATH = "xgb_clean_v3_1_fixed_test_predictions.csv"
-RF_PRED_PATH = "rf_test_clean_v3_1_test_predictions.csv"
+from project_paths import artifact_path
+
+XGB_PRED_PATH = artifact_path("xgb_clean_v3_1_fixed_test_predictions.csv")
+RF_PRED_PATH = artifact_path("rf_test_clean_v3_1_test_predictions.csv")
 OUTPUT_PREFIX = "test1_xgb_vs_rf_bootstrap"
 N_BOOTSTRAPS = 2000
 RANDOM_STATE = 42
@@ -76,7 +78,7 @@ def main():
     print(json.dumps(point, indent=2))
 
     boot = bootstrap_by_replay(merged, n_bootstraps=N_BOOTSTRAPS, seed=RANDOM_STATE)
-    boot_csv = f"{OUTPUT_PREFIX}_samples.csv"
+    boot_csv = artifact_path(f"{OUTPUT_PREFIX}_samples.csv")
     boot.to_csv(boot_csv, index=False)
 
     summary = {
@@ -99,7 +101,7 @@ def main():
         },
     }
 
-    summary_json = f"{OUTPUT_PREFIX}_summary.json"
+    summary_json = artifact_path(f"{OUTPUT_PREFIX}_summary.json")
     with open(summary_json, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 

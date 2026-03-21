@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 
 from sklearn.metrics import brier_score_loss, log_loss, roc_auc_score
 
-XGB_PRED_PATH = "xgb_clean_v3_1_fixed_test_predictions.csv"
-RF_PRED_PATH = "rf_test_clean_v3_1_test_predictions.csv"
+from project_paths import artifact_path, figure_path
+
+XGB_PRED_PATH = artifact_path("xgb_clean_v3_1_fixed_test_predictions.csv")
+RF_PRED_PATH = artifact_path("rf_test_clean_v3_1_test_predictions.csv")
 N_BINS = 10
 
 def calibration_table(y_true, y_prob, n_bins=10):
@@ -74,7 +76,7 @@ def save_reliability_plot(xgb_table, rf_table):
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
-    plt.savefig("test2_reliability_xgb_vs_rf.png", dpi=150)
+    plt.savefig(figure_path("test2_reliability_xgb_vs_rf.png"), dpi=150)
     plt.close()
 
 def save_histogram_plot(xgb_prob, rf_prob):
@@ -87,7 +89,7 @@ def save_histogram_plot(xgb_prob, rf_prob):
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
-    plt.savefig("test2_probability_histograms_xgb_vs_rf.png", dpi=150)
+    plt.savefig(figure_path("test2_probability_histograms_xgb_vs_rf.png"), dpi=150)
     plt.close()
 
 def main():
@@ -110,8 +112,8 @@ def main():
     xgb_table, xgb_summary = summarize_model("XGBoost", y_true, xgb_prob)
     rf_table, rf_summary = summarize_model("Random Forest", y_true, rf_prob)
 
-    xgb_table.to_csv("test2_xgb_calibration_bins.csv", index=False)
-    rf_table.to_csv("test2_rf_calibration_bins.csv", index=False)
+    xgb_table.to_csv(artifact_path("test2_xgb_calibration_bins.csv"), index=False)
+    rf_table.to_csv(artifact_path("test2_rf_calibration_bins.csv"), index=False)
 
     combined_summary = {
         "dataset": "v3_1_fixed",
@@ -129,7 +131,7 @@ def main():
         }
     }
 
-    with open("test2_calibration_summary_xgb_vs_rf.json", "w", encoding="utf-8") as f:
+    with open(artifact_path("test2_calibration_summary_xgb_vs_rf.json"), "w", encoding="utf-8") as f:
         json.dump(combined_summary, f, indent=2)
 
     save_reliability_plot(xgb_table, rf_table)

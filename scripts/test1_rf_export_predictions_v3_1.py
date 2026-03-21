@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import GroupShuffleSplit, GroupKFold, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+from project_paths import artifact_path, dataset_path
+
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -17,7 +19,7 @@ TARGET = "p1_wins"
 GROUP = "replay_id"
 TIME = "time_sec"
 
-DATASET_PATH = "starcraft_full_dataset_v3_1_fixed.csv"
+DATASET_PATH = dataset_path("starcraft_full_dataset_v3_1_fixed.csv")
 OUTPUT_PREFIX = "rf_clean_v3_1"
 
 print("Caricamento dataset...")
@@ -108,7 +110,7 @@ pred_df = pd.DataFrame({
     "y_prob_rf": y_prob,
     "y_pred_rf": y_pred,
 })
-pred_csv = f"{OUTPUT_PREFIX}_test_predictions.csv"
+pred_csv = artifact_path(f"{OUTPUT_PREFIX}_test_predictions.csv")
 pred_df.to_csv(pred_csv, index=False)
 
 summary = {
@@ -127,7 +129,7 @@ summary = {
     "test_auc": float(auc),
     "test_logloss": float(ll),
 }
-summary_json = f"{OUTPUT_PREFIX}_summary.json"
+summary_json = artifact_path(f"{OUTPUT_PREFIX}_summary.json")
 with open(summary_json, "w", encoding="utf-8") as f:
     json.dump(summary, f, indent=2)
 

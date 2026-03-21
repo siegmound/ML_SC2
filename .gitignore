@@ -1,0 +1,23 @@
+# Python cache / virtual env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local notebooks / editor state
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# OS noise
+.DS_Store
+Thumbs.db
