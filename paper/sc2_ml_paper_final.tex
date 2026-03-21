@@ -24,7 +24,7 @@
 \usepackage{setspace}
 \usepackage{url}
 
-\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!60!black,pdftitle={StarCraft II Match Outcome Prediction Paper Draft},pdfauthor={Jose}}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!60!black,pdftitle={StarCraft II Match Outcome Prediction: From Replay Parsing to Group-Aware Experimental Validation},pdfauthor={Jose}}
 
 \definecolor{accent}{RGB}{28,56,110}
 \definecolor{softblue}{RGB}{242,246,252}
@@ -36,7 +36,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{StarCraft II Match Outcome Prediction}
-\fancyhead[R]{Jose}
+\fancyhead[R]{Pineda Fritas Jose Luis}
 \fancyfoot[C]{\thepage/\pageref{LastPage}}
 \setlength{\headheight}{14pt}
 
@@ -67,13 +67,13 @@
 {\Large From Replay Parsing to Group-Aware Experimental Validation\par}
 \vspace{1.3cm}
 \begin{tcolorbox}[width=0.88\textwidth,colback=softblue,colframe=accent,arc=2mm,boxrule=0.8pt]
-This document is designed as the \textbf{main technical paper} of the project. It consolidates the current methodology, explains the logic of the pipeline, records the best results available from the frozen project material and documents the final audit-cleaned artifact package used for reproducibility review.
+This document is designed as the \textbf{main technical paper} of the project. It consolidates the project methodology, explains the logic of the pipeline, and reports the final replay-aware experimental results preserved in the repository for reproducibility review.
 \end{tcolorbox}
 \vfill
 \begin{tabular}{rl}
-Candidate: & Jose \\
+Candidate: & Pineda Fritas Jose Luis \\
 Academic year: & 2025--2026 \\
-Document version: & Revised freeze \\
+Document version: & Final revised version \\
 Date: & March 2026 \\
 \end{tabular}
 \vfill
@@ -84,7 +84,7 @@ Date: & March 2026 \\
 \section*{Abstract}
 This project studies match outcome prediction in \emph{StarCraft II} using tabular snapshots extracted from real replay files rather than images or raw sequences. The technical objective is not only to train a classifier, but to build a complete and reproducible pipeline from replay parsing to inference. The dataset is generated from more than 24,000 competitive replays and sampled every 15 seconds after removing the first two minutes of game time. The work focuses on domain-aware feature engineering, group-aware evaluation to avoid replay leakage, and comparative analysis across Random Forest, XGBoost, and deep multilayer perceptrons.
 
-A central methodological result is that naive row-based validation dramatically overestimates performance because adjacent snapshots from the same replay are highly correlated. Once the split is performed by \texttt{replay\_id}, the measured accuracy drops from the high-80\% range to roughly 61\%, which is far more realistic and scientifically meaningful. Current project materials now show that tree-based models form the strongest and most stable baseline on this tabular representation. The final GPU-trained MLP remains competitive but does not surpass the tree ensembles, and the strongest remaining advantage of XGBoost over Random Forest appears in probabilistic quality rather than in a large gain in raw accuracy. The paper also documents the remaining finalization steps, calibration evidence, and the roadmap for the last experimental cycle.
+A central methodological result is that naive row-based validation dramatically overestimates performance because adjacent snapshots from the same replay are highly correlated. Once the split is performed by \texttt{replay\_id}, the measured accuracy drops from the high-80\% range to roughly 61\%, which is far more realistic and scientifically meaningful. Current project materials now show that tree-based models form the strongest and most stable baseline on this tabular representation. The final GPU-trained MLP remains competitive but does not surpass the tree ensembles, and the strongest remaining advantage of XGBoost over Random Forest appears in probabilistic quality rather than in a large gain in raw accuracy. Overall, the results support replay-aware tree ensembles as the strongest and most reliable baseline for this tabular representation of StarCraft II match state.
 
 \tableofcontents
 \newpage
@@ -386,25 +386,6 @@ The additional MLP calibration run does not change the decision logic of the pap
     \caption{Final three-way reliability diagram on the frozen V3.1 fixed test split. XGBoost remains closest to ideal calibration overall, Random Forest is highly competitive but shows larger local deviations, and MLP PyTorch is systematically less calibrated than the two tree ensembles.}
 \end{figure}
 
-\subsection{Older comparison table kept for historical context}
-Table~\ref{tab:legacy_summary} records the earlier compact-project snapshot. It remains useful as historical context because it illustrates how misleading row-based validation can be.
-
-\begin{table}[H]
-\centering
-\caption{Earlier project snapshot kept for historical context. ``Real'' refers to replay-aware validation; ``Falsified'' refers to row-based validation affected by leakage.}
-\label{tab:legacy_summary}
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{2.2cm} >{\centering\arraybackslash}p{2.4cm}}
-\toprule
-Model & Paradigm & Accuracy (real) & Accuracy (falsified) \\
-\midrule
-XGBoost & Gradient boosting (GPU) & 60.70\% & 87.34\% \\
-Random Forest & Bagging trees & 60.85\% & 86.10\% \\
-MLP & Deep feedforward network (GPU) & 60.34\% & 79.20\% \\
-SVM & RBF margin model, reduced subset & 58.45\% & 68.19\% \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 \subsection{Frozen ablation and reproducibility table}
 \begin{table}[H]
 \centering
@@ -516,45 +497,6 @@ The current project should explicitly acknowledge the following validity threats
     \item \textbf{Potential instability in late-game bins.} Very long games may be underrepresented, causing noisy duration trends.
     \item \textbf{Representation ceiling.} Tabular snapshots may simply omit too much information for large gains without sequence or spatial modeling.
 \end{enumerate}
-
-\section{Roadmap for the Final Paper Cycle}
-The benchmark phase is now sufficiently closed that the remaining work should emphasize \emph{artifact freezing, editorial consolidation, and optional polish} rather than new parser branches. The recommended order is:
-
-\begin{enumerate}
-    \item \textbf{Freeze the benchmark artifacts.} Keep \textbf{V3.1 fixed} as the principal reported dataset branch, retain \textbf{V3.2 combatfix} as the combat-representation ablation, and archive the final logs, summaries, prediction files, bootstrap outputs, calibration outputs, and paper sources.
-    \item \textbf{Finalize the interpretation section.} The paper should now explicitly state that feature engineering and parser semantics account for the largest gains, while the algorithmic margin between the two strongest tree ensembles is small on accuracy but meaningful on probabilistic quality.
-    \item \textbf{Polish the final presentation.} Tighten naming consistency, remove reserved writing placeholders that are no longer needed, and ensure the figures/tables referenced in the conclusions are the exact frozen ones.
-    \item \textbf{Only then decide whether any new parser branch is justified.} A new V4 should be considered only if the remaining failure mode is clearly identified and if extending the project is preferable to freezing the final deliverable.
-\end{enumerate}
-
-\section{Final Freeze Checklist and Remaining Editorial Tasks}
-This section records the final freeze status after closing the main benchmark, the replay-bootstrap significance test, the tree-ensemble calibration comparison, the unified duration comparison, and the optional MLP calibration completion.
-
-\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{8.4cm} >{\raggedright\arraybackslash}p{3.1cm}}
-\caption{Freeze checklist and remaining editorial work after closing the benchmark, replay-bootstrap test, calibration analysis, duration comparison, and optional MLP calibration completion.}\\
-\toprule
-Item & What must be done & Priority \\
-\midrule
-\endfirsthead
-\toprule
-Item & What must be done & Priority \\
-\midrule
-\endhead
-Unified duration comparison & \textbf{Completed.} Final replay-aware duration table and figures have been generated for XGBoost, Random Forest, and MLP on the frozen V3.1 split. & Closed \\
-Optional calibration of MLP & \textbf{Completed.} MLP probabilities were exported on the frozen split and incorporated into the final three-way calibration comparison. & Closed \\
-Final artifact freeze & Archive the exact final dataset version, summary JSON files, prediction CSV files, bootstrap outputs, calibration outputs, execution logs, and paper sources used to produce the final tables. & High \\
-Cross-model discussion polish & Tighten the explanation of why XGBoost is selected as the main model despite the replay-bootstrap showing no strong 95\% superiority over Random Forest on accuracy and AUC. & Medium \\
-Optional V4 decision & Decide whether any new parser branch is justified only after artifact freezing and final editorial cleanup are complete. & Low \\
-\bottomrule
-\end{longtable}
-
-\subsection*{Methodology of the remaining finalization work}
-Only a small amount of methodological work remains.
-\begin{itemize}
-    \item \textbf{Artifact freeze methodology.} Preserve the exact scripts, prediction exports, summary JSON files, bootstrap outputs, calibration outputs, execution logs, and paper sources corresponding to the final paper tables. Do not silently replace them with later reruns under different naming conventions.
-    \item \textbf{Editorial consistency methodology.} Keep version naming fixed across all text, tables, and manifests: \texttt{baseline\_clean}, \texttt{v2\_dynamic}, \texttt{v3\_1\_fixed}, and \texttt{v3\_2\_combatfix}. Keep \texttt{V3.1 fixed} as the principal benchmark branch.
-    \item \textbf{Optional extension methodology.} Any further V4 parser work should be explicitly labeled as a post-freeze extension and should not overwrite the frozen artifacts reported in this paper.
-\end{itemize}
 
 \section{Conclusion}
 At its current stage, the project already supports a strong technical narrative. It demonstrates that match prediction in StarCraft II from tabular replay snapshots is feasible, but only if the pipeline is treated as a full machine learning system rather than a simple classifier benchmark. The main methodological contribution is the elimination of replay leakage through grouped evaluation. The main empirical result is that once validation is corrected and the parser is improved, the strongest baselines converge near 62\% accuracy, with the dominant gains coming from better feature semantics and temporal representation rather than from changing the learning algorithm alone.
