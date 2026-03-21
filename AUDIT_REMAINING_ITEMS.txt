@@ -1,0 +1,14 @@
+Remaining external items after the revised cleanup
+
+1. Full end-to-end retraining still requires:
+   - starcraft_full_dataset_v3_1_fixed.csv
+   - starcraft_full_dataset_v3_2_combatfix.csv
+
+2. The package now contains enough artifacts to audit:
+   - frozen metric values,
+   - prediction-export based comparison tests,
+   - calibration figures/tables,
+   - duration-comparison tables,
+   - parser/constants/script consistency.
+
+3. The main remaining limitation is dataset availability, not internal package incoherence.

@@ -1,0 +1,90 @@
+\relax 
+\providecommand \babel@aux [2]{\global \let \babel@toc \@gobbletwo }
+\@nameuse{bbl@beforestart}
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\babel@aux{english}{}
+\babel@aux{english}{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction and Project Goal}{4}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Problem Formulation}{4}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Pipeline Overview}{4}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Data Acquisition and Dataset Construction}{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Replay source and scale}{5}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Sampling policy}{5}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Why the first 120 seconds are removed}{5}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Dataset identity structure}{5}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Feature Engineering Logic}{5}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Feature families}{5}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Combat score}{6}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Economic features}{6}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Scouting and composition features}{6}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Dynamic features}{6}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Methodological Pivot: Leakage Control}{7}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Model Families and Expected Behavior}{7}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Random Forest}{7}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}XGBoost}{7}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}MLP}{7}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Why trees may be favored here}{7}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Experimental Protocol}{8}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Baseline data preparation}{8}{subsection.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Random Forest protocol}{8}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}XGBoost protocol}{8}{subsection.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}MLP protocol status}{8}{subsection.8.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Current Results Snapshot}{9}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Consolidated ablation status up to the current iteration}{9}{subsection.9.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Replay-aware XGBoost ablation progression across the current parser versions. All runs use grouped splitting by \texttt  {replay\_id}, grouped model selection, and a pure held-out test set.}}{9}{table.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:xgb_progression}{{1}{9}{Replay-aware XGBoost ablation progression across the current parser versions. All runs use grouped splitting by \texttt {replay\_id}, grouped model selection, and a pure held-out test set}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Current best XGBoost reference run}{10}{subsection.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Random Forest cross-check on the fixed dataset}{10}{subsection.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.4}Final cross-model comparison on the frozen main dataset}{11}{subsection.9.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Final cross-model comparison on the frozen V3.1 fixed dataset. All results use replay-aware train/validation/test splitting.}}{11}{table.caption.2}\protected@file@percent }
+\newlabel{tab:final_model_comparison}{{2}{11}{Final cross-model comparison on the frozen V3.1 fixed dataset. All results use replay-aware train/validation/test splitting}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.5}Paired replay-bootstrap significance test: XGBoost vs Random Forest}{11}{subsection.9.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Paired replay-bootstrap comparison between XGBoost and Random Forest on V3.1 fixed. Positive values favor XGBoost.}}{12}{table.caption.3}\protected@file@percent }
+\newlabel{tab:bootstrap_xgb_rf}{{3}{12}{Paired replay-bootstrap comparison between XGBoost and Random Forest on V3.1 fixed. Positive values favor XGBoost}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.6}Calibration analysis of the final tree ensembles}{12}{subsection.9.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Calibration comparison between XGBoost and Random Forest on the frozen V3.1 fixed test split. Lower Brier, log-loss, ECE, and MCE are better.}}{12}{table.caption.4}\protected@file@percent }
+\newlabel{tab:calibration_xgb_rf}{{4}{12}{Calibration comparison between XGBoost and Random Forest on the frozen V3.1 fixed test split. Lower Brier, log-loss, ECE, and MCE are better}{table.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Reliability diagram for the frozen V3.1 fixed test split. XGBoost remains closer to the ideal calibration line across the probability bins, while Random Forest shows larger local deviations.}}{13}{figure.caption.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.7}Calibration completion with the final MLP export}{13}{subsection.9.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Final three-way calibration comparison on the frozen V3.1 fixed test split. Lower Brier, log-loss, ECE, and MCE are better.}}{13}{table.caption.6}\protected@file@percent }
+\newlabel{tab:calibration_xgb_rf_mlp}{{5}{13}{Final three-way calibration comparison on the frozen V3.1 fixed test split. Lower Brier, log-loss, ECE, and MCE are better}{table.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Final three-way reliability diagram on the frozen V3.1 fixed test split. XGBoost remains closest to ideal calibration overall, Random Forest is highly competitive but shows larger local deviations, and MLP PyTorch is systematically less calibrated than the two tree ensembles.}}{14}{figure.caption.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.8}Older comparison table kept for historical context}{14}{subsection.9.8}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Earlier project snapshot kept for historical context. ``Real'' refers to replay-aware validation; ``Falsified'' refers to row-based validation affected by leakage.}}{14}{table.caption.8}\protected@file@percent }
+\newlabel{tab:legacy_summary}{{6}{14}{Earlier project snapshot kept for historical context. ``Real'' refers to replay-aware validation; ``Falsified'' refers to row-based validation affected by leakage}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.9}Frozen ablation and reproducibility table}{15}{subsection.9.9}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Frozen ablation summary under the uniform replay-aware XGBoost protocol. Every dataset contains 892,047 snapshots derived from 23,241 replays, split into 14,873 training replays, 3,719 validation replays, and 4,649 test replays.}}{15}{table.caption.9}\protected@file@percent }
+\newlabel{tab:ablation_summary}{{7}{15}{Frozen ablation summary under the uniform replay-aware XGBoost protocol. Every dataset contains 892,047 snapshots derived from 23,241 replays, split into 14,873 training replays, 3,719 validation replays, and 4,649 test replays}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Feature Importance and Interpretation}{15}{section.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Earlier XGBoost feature-importance visualization from the compact feature set. It is retained as a baseline reference.}}{16}{figure.caption.10}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Random Forest feature importance on the V3.1 fixed dataset. The ranking is broadly consistent with the improved XGBoost runs: economy and momentum dominate, while scouting, combat, and counter/tech-related features contribute additional signal.}}{17}{figure.caption.11}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces XGBoost feature importance on the frozen V3.1 fixed dataset. Economy and worker advantage remain dominant, while technology, combat, and army-complexity variables contribute the secondary signal that separates the richer parser branch from the earlier compact baseline.}}{18}{figure.caption.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {11}Temporal Analysis by Match Duration}{18}{section.11}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Final unified duration comparison on the frozen V3.1 fixed test split. All three models use the same replay-derived duration bins.}}{19}{table.caption.13}\protected@file@percent }
+\newlabel{tab:duration_compare}{{8}{19}{Final unified duration comparison on the frozen V3.1 fixed test split. All three models use the same replay-derived duration bins}{table.caption.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Final unified duration-based accuracy comparison on V3.1 fixed. XGBoost is strongest overall in the dominant 5--10 minute regime, Random Forest remains extremely close and can be slightly stronger in the longest bins, and MLP PyTorch stays consistently below both tree ensembles.}}{19}{figure.caption.14}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Test sample count by duration bin for the unified duration comparison. The longer-duration bins are noticeably smaller, which should be kept in mind when interpreting late-game differences.}}{20}{figure.caption.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {12}Critical Discussion}{20}{section.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1}Why the absolute accuracy is not extremely high}{20}{subsection.12.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2}What the models are probably learning}{20}{subsection.12.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.3}Why trees currently dominate}{20}{subsection.12.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {13}Threats to Validity}{21}{section.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {14}Roadmap for the Final Paper Cycle}{21}{section.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {15}Final Freeze Checklist and Remaining Editorial Tasks}{21}{section.15}\protected@file@percent }
+\gdef \LT@i {\LT@entry 
+    {1}{103.04872pt}\LT@entry 
+    {1}{251.00298pt}\LT@entry 
+    {1}{100.2037pt}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Freeze checklist and remaining editorial work after closing the benchmark, replay-bootstrap test, calibration analysis, duration comparison, and optional MLP calibration completion.}}{22}{table.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {16}Conclusion}{22}{section.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {17}Conceptual Extension: A POMDP-like View of Replay Snapshots}{23}{section.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A}Appendix A: Snapshot of the Current Code Logic}{24}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Appendix B: Final Freeze Manifest}{24}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Appendix C: Supplementary Reference Note for the POMDP-like View}{24}{appendix.C}\protected@file@percent }
+\newlabel{LastPage}{{C}{24}{Appendix C: Supplementary Reference Note for the POMDP-like View}{page.24}{}}
+\gdef\lastpage@lastpage{24}
+\gdef\lastpage@lastpageHy{24}
+\gdef \@abspage@last{25}

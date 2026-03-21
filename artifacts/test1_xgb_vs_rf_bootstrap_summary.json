@@ -1,0 +1,31 @@
+{
+  "n_rows_merged": 178699,
+  "n_replays_test": 4649,
+  "point_estimates": {
+    "xgb_accuracy": 0.6193319492554519,
+    "rf_accuracy": 0.6185037409274814,
+    "xgb_auc": 0.6664887274496327,
+    "rf_auc": 0.6641953845275458,
+    "xgb_logloss": 0.6451409213065206,
+    "rf_logloss": 0.6483285479067915
+  },
+  "diff_accuracy_xgb_minus_rf_mean": 0.0008268654485680833,
+  "diff_accuracy_xgb_minus_rf_ci95": [
+    -0.0017858061893035598,
+    0.0036529572052866124
+  ],
+  "diff_auc_xgb_minus_rf_mean": 0.0023128427840669323,
+  "diff_auc_xgb_minus_rf_ci95": [
+    -0.0009562382970327993,
+    0.005681950413971126
+  ],
+  "diff_logloss_rf_minus_xgb_mean": 0.003203293153729021,
+  "diff_logloss_rf_minus_xgb_ci95": [
+    0.0008887328349684003,
+    0.005452458111132613
+  ],
+  "p_xgb_better_accuracy": 0.7215,
+  "p_xgb_better_auc": 0.923,
+  "p_xgb_better_logloss": 0.9955,
+  "notes": "Replay-level paired bootstrap reconstructed from recorded test output."
+}

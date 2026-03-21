@@ -1,0 +1,201 @@
+[RAW OUTPUT BLOCK 01 — MODEL COMPARISON FINAL]
+Confronto modelli:
+
+        model  cv_accuracy  test_accuracy  test_balanced_accuracy  test_auc  test_logloss                              path
+      XGBoost     0.606554       0.619332                0.615447  0.666489      0.645141 xgb_clean_v3_1_fixed_summary.json
+random_forest     0.606300       0.618000                0.615300  0.664300      0.648700        rf_clean_v3_1_summary.json
+  MLP_PyTorch          NaN       0.611598                0.612442  0.662624      0.648304   mlp_torch_gpu_v3_1_summary.json
+
+File salvato: model_comparison_summary_v1.csv
+
+[RAW OUTPUT BLOCK 02 — BOOTSTRAP XGB VS RF]
+Merged rows: 178699
+Unique test replays: 4649
+
+Point estimates on merged test predictions
+{
+  "xgb_accuracy": 0.6193319492554519,
+  "rf_accuracy": 0.6185037409274814,
+  "xgb_auc": 0.6664887274496327,
+  "rf_auc": 0.6641953845275458,
+  "xgb_logloss": 0.6451409213065206,
+  "rf_logloss": 0.6483285479067915
+}
+
+Bootstrap summary
+{
+  "n_rows_merged": 178699,
+  "n_replays_test": 4649,
+  "point_estimates": {
+    "xgb_accuracy": 0.6193319492554519,
+    "rf_accuracy": 0.6185037409274814,
+    "xgb_auc": 0.6664887274496327,
+    "rf_auc": 0.6641953845275458,
+    "xgb_logloss": 0.6451409213065206,
+    "rf_logloss": 0.6483285479067915
+  },
+  "diff_accuracy_xgb_minus_rf_mean": 0.0008268654485680833,
+  "diff_accuracy_xgb_minus_rf_ci95": [
+    -0.0017858061893035598,
+    0.0036529572052866124
+  ],
+  "diff_auc_xgb_minus_rf_mean": 0.0023128427840669323,
+  "diff_auc_xgb_minus_rf_ci95": [
+    -0.0009562382970327993,
+    0.005681950413971126
+  ],
+  "diff_logloss_rf_minus_xgb_mean": 0.003203293153729021,
+  "diff_logloss_rf_minus_xgb_ci95": [
+    0.0008887328349684003,
+    0.005452458111132613
+  ],
+  "p_xgb_better_accuracy": 0.7215,
+  "p_xgb_better_auc": 0.923,
+  "p_xgb_better_logloss": 0.9955,
+  "interpretation": {
+    "accuracy": "Positive values favor XGBoost.",
+    "auc": "Positive values favor XGBoost.",
+    "logloss": "Positive values favor XGBoost because the quantity is RF logloss minus XGBoost logloss."
+  }
+}
+
+Files saved:
+- test1_xgb_vs_rf_bootstrap_samples.csv
+- test1_xgb_vs_rf_bootstrap_summary.json
+
+[RAW OUTPUT BLOCK 03 — CALIBRATION XGB VS RF]
+Calibration summary:
+{
+  "dataset": "v3_1_fixed",
+  "n_samples": 178699,
+  "xgboost": {
+    "model": "XGBoost",
+    "n_samples": 178699,
+    "positive_rate": 0.5379269050190544,
+    "mean_predicted_probability": 0.5171079329184999,
+    "brier_score": 0.22729093876883988,
+    "log_loss": 0.6451409213065206,
+    "roc_auc": 0.6664887274496327,
+    "ece": 0.020818972100554566,
+    "mce": 0.02940739295851391
+  },
+  "random_forest": {
+    "model": "Random Forest",
+    "n_samples": 178699,
+    "positive_rate": 0.5379269050190544,
+    "mean_predicted_probability": 0.5158864402221197,
+    "brier_score": 0.22862110720510892,
+    "log_loss": 0.6483285479067915,
+    "roc_auc": 0.6641953845275458,
+    "ece": 0.029354467802090244,
+    "mce": 0.07905515544293984
+  },
+  "delta_brier_rf_minus_xgb": 0.0013301684362690414,
+  "delta_logloss_rf_minus_xgb": 0.003187626600270943,
+  "delta_ece_rf_minus_xgb": 0.008535495701535677,
+  "interpretation": {
+    "brier": "Lower is better.",
+    "log_loss": "Lower is better.",
+    "ece": "Lower is better.",
+    "delta_*_rf_minus_xgb": "Positive values favor XGBoost."
+  }
+}
+
+Files saved:
+- test2_xgb_calibration_bins.csv
+- test2_rf_calibration_bins.csv
+- test2_calibration_summary_xgb_vs_rf.json
+- test2_reliability_xgb_vs_rf.png
+- test2_probability_histograms_xgb_vs_rf.png
+
+[RAW OUTPUT BLOCK 04 — DURATION COMPARISON]
+Merged duration comparison:
+ duration_min_bin  xgb_accuracy  xgb_n_samples  xgb_n_replays  rf_accuracy  rf_n_samples  rf_n_replays  mlp_accuracy  mlp_n_samples  mlp_n_replays  n_samples_consistent  n_replays_consistent
+              0.0      0.585325           1799            217     0.615342          1799           217      0.547526           1799            217                  True                  True
+              5.0      0.643520          38911           1705     0.636016         38911          1705      0.630027          38911           1705                  True                  True
+             10.0      0.628495          69353           1719     0.626837         69353          1719      0.622684          69353           1719                  True                  True
+             15.0      0.611935          41627            688     0.614433         41627           688      0.607490          41627            688                  True                  True
+             20.0      0.576960          19627            246     0.577011         19627           246      0.569063          19627            246                  True                  True
+             25.0      0.568410           7382             74     0.581956          7382            74      0.562178           7382             74                  True                  True
+
+Files saved:
+- test3_duration_comparison_v3_1.csv
+- test3_duration_comparison_v3_1.png
+- test3_duration_comparison_v3_1_sample_counts.png
+- test3_duration_comparison_v3_1_summary.json
+
+[RAW OUTPUT BLOCK 05 — TEST4 MLP EXPORT]
+========================================
+VALUTAZIONE FINALE SU TEST PURO
+========================================
+Accuracy          : 0.6100
+Balanced Accuracy : 0.6113
+ROC-AUC           : 0.6620
+Log Loss          : 0.6488
+
+Confusion Matrix:
+[[51858 30714]
+ [38974 57153]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+         0.0     0.5709    0.6280    0.5981     82572
+         1.0     0.6504    0.5946    0.6212     96127
+
+    accuracy                         0.6100    178699
+   macro avg     0.6107    0.6113    0.6097    178699
+weighted avg     0.6137    0.6100    0.6106    178699
+
+
+File salvati:
+- mlp_torch_gpu_v3_1_export_test_predictions.csv
+- mlp_torch_gpu_v3_1_export_summary.json
+
+[RAW OUTPUT BLOCK 06 — TEST4 THREE-WAY CALIBRATION]
+Calibration summary:
+{
+  "dataset": "v3_1_fixed",
+  "n_samples": 178699,
+  "xgboost": {
+    "model": "XGBoost",
+    "n_samples": 178699,
+    "positive_rate": 0.5379269050190544,
+    "mean_predicted_probability": 0.5171079329184999,
+    "brier_score": 0.22729093876883988,
+    "log_loss": 0.6451409213065206,
+    "roc_auc": 0.6664887274496327,
+    "ece": 0.020818972100554566,
+    "mce": 0.02940739295851391
+  },
+  "random_forest": {
+    "model": "Random Forest",
+    "n_samples": 178699,
+    "positive_rate": 0.5379269050190544,
+    "mean_predicted_probability": 0.5158864402221197,
+    "brier_score": 0.22862110720510892,
+    "log_loss": 0.6483285479067915,
+    "roc_auc": 0.6641953845275458,
+    "ece": 0.029354467802090244,
+    "mce": 0.07905515544293984
+  },
+  "mlp_pytorch": {
+    "model": "MLP PyTorch",
+    "n_samples": 178699,
+    "positive_rate": 0.5379269050190544,
+    "mean_predicted_probability": 0.5052681312136161,
+    "brier_score": 0.22890196617958147,
+    "log_loss": 0.6487730110743604,
+    "roc_auc": 0.6620248474570631,
+    "ece": 0.032815091108277065,
+    "mce": 0.04094863924137537
+  }
+}
+
+Files saved:
+- test4_xgb_calibration_bins.csv
+- test4_rf_calibration_bins.csv
+- test4_mlp_calibration_bins.csv
+- test4_reliability_xgb_rf_mlp.png
+- test4_calibration_summary_xgb_rf_mlp.json
+

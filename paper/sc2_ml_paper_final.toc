@@ -1,0 +1,51 @@
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction and Project Goal}{4}{section.1}%
+\contentsline {section}{\numberline {2}Problem Formulation}{4}{section.2}%
+\contentsline {section}{\numberline {3}Pipeline Overview}{4}{section.3}%
+\contentsline {section}{\numberline {4}Data Acquisition and Dataset Construction}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Replay source and scale}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Sampling policy}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Why the first 120 seconds are removed}{5}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Dataset identity structure}{5}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Feature Engineering Logic}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Feature families}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Combat score}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Economic features}{6}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Scouting and composition features}{6}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Dynamic features}{6}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Methodological Pivot: Leakage Control}{7}{section.6}%
+\contentsline {section}{\numberline {7}Model Families and Expected Behavior}{7}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Random Forest}{7}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}XGBoost}{7}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}MLP}{7}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Why trees may be favored here}{7}{subsection.7.4}%
+\contentsline {section}{\numberline {8}Experimental Protocol}{8}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Baseline data preparation}{8}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Random Forest protocol}{8}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}XGBoost protocol}{8}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}MLP protocol status}{8}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Current Results Snapshot}{9}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Consolidated ablation status up to the current iteration}{9}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Current best XGBoost reference run}{10}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Random Forest cross-check on the fixed dataset}{10}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Final cross-model comparison on the frozen main dataset}{11}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Paired replay-bootstrap significance test: XGBoost vs Random Forest}{11}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Calibration analysis of the final tree ensembles}{12}{subsection.9.6}%
+\contentsline {subsection}{\numberline {9.7}Calibration completion with the final MLP export}{13}{subsection.9.7}%
+\contentsline {subsection}{\numberline {9.8}Older comparison table kept for historical context}{14}{subsection.9.8}%
+\contentsline {subsection}{\numberline {9.9}Frozen ablation and reproducibility table}{15}{subsection.9.9}%
+\contentsline {section}{\numberline {10}Feature Importance and Interpretation}{15}{section.10}%
+\contentsline {section}{\numberline {11}Temporal Analysis by Match Duration}{18}{section.11}%
+\contentsline {section}{\numberline {12}Critical Discussion}{20}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Why the absolute accuracy is not extremely high}{20}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}What the models are probably learning}{20}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}Why trees currently dominate}{20}{subsection.12.3}%
+\contentsline {section}{\numberline {13}Threats to Validity}{21}{section.13}%
+\contentsline {section}{\numberline {14}Roadmap for the Final Paper Cycle}{21}{section.14}%
+\contentsline {section}{\numberline {15}Final Freeze Checklist and Remaining Editorial Tasks}{21}{section.15}%
+\contentsline {section}{\numberline {16}Conclusion}{22}{section.16}%
+\contentsline {section}{\numberline {17}Conceptual Extension: A POMDP-like View of Replay Snapshots}{23}{section.17}%
+\contentsline {section}{\numberline {A}Appendix A: Snapshot of the Current Code Logic}{24}{appendix.A}%
+\contentsline {section}{\numberline {B}Appendix B: Final Freeze Manifest}{24}{appendix.B}%
+\contentsline {section}{\numberline {C}Appendix C: Supplementary Reference Note for the POMDP-like View}{24}{appendix.C}%
