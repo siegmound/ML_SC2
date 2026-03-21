@@ -510,40 +510,22 @@ Let $s_t \in S$ denote the latent strategic state of the match at time $t$, and 
 
 In this interpretation, match evolution may be described by a transition model $T(s_{t+1}\mid s_t, a_t)$ and an observation model $Z(o_{t+1}\mid s_{t+1}, a_t)$, where the quality of the future observation is influenced by partial information and scouting quality. Historical replay trajectories can then be viewed as empirical evidence for estimating a belief-like representation over latent strategic situations. The current project does not explicitly solve a POMDP, perform belief updates, or optimize a sequential policy. However, the replay dataset can still be interpreted as a collection of observation sequences that act as proxies for hidden strategic states and that could support future work on latent-state estimation, action valuation, or policy recommendation under partial observability.
 
-This perspective should be understood as a conceptual extension rather than a redefinition of the present contribution. The main result of the paper remains a rigorous replay-aware machine learning pipeline for match outcome prediction. Nevertheless, the POMDP-like view is useful because it clarifies why static tabular snapshots already contain meaningful strategic signal while also explaining why future progress may require richer temporal modeling, belief-like state tracking, and more explicit reasoning over strategic actions. For a compact standalone formal note corresponding to this interpretation, the freeze package includes \texttt{paper/appendix\_reference\_sc2\_pomdp\_like\_spec.pdf}.
+This perspective should be understood as a conceptual extension rather than a redefinition of the present contribution. The main result of the paper remains a rigorous replay-aware machine learning pipeline for match outcome prediction. Nevertheless, the POMDP-like view is useful because it clarifies why static tabular snapshots already contain meaningful strategic signal while also explaining why future progress may require richer temporal modeling, belief-like state tracking, and more explicit reasoning over strategic actions. A separate supplementary note develops this interpretation in a more compact formal style.
 
 \appendix
-\section{Appendix A: Snapshot of the Current Code Logic}
-The project files currently indicate the following status:
+\section{Appendix A: Implementation Snapshot}
+The implementation analyzed in this study contains the following main components:
 \begin{itemize}
     \item a baseline parser and bridge used for the earlier compact dataset,
     \item updated parser and bridge branches with explicit counter, momentum, volatility, tech-fix, and combat-refactor features,
-    \item a stronger XGBoost script with proper outer split, inner split, grouped model selection, and early stopping,
-    \item a stronger Random Forest script with grouped model selection,
-    \item a GPU-aware PyTorch MLP script using replay-aware train/validation/test splitting and validation-based candidate selection.
+    \item an XGBoost pipeline with proper outer split, inner split, grouped model selection, and early stopping,
+    \item a Random Forest pipeline with grouped model selection,
+    \item a GPU-aware PyTorch MLP pipeline using replay-aware train/validation/test splitting and validation-based candidate selection.
 \end{itemize}
 
-\section{Appendix B: Final Freeze Manifest}
-The final freeze package archives the exact paper sources, benchmark summaries, prediction exports, bootstrap outputs, calibration outputs, methodology notes, and execution logs used in the closing experimental cycle. The frozen benchmark logic is therefore:
-\begin{itemize}
-    \item principal dataset branch: \textbf{V3.1 fixed},
-    \item principal model: \textbf{XGBoost},
-    \item strongest alternative baseline: \textbf{Random Forest},
-    \item neural comparison model: \textbf{PyTorch MLP},
-    \item parser-ablation branch retained for interpretation: \textbf{V3.2 combatfix}.
-\end{itemize}
-Any future V4 branch should be treated as a separate post-freeze extension rather than a silent replacement of these artifacts.
-
-\section{Appendix C: Supplementary Reference Note for the POMDP-like View}
-The final freeze package includes a short standalone note that expands the conceptual formulation introduced near the end of the main paper. This supplementary file is intended as an external appendix reference rather than as a new experimental claim. Its purpose is to formalize the distinction between latent strategic state, replay-derived observation, high-level strategic action, observation quality, and belief-like estimation from historical replay trajectories.
-
-The supplementary reference note is archived as:
-\begin{itemize}
-    \item \texttt{paper/appendix\_reference\_sc2\_pomdp\_like\_spec.tex}
-    \item \texttt{paper/appendix\_reference\_sc2\_pomdp\_like\_spec.pdf}
-\end{itemize}
+\section{Appendix B: Supplementary Note on the POMDP-like Interpretation}
+A separate supplementary note expands the conceptual formulation introduced near the end of the main paper. Its purpose is to formalize the distinction between latent strategic state, replay-derived observation, high-level strategic action, observation quality, and belief-like estimation from historical replay trajectories.
 
 This material should be read as a conceptual extension and as a possible future theoretical direction. It does not change the empirical scope of the present study, which remains centered on replay-aware supervised outcome prediction.
-
 
 \end{document}
