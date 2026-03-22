@@ -84,7 +84,7 @@ Date: & March 2026 \\
 \section*{Abstract}
 This project studies match outcome prediction in \emph{StarCraft II} using tabular snapshots extracted from real replay files rather than images or raw sequences. The technical objective is not only to train a classifier, but to build a complete and reproducible pipeline from replay parsing to inference. The dataset is generated from more than 24,000 competitive replays and sampled every 15 seconds after removing the first two minutes of game time. The work focuses on domain-aware feature engineering, group-aware evaluation to avoid replay leakage, and comparative analysis across Random Forest, XGBoost, and deep multilayer perceptrons.
 
-A central methodological result is that naive row-based validation dramatically overestimates performance because adjacent snapshots from the same replay are highly correlated. Once the split is performed by \texttt{replay\_id}, the measured accuracy drops from the high-80\% range to roughly 61\%, which is far more realistic and scientifically meaningful. Current project materials now show that tree-based models form the strongest and most stable baseline on this tabular representation. The final GPU-trained MLP remains competitive but does not surpass the tree ensembles, and the strongest remaining advantage of XGBoost over Random Forest appears in probabilistic quality rather than in a large gain in raw accuracy. Overall, the results support replay-aware tree ensembles as the strongest and most reliable baseline for this tabular representation of StarCraft II match state.
+A central methodological result is that naive row-based validation substantially overestimates performance because adjacent snapshots from the same replay are highly correlated. Once the split is performed by \texttt{replay\_id}, the final evaluation settles near 61\%, which is far more realistic and scientifically meaningful. Tree-based models then emerge as the strongest and most stable baseline on this tabular representation. The final GPU-trained MLP remains competitive but does not surpass the tree ensembles, and the strongest remaining advantage of XGBoost over Random Forest appears in probabilistic quality rather than in a large gain in raw accuracy. Overall, the results support replay-aware tree ensembles as the strongest and most reliable baseline for this tabular representation of StarCraft II match state.
 
 \tableofcontents
 \newpage
@@ -192,18 +192,18 @@ For this reason, all serious evaluation must use replay-based grouping:
 \end{itemize}
 
 \begin{resultbox}
-Current project materials report a sharp drop from roughly \textbf{87\%} apparent accuracy under row-based validation to about \textbf{61\%} under replay-aware validation. This is not a failure. It is the transition from an inflated estimate to a credible one.
+Replay-aware validation settles near \textbf{61\%}. This should be treated as the credible estimate for the preserved benchmark, whereas naive row-based validation is methodologically invalid because it leaks information across snapshots from the same replay.
 \end{resultbox}
 
 \section{Model Families and Expected Behavior}
 \subsection{Random Forest}
-Random Forest is a strong baseline for this dataset because the inputs are already engineered tabular variables with nonlinear thresholds and interactions. It does not require feature scaling, is robust to heterogeneous feature magnitudes, and can learn discrete rule-like partitions that fit many RTS situations.
+Random Forest is a strong baseline for this dataset because the inputs are already engineered tabular variables with nonlinear thresholds and interactions \cite{breiman2001rf}. It does not require feature scaling, is robust to heterogeneous feature magnitudes, and can learn discrete rule-like partitions that fit many RTS situations.
 
 \subsection{XGBoost}
-XGBoost is attractive for the same reasons as Random Forest, but with sequential residual correction and stronger capacity to exploit subtle interactions. The current implementation uses GPU acceleration with histogram-based tree construction and early stopping on a dedicated validation split.
+XGBoost is attractive for the same reasons as Random Forest, but with sequential residual correction and stronger capacity to exploit subtle interactions \cite{chen2016xgboost}. The current implementation uses GPU acceleration with histogram-based tree construction and early stopping on a dedicated validation split.
 
 \subsection{MLP}
-The MLP branch is conceptually interesting because it tests whether a deep feedforward network can extract smooth nonlinear structure from the tabular representation. Batch normalization, dropout, LeakyReLU, and quantile normalization are all sensible design choices for heterogeneous features. However, the deep model is also the most sensitive to methodological mistakes in validation and scaling.
+The MLP branch is conceptually interesting because it tests whether a deep feedforward network can extract smooth nonlinear structure from the tabular representation, using a GPU-trained PyTorch implementation in the final branch \cite{paszke2019pytorch}. Batch normalization, dropout, LeakyReLU, and quantile normalization are all sensible design choices for heterogeneous features. However, the deep model is also the most sensitive to methodological mistakes in validation and scaling.
 
 \subsection{Why trees may be favored here}
 The current working hypothesis is that tree-based models are naturally aligned with this problem because many RTS states behave like threshold systems: if one side has detector coverage, enough workers, enough tech, or enough army-quality advantage, the decision boundary can change abruptly. A piecewise tree structure often captures these conditions more directly than a smooth multilayer perceptron trained on independent rows.
@@ -219,7 +219,7 @@ Across the current codebase, the canonical supervised setup is:
 \end{itemize}
 
 \subsection{Random Forest protocol}
-The stronger Random Forest training script uses:
+The stronger Random Forest training script uses scikit-learn grouped model-selection utilities \cite{pedregosa2011sklearn}:
 \begin{itemize}
     \item outer train/test split by replay,
     \item model selection with \texttt{GroupKFold},
@@ -528,4 +528,31 @@ A separate supplementary note expands the conceptual formulation introduced near
 
 This material should be read as a conceptual extension and as a possible future theoretical direction. It does not change the empirical scope of the present study, which remains centered on replay-aware supervised outcome prediction.
 
+
+
+\begin{thebibliography}{9}
+
+\bibitem{breiman2001rf}
+Leo Breiman.
+\newblock Random Forests.
+\newblock \emph{Machine Learning}, 45(1):5--32, 2001.
+
+\bibitem{chen2016xgboost}
+Tianqi Chen and Carlos Guestrin.
+\newblock XGBoost: A Scalable Tree Boosting System.
+\newblock In \emph{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD)}, pages 785--794, 2016.
+
+\bibitem{pedregosa2011sklearn}
+Fabian Pedregosa, Ga\"el Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, Jake VanderPlas, Alexandre Passos, David Cournapeau, Matthieu Brucher, Matthieu Perrot, and \`Edouard Duchesnay.
+\newblock Scikit-learn: Machine Learning in Python.
+\newblock \emph{Journal of Machine Learning Research}, 12:2825--2830, 2011.
+
+\bibitem{paszke2019pytorch}
+Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas K\"opf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala.
+\newblock PyTorch: An Imperative Style, High-Performance Deep Learning Library.
+\newblock In \emph{Advances in Neural Information Processing Systems 32 (NeurIPS)}, pages 8024--8035, 2019.
+
+\end{thebibliography}
+
 \end{document}
+
