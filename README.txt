@@ -30,13 +30,19 @@ After extraction, the following files must exist:
 - datasets/starcraft_full_dataset_v3_1_fixed.csv
 - datasets/starcraft_full_dataset_v3_2_combatfix.csv
 
-Important:
+Important
 - The Python scripts read the extracted CSV files, not the ZIP archives.
 - The extracted CSV files are intended for local use and should not be committed back into the repository.
 - If the CSV files are missing, retraining scripts will fail with a file-not-found error.
-- The scripts in scripts/ are path-aligned to this repository layout and can be launched from either the repository root or from inside scripts/.
+- The scripts in scripts/ are path-aligned to this repository layout through scripts/project_paths.py and can be launched from either the repository root or from inside scripts/.
 - Prediction exports, summaries, calibration outputs, bootstrap outputs, and logs are read from or written to artifacts/.
 - Generated plots are read from or written to figures/.
+
+Canonical script-to-artifact mapping
+- scripts/Xgboost_clean_with_json_v1.py -> artifacts/xgb_clean_v3_1_fixed_*
+- scripts/rf_clean_aligned_v1.py -> artifacts/rf_clean_v3_1_* and figures/rf_clean_v3_1_*
+- scripts/test1_rf_export_predictions_v3_1.py -> artifacts/rf_test_clean_v3_1_* (export-preserved Test 1-4 RF line)
+- scripts/mlp_torch_gpu_aligned_v3.py -> artifacts/mlp_torch_gpu_v3_1_* and figures/mlp_torch_gpu_v3_1_*
 
 Recommended local workflow
 1. Clone the repository.

@@ -1,26 +1,26 @@
 import json
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import GroupShuffleSplit, GroupKFold, GridSearchCV
-from sklearn.ensemble import RandomForestClassifier
-from project_paths import artifact_path, dataset_path
 
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
-    roc_auc_score,
-    log_loss,
-    confusion_matrix,
     classification_report,
+    confusion_matrix,
+    log_loss,
+    roc_auc_score,
 )
+from sklearn.model_selection import GridSearchCV, GroupKFold, GroupShuffleSplit
+
+from project_paths import artifact_path, dataset_path
 
 RANDOM_STATE = 42
 TARGET = "p1_wins"
 GROUP = "replay_id"
 TIME = "time_sec"
-
 DATASET_PATH = dataset_path("starcraft_full_dataset_v3_1_fixed.csv")
-OUTPUT_PREFIX = "rf_clean_v3_1"
+OUTPUT_PREFIX = "rf_test_clean_v3_1"
 
 print("Caricamento dataset...")
 df = pd.read_csv(DATASET_PATH)
@@ -94,27 +94,29 @@ ll = log_loss(y_test, y_prob)
 print("\n" + "=" * 40)
 print("VALUTAZIONE FINALE SU TEST PURO")
 print("=" * 40)
-print(f"Accuracy          : {acc:.4f}")
+print(f"Accuracy : {acc:.4f}")
 print(f"Balanced Accuracy : {bacc:.4f}")
-print(f"ROC-AUC           : {auc:.4f}")
-print(f"Log Loss          : {ll:.4f}")
+print(f"ROC-AUC : {auc:.4f}")
+print(f"Log Loss : {ll:.4f}")
 print("\nConfusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred, digits=4))
 
-pred_df = pd.DataFrame({
-    "replay_id": groups_test.values,
-    "time_sec": times_test.values,
-    "y_true": y_test.values,
-    "y_prob_rf": y_prob,
-    "y_pred_rf": y_pred,
-})
+pred_df = pd.DataFrame(
+    {
+        "replay_id": groups_test.values,
+        "time_sec": times_test.values,
+        "y_true": y_test.values,
+        "y_prob_rf": y_prob,
+        "y_pred_rf": y_pred,
+    }
+)
 pred_csv = artifact_path(f"{OUTPUT_PREFIX}_test_predictions.csv")
 pred_df.to_csv(pred_csv, index=False)
 
 summary = {
-    "model": "random_forest",
+    "model": "random_forest_export_preserved",
     "dataset_path": DATASET_PATH,
     "rows": int(len(df)),
     "n_features": int(X.shape[1]),

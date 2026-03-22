@@ -54,159 +54,160 @@
 \newtcolorbox{resultbox}{colback=softgreen,colframe=green!40!black,boxrule=0.6pt,arc=2mm,left=2mm,right=2mm,top=1.4mm,bottom=1.4mm}
 
 \begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2.2cm}
+		{\Large University of Genoa\par}
+		\vspace{0.4cm}
+		{\large Machine Learning Project\par}
+		\vspace{1.6cm}
+		{\Huge\bfseries StarCraft II Match Outcome Prediction\par}
+		\vspace{0.35cm}
+		{\Large From Replay Parsing to Group-Aware Experimental Validation\par}
+		\vspace{1.3cm}
+		\begin{tcolorbox}[width=0.88\textwidth,colback=softblue,colframe=accent,arc=2mm,boxrule=0.8pt]
+			This document is designed as the \textbf{main technical paper} of the project. It consolidates the project methodology, explains the logic of the pipeline, and reports the final replay-aware experimental results preserved in the repository for reproducibility review.
+		\end{tcolorbox}
+		\vfill
+		\begin{tabular}{rl}
+			Candidate: & Pineda Fritas Jose Luis \\
+			Academic year: & 2025--2026 \\
+			Document version: & Final revised version \\
+			Date: & March 2026 \\
+		\end{tabular}
+		\vfill
+	\end{titlepage}
+	
+	\selectlanguage{english}
+	
+	\section*{Abstract}
+	This project studies match outcome prediction in \emph{StarCraft II} using tabular snapshots extracted from real replay files rather than images or raw sequences. The technical objective is not only to train a classifier, but to build a complete and reproducible pipeline from replay parsing to inference. The dataset is generated from more than 24,000 competitive replays and sampled every 15 seconds after removing the first two minutes of game time. The work focuses on domain-aware feature engineering, group-aware evaluation to avoid replay leakage, and comparative analysis across Random Forest, XGBoost, and deep multilayer perceptrons.
+	
+	A central methodological result is that naive row-based validation substantially overestimates performance because adjacent snapshots from the same replay are highly correlated. Once the split is performed by \texttt{replay\_id}, the final evaluation settles near 61\%, which is far more realistic and scientifically meaningful. Tree-based models then emerge as the strongest and most stable baseline on this tabular representation. The final GPU-trained MLP remains competitive but does not surpass the tree ensembles, and the strongest remaining advantage of XGBoost over Random Forest appears in probabilistic quality rather than in a large gain in raw accuracy. Overall, the results support replay-aware tree ensembles as the strongest and most reliable baseline for this tabular representation of StarCraft II match state.
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Introduction and Project Goal}
+	StarCraft II is a real-time strategy game with hidden information, long-horizon planning, macroeconomic management, and highly nonlinear interactions between army composition, technology, scouting, and timing. Predicting the winner from replay-derived tabular data is therefore an interesting machine learning problem for two reasons. First, it is a difficult supervised task with a meaningful target. Second, it forces the project to solve the much harder problem that comes \emph{before} training: how to convert a noisy temporal game trace into a structured dataset that preserves strategic signal.
+	
+	The project goal is therefore twofold:
+	\begin{enumerate}
+		\item build a replay-to-table pipeline that extracts strategically meaningful features at fixed time intervals;
+		\item evaluate multiple supervised learning paradigms under a protocol that avoids information leakage between snapshots from the same match.
+	\end{enumerate}
+	
+	\begin{keybox}
+		The classifier is only the last stage of the pipeline. The scientific value of the project depends equally on parser design, feature semantics, data cleaning, and validation protocol.
+	\end{keybox}
+	
+	\section{Problem Formulation}
+	Let each replay generate a sequence of snapshots $x_t$ sampled at time $t$, with label $y \in \{0,1\}$ indicating whether Player 1 wins the match. The learning objective is to approximate
+	\[
+	f(x_t) \approx P(y=1 \mid x_t)
+	\]
+	using a tabular representation of the game state. This framing has an immediate limitation: the model does not observe the full spatial or sequential structure of the game. Instead, it only sees the information that the parser chooses to encode. For this reason, the feature space must capture not only absolute state variables, but also relationships between the two players and local temporal momentum.
+	
+	\section{Pipeline Overview}
+	The project pipeline can be summarized as follows:
+	\[
+	\begin{aligned}
+		&\text{Replay corpus} \rightarrow \text{SC2 parser / bridge} \rightarrow \text{snapshot dataset} \\
+		&\rightarrow \text{group-aware split} \rightarrow \text{model selection} \rightarrow \text{final evaluation}
+	\end{aligned}
+	\]
+	
+	In practical terms, the project contains three tightly coupled layers:
+	\begin{itemize}
+		\item \textbf{Replay ingestion}: reading \texttt{.SC2Replay} files and recovering player-level state at multiple times;
+		\item \textbf{Feature engineering}: compressing military, economic, scouting, and compositional information into a fixed-width row;
+		\item \textbf{Learning and validation}: comparing model families under a replay-aware evaluation protocol.
+	\end{itemize}
+	
+	\section{Data Acquisition and Dataset Construction}
+	\subsection{Replay source and scale}
+	The broader project material references roughly \textbf{24,057} raw competitive or high-level replays, while the frozen \textbf{V3.1 fixed} benchmark retained \textbf{23,241} usable replays and \textbf{892,047} snapshots after the final filtering and parser-stability corrections. The extraction pipeline uses \texttt{sc2reader} for replay parsing and \texttt{joblib} for parallel execution. A key engineering point is that replay parsing is heavy enough that preprocessing itself becomes a relevant computational stage.
+	
+	\subsection{Sampling policy}
+	Snapshots are extracted every \textbf{15 seconds}. Extremely short or atypically long games are removed, with the current filtering policy centered on durations between \textbf{180 s} and \textbf{1800 s}. In addition, the first \textbf{120 seconds} are removed from the learning problem because the opening phase is comparatively deterministic and contributes less discriminative variance.
+	
+	\subsection{Why the first 120 seconds are removed}
+	The early game in StarCraft II often follows race-specific build order routines with low observable divergence in the aggregate statistics used here. Removing the earliest phase acts as a denoising step: it reduces the proportion of nearly identical low-information states and lets the models focus on strategic separation that emerges after the opening.
+	
+	\subsection{Dataset identity structure}
+	Each row is associated with at least:
+	\begin{itemize}
+		\item a \texttt{replay\_id},
+		\item a snapshot timestamp \texttt{time\_sec},
+		\item a binary label \texttt{p1\_wins}.
+	\end{itemize}
+	This identity information is not just metadata. It is essential for correct validation because all snapshots belonging to the same replay are statistically dependent.
+	
+	\section{Feature Engineering Logic}
+	\subsection{Feature families}
+	The current project design includes four main semantic families:
+	\begin{enumerate}
+		\item \textbf{Military power and army state}
+		\item \textbf{Economic efficiency and production balance}
+		\item \textbf{Scouting and informational behavior}
+		\item \textbf{Temporal dynamics and momentum}
+	\end{enumerate}
+	
+	The earlier presentation material reports around \textbf{30 columns} in the baseline parser actually used for the first experimental cycle, with \textbf{27 model features} after removing metadata and target. Newer parser branches already expose a richer feature space, including explicit counter-advantage and longer-horizon momentum features. This is important: the experimental results currently available mostly correspond to the earlier compact feature set, while the codebase is already evolving toward a second-generation dataset.
+	
+	\subsection{Combat score}
+	A central domain-engineered variable is the \texttt{combat score}. Instead of using only raw unit counts, the parser builds a weighted military strength estimate based on:
+	\begin{itemize}
+		\item per-unit base power,
+		\item number of alive units,
+		\item matchup-dependent counter penalties,
+		\item upgrade and technology multipliers.
+	\end{itemize}
+	In the earlier project material, this design was motivated as a simple approximation to combat effectiveness beyond raw supply. In the newer parser branch, the combat logic is paired with an explicit counter-advantage computation and longer-horizon volatility features.
+	
+	\subsection{Economic features}
+	Economic state is summarized through worker counts, income-related statistics, and especially \emph{Spending Quotient} (SQ), which tries to quantify how effectively a player converts resources and income into usable progress. In the prior project presentation, SQ is treated as a macroeconomic efficiency proxy and is one of the core inputs of all model families.
+	
+	\subsection{Scouting and composition features}
+	The project also builds features that do not directly correspond to standard scoreboard metrics:
+	\begin{itemize}
+		\item scouting score derived from camera movement and enemy-base attention,
+		\item army entropy as a proxy for compositional diversity,
+		\item number of unit types as a coarse signal of strategic flexibility.
+	\end{itemize}
+	These variables are particularly important because they encode behavior and composition rather than only scale.
+	
+	\subsection{Dynamic features}
+	The first parser generation already introduced local deltas such as changes in workers, combat score, and SQ. The newer parser branch extends this idea with multi-horizon momentum terms (15 s, 60 s, 120 s), growth ratios, and rolling volatility estimates. This is one of the clearest directions for the next experimental phase because the outcome prediction task is inherently temporal even if the current models consume independent rows.
+	
+	\section{Methodological Pivot: Leakage Control}
+	The most important scientific lesson of the project is that \textbf{row-level random splitting is invalid} for this dataset. Adjacent snapshots from the same replay share the same players, strategy arc, map context, and eventual label. If one snapshot goes to train and a nearby snapshot from the same match goes to test, the model is rewarded for memorizing replay-specific context rather than learning general strategic patterns.
+	
+	For this reason, all serious evaluation must use replay-based grouping:
+	\begin{itemize}
+		\item outer train/test split with \texttt{GroupShuffleSplit},
+		\item inner cross-validation with \texttt{GroupKFold} whenever model selection is performed,
+		\item no use of test data for early stopping or hyperparameter selection.
+	\end{itemize}
+	
+	\begin{resultbox}
+		Replay-aware validation settles near \textbf{61\%}. This should be treated as the credible estimate for the preserved benchmark, whereas naive row-based validation is methodologically invalid because it leaks information across snapshots from the same replay.
+	\end{resultbox}
+	
+	\section{Model Families and Expected Behavior}
+	\subsection{Random Forest}
+	Random Forest is a strong baseline for this dataset because the inputs are already engineered tabular variables with nonlinear thresholds and interactions \cite{breiman2001rf}. It does not require feature scaling, is robust to heterogeneous feature magnitudes, and can learn discrete rule-like partitions that fit many RTS situations.
+	
+	\subsection{XGBoost}
+	XGBoost is attractive for the same reasons as Random Forest, but with sequential residual correction and stronger capacity to exploit subtle interactions \cite{chen2016xgboost}. The current implementation uses GPU acceleration with histogram-based tree construction and early stopping on a dedicated validation split.
+	
+	\subsection{MLP}
+	The MLP branch is conceptually interesting because it tests whether a deep feedforward network can extract smooth nonlinear structure from the tabular representation, using a GPU-trained PyTorch implementation in the final branch \cite{paszke2019pytorch}. Batch normalization, dropout, LeakyReLU, and quantile normalization are all sensible design choices for heterogeneous features. However, the deep model is also the most sensitive to methodological mistakes in validation and scaling.
+	
+	\subsection{Why trees may be favored here}
+	The current working hypothesis is that tree-based models are naturally aligned with this problem because many RTS states behave like threshold systems: if one side has detector coverage, enough workers, enough tech, or enough army-quality advantage, the decision boundary can change abruptly. A piecewise tree structure often captures these conditions more directly than a smooth multilayer perceptron trained on independent rows.
 
-\begin{titlepage}
-\centering
-\vspace*{2.2cm}
-{\Large University of Genoa\par}
-\vspace{0.4cm}
-{\large Machine Learning Project\par}
-\vspace{1.6cm}
-{\Huge\bfseries StarCraft II Match Outcome Prediction\par}
-\vspace{0.35cm}
-{\Large From Replay Parsing to Group-Aware Experimental Validation\par}
-\vspace{1.3cm}
-\begin{tcolorbox}[width=0.88\textwidth,colback=softblue,colframe=accent,arc=2mm,boxrule=0.8pt]
-This document is designed as the \textbf{main technical paper} of the project. It consolidates the project methodology, explains the logic of the pipeline, and reports the final replay-aware experimental results preserved in the repository for reproducibility review.
-\end{tcolorbox}
-\vfill
-\begin{tabular}{rl}
-Candidate: & Pineda Fritas Jose Luis \\
-Academic year: & 2025--2026 \\
-Document version: & Final revised version \\
-Date: & March 2026 \\
-\end{tabular}
-\vfill
-\end{titlepage}
-
-\selectlanguage{english}
-
-\section*{Abstract}
-This project studies match outcome prediction in \emph{StarCraft II} using tabular snapshots extracted from real replay files rather than images or raw sequences. The technical objective is not only to train a classifier, but to build a complete and reproducible pipeline from replay parsing to inference. The dataset is generated from more than 24,000 competitive replays and sampled every 15 seconds after removing the first two minutes of game time. The work focuses on domain-aware feature engineering, group-aware evaluation to avoid replay leakage, and comparative analysis across Random Forest, XGBoost, and deep multilayer perceptrons.
-
-A central methodological result is that naive row-based validation substantially overestimates performance because adjacent snapshots from the same replay are highly correlated. Once the split is performed by \texttt{replay\_id}, the final evaluation settles near 61\%, which is far more realistic and scientifically meaningful. Tree-based models then emerge as the strongest and most stable baseline on this tabular representation. The final GPU-trained MLP remains competitive but does not surpass the tree ensembles, and the strongest remaining advantage of XGBoost over Random Forest appears in probabilistic quality rather than in a large gain in raw accuracy. Overall, the results support replay-aware tree ensembles as the strongest and most reliable baseline for this tabular representation of StarCraft II match state.
-
-\tableofcontents
-\newpage
-
-\section{Introduction and Project Goal}
-StarCraft II is a real-time strategy game with hidden information, long-horizon planning, macroeconomic management, and highly nonlinear interactions between army composition, technology, scouting, and timing. Predicting the winner from replay-derived tabular data is therefore an interesting machine learning problem for two reasons. First, it is a difficult supervised task with a meaningful target. Second, it forces the project to solve the much harder problem that comes \emph{before} training: how to convert a noisy temporal game trace into a structured dataset that preserves strategic signal.
-
-The project goal is therefore twofold:
-\begin{enumerate}
-    \item build a replay-to-table pipeline that extracts strategically meaningful features at fixed time intervals;
-    \item evaluate multiple supervised learning paradigms under a protocol that avoids information leakage between snapshots from the same match.
-\end{enumerate}
-
-\begin{keybox}
-The classifier is only the last stage of the pipeline. The scientific value of the project depends equally on parser design, feature semantics, data cleaning, and validation protocol.
-\end{keybox}
-
-\section{Problem Formulation}
-Let each replay generate a sequence of snapshots $x_t$ sampled at time $t$, with label $y \in \{0,1\}$ indicating whether Player 1 wins the match. The learning objective is to approximate
-\[
-    f(x_t) \approx P(y=1 \mid x_t)
-\]
-using a tabular representation of the game state. This framing has an immediate limitation: the model does not observe the full spatial or sequential structure of the game. Instead, it only sees the information that the parser chooses to encode. For this reason, the feature space must capture not only absolute state variables, but also relationships between the two players and local temporal momentum.
-
-\section{Pipeline Overview}
-The project pipeline can be summarized as follows:
-\[
-\begin{aligned}
-&\text{Replay corpus} \rightarrow \text{SC2 parser / bridge} \rightarrow \text{snapshot dataset} \\
-&\rightarrow \text{group-aware split} \rightarrow \text{model selection} \rightarrow \text{final evaluation}
-\end{aligned}
-\]
-
-In practical terms, the project contains three tightly coupled layers:
-\begin{itemize}
-    \item \textbf{Replay ingestion}: reading \texttt{.SC2Replay} files and recovering player-level state at multiple times;
-    \item \textbf{Feature engineering}: compressing military, economic, scouting, and compositional information into a fixed-width row;
-    \item \textbf{Learning and validation}: comparing model families under a replay-aware evaluation protocol.
-\end{itemize}
-
-\section{Data Acquisition and Dataset Construction}
-\subsection{Replay source and scale}
-The broader project material references roughly \textbf{24,057} raw competitive or high-level replays, while the frozen \textbf{V3.1 fixed} benchmark retained \textbf{23,241} usable replays and \textbf{892,047} snapshots after the final filtering and parser-stability corrections. The extraction pipeline uses \texttt{sc2reader} for replay parsing and \texttt{joblib} for parallel execution. A key engineering point is that replay parsing is heavy enough that preprocessing itself becomes a relevant computational stage.
-
-\subsection{Sampling policy}
-Snapshots are extracted every \textbf{15 seconds}. Extremely short or atypically long games are removed, with the current filtering policy centered on durations between \textbf{180 s} and \textbf{1800 s}. In addition, the first \textbf{120 seconds} are removed from the learning problem because the opening phase is comparatively deterministic and contributes less discriminative variance.
-
-\subsection{Why the first 120 seconds are removed}
-The early game in StarCraft II often follows race-specific build order routines with low observable divergence in the aggregate statistics used here. Removing the earliest phase acts as a denoising step: it reduces the proportion of nearly identical low-information states and lets the models focus on strategic separation that emerges after the opening.
-
-\subsection{Dataset identity structure}
-Each row is associated with at least:
-\begin{itemize}
-    \item a \texttt{replay\_id},
-    \item a snapshot timestamp \texttt{time\_sec},
-    \item a binary label \texttt{p1\_wins}.
-\end{itemize}
-This identity information is not just metadata. It is essential for correct validation because all snapshots belonging to the same replay are statistically dependent.
-
-\section{Feature Engineering Logic}
-\subsection{Feature families}
-The current project design includes four main semantic families:
-\begin{enumerate}
-    \item \textbf{Military power and army state}
-    \item \textbf{Economic efficiency and production balance}
-    \item \textbf{Scouting and informational behavior}
-    \item \textbf{Temporal dynamics and momentum}
-\end{enumerate}
-
-The earlier presentation material reports around \textbf{30 columns} in the baseline parser actually used for the first experimental cycle, with \textbf{27 model features} after removing metadata and target. Newer parser branches already expose a richer feature space, including explicit counter-advantage and longer-horizon momentum features. This is important: the experimental results currently available mostly correspond to the earlier compact feature set, while the codebase is already evolving toward a second-generation dataset.
-
-\subsection{Combat score}
-A central domain-engineered variable is the \texttt{combat score}. Instead of using only raw unit counts, the parser builds a weighted military strength estimate based on:
-\begin{itemize}
-    \item per-unit base power,
-    \item number of alive units,
-    \item matchup-dependent counter penalties,
-    \item upgrade and technology multipliers.
-\end{itemize}
-In the earlier project material, this design was motivated as a simple approximation to combat effectiveness beyond raw supply. In the newer parser branch, the combat logic is paired with an explicit counter-advantage computation and longer-horizon volatility features.
-
-\subsection{Economic features}
-Economic state is summarized through worker counts, income-related statistics, and especially \emph{Spending Quotient} (SQ), which tries to quantify how effectively a player converts resources and income into usable progress. In the prior project presentation, SQ is treated as a macroeconomic efficiency proxy and is one of the core inputs of all model families.
-
-\subsection{Scouting and composition features}
-The project also builds features that do not directly correspond to standard scoreboard metrics:
-\begin{itemize}
-    \item scouting score derived from camera movement and enemy-base attention,
-    \item army entropy as a proxy for compositional diversity,
-    \item number of unit types as a coarse signal of strategic flexibility.
-\end{itemize}
-These variables are particularly important because they encode behavior and composition rather than only scale.
-
-\subsection{Dynamic features}
-The first parser generation already introduced local deltas such as changes in workers, combat score, and SQ. The newer parser branch extends this idea with multi-horizon momentum terms (15 s, 60 s, 120 s), growth ratios, and rolling volatility estimates. This is one of the clearest directions for the next experimental phase because the outcome prediction task is inherently temporal even if the current models consume independent rows.
-
-\section{Methodological Pivot: Leakage Control}
-The most important scientific lesson of the project is that \textbf{row-level random splitting is invalid} for this dataset. Adjacent snapshots from the same replay share the same players, strategy arc, map context, and eventual label. If one snapshot goes to train and a nearby snapshot from the same match goes to test, the model is rewarded for memorizing replay-specific context rather than learning general strategic patterns.
-
-For this reason, all serious evaluation must use replay-based grouping:
-\begin{itemize}
-    \item outer train/test split with \texttt{GroupShuffleSplit},
-    \item inner cross-validation with \texttt{GroupKFold} whenever model selection is performed,
-    \item no use of test data for early stopping or hyperparameter selection.
-\end{itemize}
-
-\begin{resultbox}
-Replay-aware validation settles near \textbf{61\%}. This should be treated as the credible estimate for the preserved benchmark, whereas naive row-based validation is methodologically invalid because it leaks information across snapshots from the same replay.
-\end{resultbox}
-
-\section{Model Families and Expected Behavior}
-\subsection{Random Forest}
-Random Forest is a strong baseline for this dataset because the inputs are already engineered tabular variables with nonlinear thresholds and interactions \cite{breiman2001rf}. It does not require feature scaling, is robust to heterogeneous feature magnitudes, and can learn discrete rule-like partitions that fit many RTS situations.
-
-\subsection{XGBoost}
-XGBoost is attractive for the same reasons as Random Forest, but with sequential residual correction and stronger capacity to exploit subtle interactions \cite{chen2016xgboost}. The current implementation uses GPU acceleration with histogram-based tree construction and early stopping on a dedicated validation split.
-
-\subsection{MLP}
-The MLP branch is conceptually interesting because it tests whether a deep feedforward network can extract smooth nonlinear structure from the tabular representation, using a GPU-trained PyTorch implementation in the final branch \cite{paszke2019pytorch}. Batch normalization, dropout, LeakyReLU, and quantile normalization are all sensible design choices for heterogeneous features. However, the deep model is also the most sensitive to methodological mistakes in validation and scaling.
-
-\subsection{Why trees may be favored here}
-The current working hypothesis is that tree-based models are naturally aligned with this problem because many RTS states behave like threshold systems: if one side has detector coverage, enough workers, enough tech, or enough army-quality advantage, the decision boundary can change abruptly. A piecewise tree structure often captures these conditions more directly than a smooth multilayer perceptron trained on independent rows.
 
 \section{Experimental Protocol}
 \subsection{Baseline data preparation}
@@ -219,14 +220,14 @@ Across the current codebase, the canonical supervised setup is:
 \end{itemize}
 
 \subsection{Random Forest protocol}
-The stronger Random Forest training script uses scikit-learn grouped model-selection utilities \cite{pedregosa2011sklearn}:
+The stronger Random Forest training script uses:
 \begin{itemize}
     \item outer train/test split by replay,
     \item model selection with \texttt{GroupKFold},
     \item final training on the full outer training partition,
     \item test-only evaluation on unseen replays.
 \end{itemize}
-To reduce grid-search cost, only full replays are subsampled for hyperparameter tuning rather than random rows, which is the correct strategy.
+The aligned Random Forest branch keeps replay-aware splitting and GroupKFold model selection on the training partition, while a separate export-preserved RF run is retained in the repository to match the historical Test 1--4 artifacts.
 
 \subsection{XGBoost protocol}
 The XGBoost branch is the cleanest current experimental implementation:
@@ -528,31 +529,4 @@ A separate supplementary note expands the conceptual formulation introduced near
 
 This material should be read as a conceptual extension and as a possible future theoretical direction. It does not change the empirical scope of the present study, which remains centered on replay-aware supervised outcome prediction.
 
-
-
-\begin{thebibliography}{9}
-
-\bibitem{breiman2001rf}
-Leo Breiman.
-\newblock Random Forests.
-\newblock \emph{Machine Learning}, 45(1):5--32, 2001.
-
-\bibitem{chen2016xgboost}
-Tianqi Chen and Carlos Guestrin.
-\newblock XGBoost: A Scalable Tree Boosting System.
-\newblock In \emph{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD)}, pages 785--794, 2016.
-
-\bibitem{pedregosa2011sklearn}
-Fabian Pedregosa, Ga\"el Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, Jake VanderPlas, Alexandre Passos, David Cournapeau, Matthieu Brucher, Matthieu Perrot, and \`Edouard Duchesnay.
-\newblock Scikit-learn: Machine Learning in Python.
-\newblock \emph{Journal of Machine Learning Research}, 12:2825--2830, 2011.
-
-\bibitem{paszke2019pytorch}
-Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas K\"opf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala.
-\newblock PyTorch: An Imperative Style, High-Performance Deep Learning Library.
-\newblock In \emph{Advances in Neural Information Processing Systems 32 (NeurIPS)}, pages 8024--8035, 2019.
-
-\end{thebibliography}
-
 \end{document}
-

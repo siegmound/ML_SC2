@@ -1,22 +1,21 @@
 import json
 import os
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
-from project_paths import artifact_path, dataset_path, figure_path
-
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GroupShuffleSplit, GroupKFold, GridSearchCV
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
-    roc_auc_score,
-    log_loss,
-    confusion_matrix,
     classification_report,
+    confusion_matrix,
+    log_loss,
+    roc_auc_score,
 )
+from sklearn.model_selection import GridSearchCV, GroupKFold, GroupShuffleSplit
+
+from project_paths import artifact_path, dataset_path, figure_path
 
 # ============================================================
 # Random Forest - clean protocol aligned with XGBoost
@@ -62,7 +61,6 @@ def split_train_val_test(X, y, groups):
     X_train_val = X.iloc[train_val_idx]
     y_train_val = y.iloc[train_val_idx]
     groups_train_val = groups.iloc[train_val_idx]
-
     X_test = X.iloc[test_idx]
     y_test = y.iloc[test_idx]
     groups_test = groups.iloc[test_idx]
@@ -73,7 +71,6 @@ def split_train_val_test(X, y, groups):
     X_train = X_train_val.iloc[train_idx]
     y_train = y_train_val.iloc[train_idx]
     groups_train = groups_train_val.iloc[train_idx]
-
     X_val = X_train_val.iloc[val_idx]
     y_val = y_train_val.iloc[val_idx]
     groups_val = groups_train_val.iloc[val_idx]
@@ -98,7 +95,6 @@ def fit_model(parts):
         n_jobs=-1,
         class_weight="balanced_subsample",
     )
-
     param_grid = {
         "n_estimators": [300],
         "max_depth": [16, 24, None],
@@ -129,29 +125,27 @@ def fit_model(parts):
         class_weight="balanced_subsample",
     )
     final_model.fit(parts["X_train"], parts["y_train"])
-
     return grid, final_model
 
 
-def evaluate_model(model, parts, full_df, feature_names):
+def evaluate_model(model, grid, parts, full_df, feature_names):
     print("\n" + "=" * 40)
     print("VALUTAZIONE FINALE SU TEST PURO")
     print("=" * 40)
 
     y_pred = model.predict(parts["X_test"])
     y_prob = model.predict_proba(parts["X_test"])[:, 1]
-
     metrics = {
-        "accuracy": accuracy_score(parts["y_test"], y_pred),
-        "balanced_accuracy": balanced_accuracy_score(parts["y_test"], y_pred),
-        "auc": roc_auc_score(parts["y_test"], y_prob),
-        "logloss": log_loss(parts["y_test"], y_prob),
+        "test_accuracy": accuracy_score(parts["y_test"], y_pred),
+        "test_balanced_accuracy": balanced_accuracy_score(parts["y_test"], y_pred),
+        "test_auc": roc_auc_score(parts["y_test"], y_prob),
+        "test_logloss": log_loss(parts["y_test"], y_prob),
     }
 
-    print(f"Accuracy          : {metrics['accuracy']:.4f}")
-    print(f"Balanced Accuracy : {metrics['balanced_accuracy']:.4f}")
-    print(f"ROC-AUC           : {metrics['auc']:.4f}")
-    print(f"Log Loss          : {metrics['logloss']:.4f}")
+    print(f"Accuracy : {metrics['test_accuracy']:.4f}")
+    print(f"Balanced Accuracy : {metrics['test_balanced_accuracy']:.4f}")
+    print(f"ROC-AUC : {metrics['test_auc']:.4f}")
+    print(f"Log Loss : {metrics['test_logloss']:.4f}")
 
     cm = confusion_matrix(parts["y_test"], y_pred)
     print("\nConfusion Matrix:")
@@ -164,16 +158,13 @@ def evaluate_model(model, parts, full_df, feature_names):
         "feature": feature_names,
         "importance": importances,
     }).sort_values(by="importance", ascending=False)
-
     print("\n--- TOP FEATURE IMPORTANCE ---")
     print(imp_df.head(15))
     imp_df.to_csv(artifact_path(f"{OUTPUT_PREFIX}_feature_importance.csv"), index=False)
 
-    # Accuracy vs durata con sample count
     test_groups = parts["groups_test"]
     replay_lengths = full_df.groupby(GROUP)[TIME_COL].max() / 60.0
     duration_map = replay_lengths.to_dict()
-
     test_meta = pd.DataFrame({
         GROUP: test_groups.values,
         "y_true": parts["y_test"].values,
@@ -184,11 +175,15 @@ def evaluate_model(model, parts, full_df, feature_names):
 
     duration_summary = (
         test_meta.groupby("duration_min_bin")
-        .apply(lambda g: pd.Series({
-            "accuracy": accuracy_score(g["y_true"], g["y_pred"]),
-            "n_samples": len(g),
-            "n_replays": g[GROUP].nunique(),
-        }))
+        .apply(
+            lambda g: pd.Series(
+                {
+                    "accuracy": accuracy_score(g["y_true"], g["y_pred"]),
+                    "n_samples": len(g),
+                    "n_replays": g[GROUP].nunique(),
+                }
+            )
+        )
         .reset_index()
         .sort_values("duration_min_bin")
     )
@@ -208,13 +203,16 @@ def evaluate_model(model, parts, full_df, feature_names):
     plt.close()
 
     summary = {
-        "dataset": DATASET_PATH,
+        "model": "random_forest_aligned",
+        "dataset_path": DATASET_PATH,
         "rows": int(len(full_df)),
         "n_features": int(len(feature_names)),
         "n_replays_total": int(full_df[GROUP].nunique()),
         "n_replays_train": int(parts["groups_train"].nunique()),
         "n_replays_val": int(parts["groups_val"].nunique()),
         "n_replays_test": int(parts["groups_test"].nunique()),
+        "best_params": grid.best_params_,
+        "cv_accuracy": float(grid.best_score_),
         **metrics,
     }
     with open(artifact_path(f"{OUTPUT_PREFIX}_summary.json"), "w", encoding="utf-8") as f:
@@ -227,8 +225,8 @@ def main():
 
     full_df, X, y, groups = load_dataset(DATASET_PATH)
     parts = split_train_val_test(X, y, groups)
-    _, model = fit_model(parts)
-    evaluate_model(model, parts, full_df, list(X.columns))
+    grid, model = fit_model(parts)
+    evaluate_model(model, grid, parts, full_df, list(X.columns))
 
     print("\nAnalisi completata.")
     print("File salvati:")
