@@ -204,7 +204,9 @@ def evaluate_model(model, grid, parts, full_df, feature_names):
 
     summary = {
         "model": "random_forest_aligned",
-        "dataset_path": DATASET_PATH,
+        "artifact_line": "aligned_benchmark",
+        "script": "scripts/rf_clean_aligned_v1.py",
+        "dataset_path": "datasets/starcraft_full_dataset_v3_1_fixed.csv",
         "rows": int(len(full_df)),
         "n_features": int(len(feature_names)),
         "n_replays_total": int(full_df[GROUP].nunique()),

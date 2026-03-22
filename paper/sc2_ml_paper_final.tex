@@ -203,7 +203,7 @@
 	XGBoost is attractive for the same reasons as Random Forest, but with sequential residual correction and stronger capacity to exploit subtle interactions \cite{chen2016xgboost}. The current implementation uses GPU acceleration with histogram-based tree construction and early stopping on a dedicated validation split.
 	
 	\subsection{MLP}
-	The MLP branch is conceptually interesting because it tests whether a deep feedforward network can extract smooth nonlinear structure from the tabular representation, using a GPU-trained PyTorch implementation in the final branch \cite{paszke2019pytorch}. Batch normalization, dropout, LeakyReLU, and quantile normalization are all sensible design choices for heterogeneous features. However, the deep model is also the most sensitive to methodological mistakes in validation and scaling.
+	The MLP branch is conceptually interesting because it tests whether a deep feedforward network can extract smooth nonlinear structure from the tabular representation, using a GPU-trained PyTorch implementation in the final branch \cite{paszke2019pytorch}. The frozen final branch uses standardization, BatchNorm, dropout, ReLU activations, AdamW optimization, and validation-log-loss candidate selection under a replay-aware split. However, the deep model is also the most sensitive to methodological mistakes in validation and scaling.
 	
 	\subsection{Why trees may be favored here}
 	The current working hypothesis is that tree-based models are naturally aligned with this problem because many RTS states behave like threshold systems: if one side has detector coverage, enough workers, enough tech, or enough army-quality advantage, the decision boundary can change abruptly. A piecewise tree structure often captures these conditions more directly than a smooth multilayer perceptron trained on independent rows.
@@ -404,6 +404,7 @@ V3.2 combatfix & 73 & \textbf{0.6019} & \textbf{0.6195} & \textbf{0.6155} & 0.66
 \end{tabularx}
 \end{table}
 
+\clearpage
 
 \section{Feature Importance and Interpretation}
 The newer experiments sharpen the interpretation considerably. In the compact baseline, worker difference already dominated the feature ranking. After the parser revisions, the most stable and influential variables are now:
@@ -504,6 +505,8 @@ At its current stage, the project already supports a strong technical narrative.
 
 The final cross-model comparison sharpens that claim. XGBoost is the best overall model on the frozen V3.1 dataset, Random Forest is almost tied across the main metrics, and the GPU-trained PyTorch MLP remains consistently below the two tree ensembles. The paired replay-bootstrap refines the interpretation: XGBoost does not show a statistically strong 95\% advantage over Random Forest on accuracy or ROC-AUC, but it does show a statistically supported advantage in log-loss. The calibration analysis then strengthens that conclusion further. In the two-model tree comparison, XGBoost is better calibrated than Random Forest, with lower Brier score, lower ECE, and much lower MCE on the frozen test split. The optional three-way calibration completion preserves the same ordering: XGBoost remains best on all reported probability-quality metrics, Random Forest remains second, and MLP is third overall despite having a lower MCE than Random Forest. This is a good outcome, not a disappointing one. It means the project has already moved past naive benchmark inflation and reached the stage where progress must come from better representation, cleaner experiments, and more explicit temporal and counter-based modeling. In other words, the main reason to prefer XGBoost is no longer a large gain in raw accuracy, but the combination of near-best discrimination and clearly better probabilistic quality.
 
+\clearpage
+
 \section{Conceptual Extension: A POMDP-like View of Replay Snapshots}
 Although the present study is framed as a supervised learning problem over tabular replay snapshots, the underlying \emph{StarCraft II} process is naturally partially observable. The true strategic state of a match at time $t$ is richer than the compact feature vector exposed to the predictive models. It includes latent or only partially visible factors such as hidden tech choices, spatial pressure, future production intent, local tactical geometry, and information asymmetry. For this reason, the current pipeline also admits a useful \emph{POMDP-like} conceptual interpretation.
 
@@ -524,9 +527,38 @@ The implementation analyzed in this study contains the following main components
     \item a GPU-aware PyTorch MLP pipeline using replay-aware train/validation/test splitting and validation-based candidate selection.
 \end{itemize}
 
+\clearpage
+
 \section{Appendix B: Supplementary Note on the POMDP-like Interpretation}
 A separate supplementary note expands the conceptual formulation introduced near the end of the main paper. Its purpose is to formalize the distinction between latent strategic state, replay-derived observation, high-level strategic action, observation quality, and belief-like estimation from historical replay trajectories.
 
 This material should be read as a conceptual extension and as a possible future theoretical direction. It does not change the empirical scope of the present study, which remains centered on replay-aware supervised outcome prediction.
 
+
+\begin{thebibliography}{9}
+	
+	\bibitem{breiman2001rf}
+	Leo Breiman.
+	\newblock Random Forests.
+	\newblock \emph{Machine Learning}, 45(1):5--32, 2001.
+	
+	\bibitem{chen2016xgboost}
+	Tianqi Chen and Carlos Guestrin.
+	\newblock XGBoost: A Scalable Tree Boosting System.
+	\newblock In \emph{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD)}, pages 785--794, 2016.
+	
+	\bibitem{pedregosa2011sklearn}
+	Fabian Pedregosa, Ga\"el Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron Weiss, Vincent Dubourg, Jake VanderPlas, Alexandre Passos, David Cournapeau, Matthieu Brucher, Matthieu Perrot, and \`Edouard Duchesnay.
+	\newblock Scikit-learn: Machine Learning in Python.
+	\newblock \emph{Journal of Machine Learning Research}, 12:2825--2830, 2011.
+	
+	\bibitem{paszke2019pytorch}
+	Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas K\"opf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala.
+	\newblock PyTorch: An Imperative Style, High-Performance Deep Learning Library.
+	\newblock In \emph{Advances in Neural Information Processing Systems 32 (NeurIPS)}, pages 8024--8035, 2019.
+	
+\end{thebibliography}
+
 \end{document}
+
+
