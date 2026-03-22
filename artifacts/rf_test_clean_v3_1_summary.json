@@ -1,6 +1,6 @@
 {
-  "model": "random_forest",
-  "dataset_path": "starcraft_full_dataset_v3_1_fixed.csv",
+  "model": "random_forest_export_preserved",
+  "dataset_path": "datasets/starcraft_full_dataset_v3_1_fixed.csv",
   "rows": 892047,
   "n_features": 64,
   "n_replays_total": 23241,
@@ -18,5 +18,7 @@
   "test_accuracy": 0.6185037409274814,
   "test_balanced_accuracy": 0.6144469308829136,
   "test_auc": 0.6641953845275458,
-  "test_logloss": 0.6483285479067915
+  "test_logloss": 0.6483285479067915,
+  "artifact_line": "export_preserved_test1_to_test4",
+  "script": "scripts/test1_rf_export_predictions_v3_1.py"
 }

@@ -117,7 +117,9 @@ pred_df.to_csv(pred_csv, index=False)
 
 summary = {
     "model": "random_forest_export_preserved",
-    "dataset_path": DATASET_PATH,
+    "artifact_line": "export_preserved_test1_to_test4",
+    "script": "scripts/test1_rf_export_predictions_v3_1.py",
+    "dataset_path": "datasets/starcraft_full_dataset_v3_1_fixed.csv",
     "rows": int(len(df)),
     "n_features": int(X.shape[1]),
     "n_replays_total": int(groups.nunique()),
