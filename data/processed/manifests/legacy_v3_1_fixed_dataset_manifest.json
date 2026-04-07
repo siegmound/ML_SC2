@@ -1,0 +1,8 @@
+{
+  "dataset_name": "legacy_v3_1_fixed_from_artifacts",
+  "dataset_version": "legacy_import_only",
+  "import_manifest": "/mnt/data/ml_sc2_remake/results/legacy_imports/legacy_import_manifest.json",
+  "notes": "Built from legacy result artifacts because the raw zipped dataset is not present in the current workspace.",
+  "raw_dataset_available": false,
+  "source_type": "artifact_only"
+}

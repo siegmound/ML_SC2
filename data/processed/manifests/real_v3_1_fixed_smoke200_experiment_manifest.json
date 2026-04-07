@@ -1,0 +1,7 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke200",
+  "dataset_version": "smoke200",
+  "experiment_name": "dataset_registration_real_v3_1_fixed_smoke200",
+  "source_zip": "real_v3_1_fixed_smoke200.zip",
+  "status": "registered"
+}
