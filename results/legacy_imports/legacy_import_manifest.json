@@ -1,0 +1,83 @@
+{
+  "freeze_zip": "/mnt/data/sc2_project_freeze_final.zip",
+  "n_prediction_files": 1,
+  "n_summary_files": 11,
+  "n_tables": 10,
+  "predictions": [
+    {
+      "canonical_path": "predictions/01_mlp_torch_gpu_v3_1_export_test_predictions.csv",
+      "member_path": "mlp_torch_gpu_v3_1_export_test_predictions.csv",
+      "n_replays": 4649,
+      "rows": 178699,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/test4pred_cal.zip"
+    }
+  ],
+  "summaries": [
+    {
+      "canonical_path": "summaries/01_test2_calibration_summary_xgb_vs_rf.json",
+      "member_path": "test2_calibration_summary_xgb_vs_rf.json",
+      "model": null,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/calib_test.zip"
+    },
+    {
+      "canonical_path": "summaries/02_test3_duration_comparison_v3_1_summary.json",
+      "member_path": "test3_duration_comparison_v3_1_summary.json",
+      "model": null,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/comparison.zip"
+    },
+    {
+      "canonical_path": "summaries/03_mlp_torch_gpu_v3_1_summary.json",
+      "member_path": "sc2_project_freeze_final/artifacts/mlp_torch_gpu_v3_1_summary.json",
+      "model": "MLP_PyTorch",
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    },
+    {
+      "canonical_path": "summaries/04_rf_clean_v3_1_summary.json",
+      "member_path": "sc2_project_freeze_final/artifacts/rf_clean_v3_1_summary.json",
+      "model": "random_forest",
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    },
+    {
+      "canonical_path": "summaries/05_rf_test_clean_v3_1_summary.json",
+      "member_path": "sc2_project_freeze_final/artifacts/rf_test_clean_v3_1_summary.json",
+      "model": "random_forest",
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    },
+    {
+      "canonical_path": "summaries/06_test1_xgb_vs_rf_bootstrap_summary.json",
+      "member_path": "sc2_project_freeze_final/artifacts/test1_xgb_vs_rf_bootstrap_summary.json",
+      "model": null,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    },
+    {
+      "canonical_path": "summaries/07_test2_calibration_summary_xgb_vs_rf.json",
+      "member_path": "sc2_project_freeze_final/artifacts/test2_calibration_summary_xgb_vs_rf.json",
+      "model": null,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    },
+    {
+      "canonical_path": "summaries/08_test3_duration_comparison_v3_1_summary.json",
+      "member_path": "sc2_project_freeze_final/artifacts/test3_duration_comparison_v3_1_summary.json",
+      "model": null,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    },
+    {
+      "canonical_path": "summaries/09_mlp_torch_gpu_v3_1_export_summary.json",
+      "member_path": "mlp_torch_gpu_v3_1_export_summary.json",
+      "model": "MLP_PyTorch",
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/test4pred_cal.zip"
+    },
+    {
+      "canonical_path": "summaries/10_test4_calibration_summary_xgb_rf_mlp.json",
+      "member_path": "test4_calibration_summary_xgb_rf_mlp.json",
+      "model": null,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/test4pred_cal.zip"
+    },
+    {
+      "canonical_path": "summaries/11_xgb_clean_v3_1_fixed_summary.json",
+      "member_path": "sc2_project_freeze_final/artifacts/xgb_clean_v3_1_fixed_summary.json",
+      "model": "XGBoost",
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip"
+    }
+  ]
+}

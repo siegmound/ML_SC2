@@ -1,0 +1,13 @@
+{
+  "imported_files": [
+    "mlp_torch_gpu_v3_1_export_summary.json",
+    "mlp_torch_gpu_v3_1_export_test_predictions.csv",
+    "test4_calibration_summary_xgb_rf_mlp.json",
+    "test4_mlp_calibration_bins.csv",
+    "test4_reliability_xgb_rf_mlp.png",
+    "test4_rf_calibration_bins.csv",
+    "test4_xgb_calibration_bins.csv"
+  ],
+  "n_imported": 7,
+  "source_bundle": "/mnt/data/test4pred_cal.zip"
+}

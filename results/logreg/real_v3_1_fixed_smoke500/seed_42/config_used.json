@@ -1,0 +1,16 @@
+{
+  "candidate_params": [
+    {
+      "clf__C": 1.0,
+      "clf__class_weight": null
+    },
+    {
+      "clf__C": 1.0,
+      "clf__class_weight": "balanced"
+    }
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke500",
+  "dataset_zip": "data/processed/real_v3_1_fixed_smoke500.zip",
+  "split_json": "/mnt/data/ml_sc2_remake_block8_work/data/processed/splits/real_v3_1_fixed_smoke500_split_seed_42.json"
+}

@@ -1,0 +1,28 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke1500",
+  "model_name": "logreg",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "aggregate": {
+    "accuracy": {
+      "mean": 0.5978611465765897,
+      "std": 0.02627982143096225
+    },
+    "balanced_accuracy": {
+      "mean": 0.5948030711511395,
+      "std": 0.02252793086331352
+    },
+    "roc_auc": {
+      "mean": 0.641504710326943,
+      "std": 0.028639787170095726
+    },
+    "log_loss": {
+      "mean": 0.6620356771985689,
+      "std": 0.02367048688901569
+    }
+  },
+  "detailed_csv": "/mnt/data/ml_sc2_remake/results/block9_multiseed/real_v3_1_fixed_smoke1500_logreg_multiseed_detailed.csv"
+}

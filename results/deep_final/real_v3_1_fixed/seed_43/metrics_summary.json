@@ -1,0 +1,67 @@
+{
+  "dataset_name": "real_v3_1_fixed",
+  "seed": 43,
+  "model": "deep_final",
+  "selection_metric": "neg_log_loss",
+  "device_requested": "cuda",
+  "device_resolved": "cuda",
+  "candidate_set": "strict",
+  "best_candidate": {
+    "name": "qt_lrelu_256_128_full",
+    "profile": "full",
+    "scaler": "quantile",
+    "hidden_dims": [
+      256,
+      128
+    ],
+    "dropout": 0.3,
+    "activation": "leaky_relu",
+    "batch_norm": true,
+    "lr": 0.0008,
+    "weight_decay": 0.0005,
+    "batch_size": 512,
+    "max_epochs": 100,
+    "patience": 12,
+    "scheduler": true,
+    "use_pos_weight": true
+  },
+  "best_validation_score": -0.6405830339729861,
+  "best_epoch": 14,
+  "best_val_loss": 0.6178506016731262,
+  "n_rows_train": 571203,
+  "n_rows_val": 142558,
+  "n_rows_test": 178286,
+  "n_features": 64,
+  "validation_metrics": {
+    "accuracy": 0.6211366601663885,
+    "balanced_accuracy": 0.6208165051064671,
+    "roc_auc": 0.6748346731561088,
+    "log_loss": 0.6405830339729861,
+    "confusion_matrix": [
+      [
+        42116,
+        26792
+      ],
+      [
+        27218,
+        46432
+      ]
+    ]
+  },
+  "test_metrics": {
+    "accuracy": 0.606811527545629,
+    "balanced_accuracy": 0.6061111655041436,
+    "roc_auc": 0.6544295904057892,
+    "log_loss": 0.6528548739063996,
+    "confusion_matrix": [
+      [
+        50299,
+        34931
+      ],
+      [
+        35169,
+        57887
+      ]
+    ]
+  }
+}

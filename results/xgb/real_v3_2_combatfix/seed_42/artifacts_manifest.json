@@ -1,0 +1,10 @@
+{
+  "artifacts": [
+    "metrics_summary.json",
+    "config_used.json",
+    "predictions.csv",
+    "feature_importance.csv",
+    "raw_log.txt",
+    "block11_validation_search_full.jsonl"
+  ]
+}

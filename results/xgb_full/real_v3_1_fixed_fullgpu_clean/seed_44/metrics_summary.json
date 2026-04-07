@@ -1,0 +1,27 @@
+{
+  "dataset_name": "real_v3_1_fixed_fullgpu_clean",
+  "seed": 44,
+  "model": "xgb_full",
+  "profile": "full",
+  "device": "cuda",
+  "n_rows_train": 572155,
+  "n_rows_val": 141524,
+  "n_rows_test": 178368,
+  "n_features": 64,
+  "accuracy": 0.6109335755292429,
+  "balanced_accuracy": 0.6072851280994509,
+  "roc_auc": 0.658516761183566,
+  "log_loss": 0.649051853272861,
+  "best_iteration": 1047,
+  "best_score": 0.6447941295745065,
+  "confusion_matrix": [
+    [
+      45560,
+      38769
+    ],
+    [
+      30628,
+      63411
+    ]
+  ]
+}

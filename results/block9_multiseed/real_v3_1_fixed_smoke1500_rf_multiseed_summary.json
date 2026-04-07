@@ -1,0 +1,28 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke1500",
+  "model_name": "rf",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "aggregate": {
+    "accuracy": {
+      "mean": 0.593200639561463,
+      "std": 0.038990418563262116
+    },
+    "balanced_accuracy": {
+      "mean": 0.587053731235771,
+      "std": 0.02187957309697999
+    },
+    "roc_auc": {
+      "mean": 0.6282519449426428,
+      "std": 0.02910616852238776
+    },
+    "log_loss": {
+      "mean": 0.6671294613144815,
+      "std": 0.015287440404088252
+    }
+  },
+  "detailed_csv": "/mnt/data/ml_sc2_remake/results/block9_multiseed/real_v3_1_fixed_smoke1500_rf_multiseed_detailed.csv"
+}

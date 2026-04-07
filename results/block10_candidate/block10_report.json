@@ -1,0 +1,31 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "n_rows": 95480,
+  "n_replays": 2508,
+  "completed_models": [
+    "logreg"
+  ],
+  "attempted_models": [
+    "logreg",
+    "rf",
+    "xgb"
+  ],
+  "summary": [
+    {
+      "model_name": "logreg",
+      "runs": 2,
+      "accuracy_mean": 0.591077525199329,
+      "accuracy_std": 0.0169135652727512,
+      "balanced_accuracy_mean": 0.5913953182245767,
+      "balanced_accuracy_std": 0.0159652916122707,
+      "roc_auc_mean": 0.6340316678212881,
+      "roc_auc_std": 0.020104545613217,
+      "log_loss_mean": 0.6615470690850365,
+      "log_loss_std": 0.0094650518453548
+    }
+  ],
+  "seeds": [
+    42,
+    43
+  ]
+}

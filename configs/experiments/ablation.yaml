@@ -1,0 +1,6 @@
+include_families: []
+exclude_families: []
+model_target: xgb
+cv_scoring: neg_log_loss
+selection_metric: neg_log_loss
+device: cpu

@@ -1,0 +1,32 @@
+{
+  "best_iteration": 5,
+  "best_params": {
+    "batch_size": 4096,
+    "dropout": 0.2,
+    "hidden_dims": [
+      512,
+      256
+    ],
+    "lr": 0.0005,
+    "weight_decay": 0.001
+  },
+  "cv_accuracy": null,
+  "dataset_path": "starcraft_full_dataset_v3_1_fixed.csv",
+  "device": "cuda",
+  "legacy_member_path": "mlp_torch_gpu_v3_1_export_summary.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/test4pred_cal.zip",
+  "model": "MLP_PyTorch",
+  "n_features": 64,
+  "n_replays_test": 4649,
+  "n_replays_total": 23241,
+  "n_replays_train": 14873,
+  "n_replays_val": 3719,
+  "notes": null,
+  "rows": 892047,
+  "source_name": "mlp_torch_gpu_v3_1_export_summary.json",
+  "test_accuracy": 0.6100257975702158,
+  "test_auc": 0.6620248474570631,
+  "test_balanced_accuracy": 0.6112954581999952,
+  "test_logloss": 0.6487730111884316,
+  "validation_logloss": 0.6477161400973124
+}

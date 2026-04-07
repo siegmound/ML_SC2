@@ -1,0 +1,120 @@
+{
+  "profiles": {
+    "real_v3_1_fixed_smoke3000": [
+      {
+        "profile": "full",
+        "accuracy_mean": 0.5699670984988691,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6120965685338176,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6791160153459352,
+        "log_loss_std": NaN,
+        "n_features_mean": 64.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "no_counter_no_losses",
+        "accuracy_mean": 0.5710980876002467,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6111253522499857,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.67929163279051,
+        "log_loss_std": NaN,
+        "n_features_mean": 55.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "no_counter",
+        "accuracy_mean": 0.5655459592843923,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6091853952777383,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6797202783358378,
+        "log_loss_std": NaN,
+        "n_features_mean": 58.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "economy_scouting",
+        "accuracy_mean": 0.5539276166975118,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.5874281065667655,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6890593914251325,
+        "log_loss_std": NaN,
+        "n_features_mean": 28.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "economy_only",
+        "accuracy_mean": 0.5448797038864899,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.5767544235266624,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6931397665593206,
+        "log_loss_std": NaN,
+        "n_features_mean": 26.0,
+        "n_runs": 1
+      }
+    ],
+    "real_v3_2_combatfix_smoke3000": [
+      {
+        "profile": "no_counter",
+        "accuracy_mean": 0.5946774960038018,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6293253359451803,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6657581254717558,
+        "log_loss_std": NaN,
+        "n_features_mean": 66.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "no_counter_no_losses",
+        "accuracy_mean": 0.5926901974337927,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6282938425991411,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6665591465032257,
+        "log_loss_std": NaN,
+        "n_features_mean": 63.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "full",
+        "accuracy_mean": 0.5891044195792111,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6239153250816561,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6682685371513167,
+        "log_loss_std": NaN,
+        "n_features_mean": 73.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "economy_scouting",
+        "accuracy_mean": 0.5863826845811553,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6181304034169925,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6711192738205592,
+        "log_loss_std": NaN,
+        "n_features_mean": 28.0,
+        "n_runs": 1
+      },
+      {
+        "profile": "economy_only",
+        "accuracy_mean": 0.5776558517302458,
+        "accuracy_std": NaN,
+        "roc_auc_mean": 0.6082307115832917,
+        "roc_auc_std": NaN,
+        "log_loss_mean": 0.6740977236435545,
+        "log_loss_std": NaN,
+        "n_features_mean": 26.0,
+        "n_runs": 1
+      }
+    ]
+  },
+  "dataset_comparison_available": true,
+  "dataset_comparison_csv": "/mnt/data/ml_sc2_remake_block13work/results/block13_dataset_compare/block13_profile_dataset_comparison.csv"
+}

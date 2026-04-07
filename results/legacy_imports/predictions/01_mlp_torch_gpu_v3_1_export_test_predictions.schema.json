@@ -1,0 +1,20 @@
+{
+  "columns": [
+    "replay_id",
+    "time_sec",
+    "y_true",
+    "y_prob_mlp",
+    "y_pred_mlp"
+  ],
+  "n_replays": 4649,
+  "prediction_columns": [
+    "y_pred_mlp"
+  ],
+  "probability_columns": [
+    "y_prob_mlp"
+  ],
+  "rows": 178699,
+  "target_present": true,
+  "time_max": 1785.0,
+  "time_min": 135.0
+}

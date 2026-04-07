@@ -1,0 +1,14 @@
+{
+  "experiment_name": "xgb_canonical_seed42",
+  "experiment_type": "training",
+  "dataset_name": "canonical_v1",
+  "model_name": "xgb",
+  "seed": 42,
+  "config_path": "configs/models/xgb.yaml",
+  "split_manifest": "data/processed/splits/split_seed_42.json",
+  "artifacts": {
+    "metrics_summary": "results/summaries/example_metrics_summary.json",
+    "predictions": "results/predictions/example_predictions.csv",
+    "raw_log": "results/logs/example_raw_log.txt"
+  }
+}

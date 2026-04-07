@@ -1,0 +1,20 @@
+{
+  "tag": "xgb_smoke3000",
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "model_name": "xgb",
+  "n_runs": 3,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "accuracy_mean": 0.588444897821368,
+  "accuracy_std": 0.008578873675239799,
+  "balanced_accuracy_mean": 0.5872001826823209,
+  "balanced_accuracy_std": 0.004909118296246849,
+  "roc_auc_mean": 0.6336591278961966,
+  "roc_auc_std": 0.005632298795633209,
+  "log_loss_mean": 0.6665613572738588,
+  "log_loss_std": 0.006696859674494001,
+  "source": "parsed_from_metrics_summary_json_in_uploaded_zip_files"
+}

@@ -1,0 +1,4 @@
+
+python scripts/50_build_block15_freeze_candidate.py
+python scripts/51_export_block15_paper_tables.py
+python scripts/52_make_block15_report.py

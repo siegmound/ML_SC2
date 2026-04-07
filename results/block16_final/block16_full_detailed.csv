@@ -1,0 +1,13 @@
+accuracy,balanced_accuracy,roc_auc,log_loss,seed,dataset_name,profile,model,zip_file,source_dataset,model_family,target_profile
+0.6201657535856384,0.6161010574537045,0.6665526875734427,0.6451140170495628,42,real_v3_1_fixed_fullgpu_clean,full,xgb_full,real_v3_1_fixed_fullgpu_clean.zip,v3_1_fixed,xgb,full
+0.6072770716713595,0.6045979601669711,0.6551047633383114,0.6511464234068374,43,real_v3_1_fixed_fullgpu_clean,full,xgb_full,real_v3_1_fixed_fullgpu_clean.zip,v3_1_fixed,xgb,full
+0.6109335755292429,0.6072851280994509,0.658516761183566,0.649051853272861,44,real_v3_1_fixed_fullgpu_clean,full,xgb_full,real_v3_1_fixed_fullgpu_clean.zip,v3_1_fixed,xgb,full
+0.6203056536410388,0.6162669562650229,0.6662458426473861,0.6452657576655404,42,real_v3_2_combatfix_fullgpu_clean,full,xgb_full,xgbreal_v3_2_combatfix_fullgpu_clean.zip,v3_2_combatfix,xgb,full
+0.6068732261647016,0.6041489316885646,0.6547666703574244,0.6511160879203708,43,real_v3_2_combatfix_fullgpu_clean,full,xgb_full,xgbreal_v3_2_combatfix_fullgpu_clean.zip,v3_2_combatfix,xgb,full
+0.611174650161464,0.6075908957932239,0.6580463693871903,0.6493393331403304,44,real_v3_2_combatfix_fullgpu_clean,full,xgb_full,xgbreal_v3_2_combatfix_fullgpu_clean.zip,v3_2_combatfix,xgb,full
+0.6148692590599211,0.6126632571803022,0.6616011385328887,0.6499678446535175,44,real_v3_1_fixed_fullrf_clean,no_counter,,real_v3_1_fixed_fullrf_clean.zip,v3_1_fixed,rf,no_counter
+0.619052149144651,0.6165107150941782,0.6666976448260143,0.6477561501032182,42,real_v3_1_fixed_fullrf_clean,no_counter,,real_v3_1_fixed_fullrf_clean.zip,v3_1_fixed,rf,no_counter
+0.6059421379132405,0.604229428459298,0.6533280364303904,0.6533124898004485,43,real_v3_1_fixed_fullrf_clean,no_counter,,real_v3_1_fixed_fullrf_clean.zip,v3_1_fixed,rf,no_counter
+0.6061721054934207,0.6045345856016514,0.6531928261193395,0.6532830837063315,43,real_v3_2_combatfix_fullrf_clean,no_counter,,rfreal_v3_2_combatfix_fullrf_clean.zip,v3_2_combatfix,rf,no_counter
+0.6135853964836742,0.6114071076670433,0.6606397587767947,0.6504172203829092,44,real_v3_2_combatfix_fullrf_clean,no_counter,,rfreal_v3_2_combatfix_fullrf_clean.zip,v3_2_combatfix,rf,no_counter
+0.6187331770183381,0.6161860546335438,0.6670604863726182,0.6473755796033811,42,real_v3_2_combatfix_fullrf_clean,no_counter,,rfreal_v3_2_combatfix_fullrf_clean.zip,v3_2_combatfix,rf,no_counter

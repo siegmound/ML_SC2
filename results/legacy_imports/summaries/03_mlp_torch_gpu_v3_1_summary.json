@@ -1,0 +1,32 @@
+{
+  "best_iteration": null,
+  "best_params": {
+    "batch_size": 4096,
+    "dropout": 0.2,
+    "hidden_dims": [
+      512,
+      256
+    ],
+    "lr": 0.0005,
+    "weight_decay": 0.001
+  },
+  "cv_accuracy": null,
+  "dataset_path": "starcraft_full_dataset_v3_1_fixed.csv",
+  "device": null,
+  "legacy_member_path": "sc2_project_freeze_final/artifacts/mlp_torch_gpu_v3_1_summary.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip",
+  "model": "MLP_PyTorch",
+  "n_features": null,
+  "n_replays_test": null,
+  "n_replays_total": null,
+  "n_replays_train": null,
+  "n_replays_val": null,
+  "notes": "Aligned GPU MLP benchmark summary used for final cross-model comparison.",
+  "rows": null,
+  "source_name": "sc2_project_freeze_final/artifacts/mlp_torch_gpu_v3_1_summary.json",
+  "test_accuracy": 0.611598,
+  "test_auc": 0.662624,
+  "test_balanced_accuracy": 0.612442,
+  "test_logloss": 0.648304,
+  "validation_logloss": null
+}

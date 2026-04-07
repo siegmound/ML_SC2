@@ -1,0 +1,8 @@
+{
+  "metrics_summary": "results\\xgb_calibration\\real_v3_1_fixed\\seed_42\\metrics_summary.json",
+  "validation_predictions": "results\\xgb_calibration\\real_v3_1_fixed\\seed_42\\validation_predictions.csv",
+  "test_predictions": "results\\xgb_calibration\\real_v3_1_fixed\\seed_42\\test_predictions.csv",
+  "feature_importance": "results\\xgb_calibration\\real_v3_1_fixed\\seed_42\\feature_importance.csv",
+  "config_used": "results\\xgb_calibration\\real_v3_1_fixed\\seed_42\\config_used.json",
+  "model": "results\\xgb_calibration\\real_v3_1_fixed\\seed_42\\model.json"
+}

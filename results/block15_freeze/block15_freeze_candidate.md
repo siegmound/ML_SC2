@@ -1,0 +1,22 @@
+# Block 15 Freeze Candidate
+
+Selected candidate: **RF + real_v3_2_combatfix_smoke3000 + no_counter**
+
+## Why this candidate
+- **block11**: RF beat XGB on real_v3_1_fixed_smoke3000 across seeds 42-44
+- **block12**: economy/scouting/composition were the most useful families; counter features looked suspicious
+- **block13**: combatfix and no_counter improved seed-42 compact RF profiles
+- **block14**: combatfix + no_counter won the multi-seed compact RF comparison
+
+## Selected metrics
+- **profile**: no_counter
+- **accuracy_mean**: 0.6015333333333334
+- **accuracy_std**: 0.011344308411416454
+- **balanced_accuracy_mean**: 0.5910624253682748
+- **balanced_accuracy_std**: 0.013246376632439633
+- **roc_auc_mean**: 0.6268306751875902
+- **roc_auc_std**: 0.011921206969900686
+- **log_loss_mean**: 0.6640122675134749
+- **log_loss_std**: 0.002888297121747193
+- **n_runs**: 3
+- **n_features_mean**: 66.0

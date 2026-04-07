@@ -1,0 +1,69 @@
+{
+  "formal_conclusion": {
+    "dataset_versioning": "v3_1_fixed is at least as strong as v3_2_combatfix in full multi-seed evaluation; combatfix does not show a clear final advantage.",
+    "model_comparison": "RF (no_counter) and XGB are effectively tied on full multi-seed evaluation. RF is marginally better on classification-oriented metrics, while XGB is marginally better on log loss.",
+    "rf_profile": "no_counter remains the strongest RF profile among the tested options."
+  },
+  "recommended_finalists": {
+    "classification_focused": "RF + v3_1_fixed + no_counter",
+    "probability_focused": "XGB + v3_1_fixed + full"
+  },
+  "summary_rows": [
+    {
+      "source_dataset": "v3_1_fixed",
+      "model_family": "rf",
+      "profile": "no_counter",
+      "n_runs": 3,
+      "accuracy_mean": 0.6132878487059376,
+      "accuracy_std": 0.0054677077861868,
+      "balanced_accuracy_mean": 0.6111344669112594,
+      "balanced_accuracy_std": 0.0051290285056114,
+      "roc_auc_mean": 0.6605422732630978,
+      "roc_auc_std": 0.0055092349080286,
+      "log_loss_mean": 0.6503454948523947,
+      "log_loss_std": 0.0022840304233654
+    },
+    {
+      "source_dataset": "v3_1_fixed",
+      "model_family": "xgb",
+      "profile": "full",
+      "n_runs": 3,
+      "accuracy_mean": 0.6127921335954135,
+      "accuracy_std": 0.0054234189054421,
+      "balanced_accuracy_mean": 0.6093280485733755,
+      "balanced_accuracy_std": 0.0049132782568666,
+      "roc_auc_mean": 0.6600580706984399,
+      "roc_auc_std": 0.0047989907681238,
+      "log_loss_mean": 0.6484374312430871,
+      "log_loss_std": 0.0025007488795459
+    },
+    {
+      "source_dataset": "v3_2_combatfix",
+      "model_family": "rf",
+      "profile": "no_counter",
+      "n_runs": 3,
+      "accuracy_mean": 0.612830226331811,
+      "accuracy_std": 0.0051557631786976,
+      "balanced_accuracy_mean": 0.6107092493007462,
+      "balanced_accuracy_std": 0.0047822196641897,
+      "roc_auc_mean": 0.6602976904229175,
+      "roc_auc_std": 0.0056666132327363,
+      "log_loss_mean": 0.6503586278975405,
+      "log_loss_std": 0.0024120842980156
+    },
+    {
+      "source_dataset": "v3_2_combatfix",
+      "model_family": "xgb",
+      "profile": "full",
+      "n_runs": 3,
+      "accuracy_mean": 0.6127845099890682,
+      "accuracy_std": 0.0056006704048214,
+      "balanced_accuracy_mean": 0.6093355945822705,
+      "balanced_accuracy_std": 0.0050986671661841,
+      "roc_auc_mean": 0.6596862941306669,
+      "roc_auc_std": 0.0048276884730241,
+      "log_loss_mean": 0.6485737262420805,
+      "log_loss_std": 0.0024489734535966
+    }
+  ]
+}

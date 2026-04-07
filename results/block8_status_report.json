@@ -1,0 +1,32 @@
+{
+  "n_completed_runs": 6,
+  "models_completed": [
+    "logreg",
+    "rf",
+    "xgb"
+  ],
+  "datasets_completed": [
+    "real_v3_1_fixed_smoke200",
+    "real_v3_1_fixed_smoke500"
+  ],
+  "best_accuracy_run": {
+    "model": "rf",
+    "dataset_name": "real_v3_1_fixed_smoke500",
+    "seed": 42,
+    "accuracy": 0.612,
+    "balanced_accuracy": 0.6035573754991308,
+    "roc_auc": 0.6375782789895919,
+    "log_loss": 0.6610902314031778,
+    "path": "/mnt/data/ml_sc2_remake_block8_work/results/rf/real_v3_1_fixed_smoke500/seed_42/metrics_summary.json"
+  },
+  "best_log_loss_run": {
+    "model": "rf",
+    "dataset_name": "real_v3_1_fixed_smoke500",
+    "seed": 42,
+    "accuracy": 0.612,
+    "balanced_accuracy": 0.6035573754991308,
+    "roc_auc": 0.6375782789895919,
+    "log_loss": 0.6610902314031778,
+    "path": "/mnt/data/ml_sc2_remake_block8_work/results/rf/real_v3_1_fixed_smoke500/seed_42/metrics_summary.json"
+  }
+}

@@ -1,0 +1,7 @@
+name,profile,scaler,hidden_dims,dropout,activation,batch_norm,lr,weight_decay,batch_size,max_epochs,patience,scheduler,use_pos_weight,selection_metric,score,best_epoch,best_val_loss,resolved_device,n_features
+qt_lrelu_256_128_nocounter,no_counter,quantile,"[256, 128]",0.3,leaky_relu,True,0.0008,0.0005,512,100,12,True,True,neg_log_loss,-0.6470715636140609,15,0.6303130984306335,cuda,58
+qt_lrelu_256_128_full,full,quantile,"[256, 128]",0.3,leaky_relu,True,0.0008,0.0005,512,100,12,True,True,neg_log_loss,-0.6473789518406184,9,0.6304327845573425,cuda,64
+std_lrelu_256_128_full,full,standard,"[256, 128]",0.3,leaky_relu,True,0.0008,0.0001,512,100,12,True,True,neg_log_loss,-0.6475573478071899,4,0.6305097341537476,cuda,64
+std_lrelu_256_128_nocounter,no_counter,standard,"[256, 128]",0.3,leaky_relu,True,0.0008,0.0001,512,100,12,True,True,neg_log_loss,-0.6477884297925958,17,0.6305644512176514,cuda,58
+std_relu_256_128_full,full,standard,"[256, 128]",0.25,relu,True,0.001,0.0001,512,80,10,True,True,neg_log_loss,-0.6486865376853032,6,0.6315488219261169,cuda,64
+std_relu_256_128_nocounter,no_counter,standard,"[256, 128]",0.25,relu,True,0.001,0.0001,512,80,10,True,True,neg_log_loss,-0.6490502795721332,8,0.6320496797561646,cuda,58

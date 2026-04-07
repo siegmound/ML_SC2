@@ -1,0 +1,3 @@
+python scripts/55_collect_block16_full_comparison.py
+python scripts/56_make_block16_freeze_report.py
+python scripts/57_verify_block16_reproducibility.py

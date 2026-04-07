@@ -1,0 +1,13 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke200",
+  "dataset_quality_summary_exists": true,
+  "legacy_calibration_import_exists": true,
+  "logreg_runs": [
+    "results/logreg/real_v3_1_fixed_smoke200/seed_42/metrics_summary.json"
+  ],
+  "registered_dataset_manifest_exists": true,
+  "split_manifests": [
+    "split_seed_42.json"
+  ],
+  "xgb_runs": []
+}

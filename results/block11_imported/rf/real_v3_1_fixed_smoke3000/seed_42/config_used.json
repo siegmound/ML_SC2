@@ -1,0 +1,45 @@
+{
+  "candidate_params": [
+    {
+      "class_weight": null,
+      "max_depth": 16,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 5,
+      "n_estimators": 300
+    },
+    {
+      "class_weight": null,
+      "max_depth": 20,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 5,
+      "n_estimators": 500
+    },
+    {
+      "class_weight": "balanced_subsample",
+      "max_depth": null,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 5,
+      "n_estimators": 500
+    },
+    {
+      "class_weight": "balanced_subsample",
+      "max_depth": 24,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 4,
+      "n_estimators": 700
+    }
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "dataset_zip": "data\\processed\\real_v3_1_fixed_smoke3000.zip",
+  "max_test_rows": null,
+  "max_train_rows": 30000,
+  "max_val_rows": 12000,
+  "n_jobs": 4,
+  "resume": true,
+  "split_json": "data\\processed\\splits\\real_v3_1_fixed_smoke3000_split_seed_42.json"
+}

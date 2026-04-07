@@ -1,0 +1,32 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "downsample": {
+    "test": 5000,
+    "train": 10000,
+    "val": 4000
+  },
+  "family_map_counts": {
+    "combat": 9,
+    "composition": 10,
+    "counter": 6,
+    "delta_15s": 6,
+    "economy": 26,
+    "losses": 3,
+    "other": 2,
+    "scouting": 2
+  },
+  "profile_feature_counts": {
+    "full": 64,
+    "no_counter": 58,
+    "no_counter_no_losses": 55
+  },
+  "rf_params": {
+    "class_weight": null,
+    "max_depth": 16,
+    "max_features": "sqrt",
+    "min_samples_leaf": 2,
+    "min_samples_split": 5,
+    "n_estimators": 100
+  },
+  "seed": 42
+}

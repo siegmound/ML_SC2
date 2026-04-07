@@ -1,0 +1,29 @@
+{
+  "best_iteration": null,
+  "best_params": {
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 4,
+    "min_samples_split": 10,
+    "n_estimators": 300
+  },
+  "cv_accuracy": 0.6061,
+  "dataset_path": "starcraft_full_dataset_v3_1_fixed.csv",
+  "device": null,
+  "legacy_member_path": "sc2_project_freeze_final/artifacts/rf_test_clean_v3_1_summary.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip",
+  "model": "random_forest",
+  "n_features": null,
+  "n_replays_test": null,
+  "n_replays_total": null,
+  "n_replays_train": null,
+  "n_replays_val": null,
+  "notes": "Latest RF export run used in bootstrap, calibration, and duration-comparison tests.",
+  "rows": null,
+  "source_name": "sc2_project_freeze_final/artifacts/rf_test_clean_v3_1_summary.json",
+  "test_accuracy": 0.6185037409274814,
+  "test_auc": 0.6641953845275458,
+  "test_balanced_accuracy": 0.6144,
+  "test_logloss": 0.6483285479067915,
+  "validation_logloss": null
+}

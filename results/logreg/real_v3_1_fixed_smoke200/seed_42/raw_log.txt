@@ -1,0 +1,4 @@
+Loading dataset from data/processed/real_v3_1_fixed_smoke200.zip
+Running group-aware CV search with scoring=neg_log_loss; fast_smoke=True
+Best params: {'clf__C': 1.0, 'clf__class_weight': 'balanced'}
+Best CV score: -0.845771

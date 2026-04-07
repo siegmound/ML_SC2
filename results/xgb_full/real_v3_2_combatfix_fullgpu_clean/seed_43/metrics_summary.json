@@ -1,0 +1,27 @@
+{
+  "dataset_name": "real_v3_2_combatfix_fullgpu_clean",
+  "seed": 43,
+  "model": "xgb_full",
+  "profile": "full",
+  "device": "cuda",
+  "n_rows_train": 571203,
+  "n_rows_val": 142558,
+  "n_rows_test": 178286,
+  "n_features": 73,
+  "accuracy": 0.6068732261647016,
+  "balanced_accuracy": 0.6041489316885646,
+  "roc_auc": 0.6547666703574244,
+  "log_loss": 0.6511160879203708,
+  "best_iteration": 1288,
+  "best_score": 0.6417168462244174,
+  "confusion_matrix": [
+    [
+      46202,
+      39028
+    ],
+    [
+      31061,
+      61995
+    ]
+  ]
+}

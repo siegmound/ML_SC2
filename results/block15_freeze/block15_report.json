@@ -1,0 +1,67 @@
+{
+  "selected_candidate": {
+    "selected_dataset": "real_v3_2_combatfix_smoke3000",
+    "selected_model_family": "random_forest",
+    "selected_profile": "no_counter",
+    "selection_basis": {
+      "block11": "RF beat XGB on real_v3_1_fixed_smoke3000 across seeds 42-44",
+      "block12": "economy/scouting/composition were the most useful families; counter features looked suspicious",
+      "block13": "combatfix and no_counter improved seed-42 compact RF profiles",
+      "block14": "combatfix + no_counter won the multi-seed compact RF comparison"
+    },
+    "metrics_on_selected_regime": {
+      "profile": "no_counter",
+      "accuracy_mean": 0.6015333333333334,
+      "accuracy_std": 0.011344308411416454,
+      "balanced_accuracy_mean": 0.5910624253682748,
+      "balanced_accuracy_std": 0.013246376632439633,
+      "roc_auc_mean": 0.6268306751875902,
+      "roc_auc_std": 0.011921206969900686,
+      "log_loss_mean": 0.6640122675134749,
+      "log_loss_std": 0.002888297121747193,
+      "n_runs": 3,
+      "n_features_mean": 66.0
+    },
+    "context": {
+      "block12_report_exists": true,
+      "block13_report_exists": true
+    }
+  },
+  "rf_vs_xgb_block11_means": [
+    {
+      "model": "rf",
+      "accuracy": 0.5935853680149877,
+      "balanced_accuracy": 0.5933646901919908,
+      "roc_auc": 0.6371340296754726,
+      "log_loss": 0.6632605328088848
+    },
+    {
+      "model": "xgb",
+      "accuracy": 0.5884448978213681,
+      "balanced_accuracy": 0.5872001826823208,
+      "roc_auc": 0.6336591278961967,
+      "log_loss": 0.6665613572738588
+    }
+  ],
+  "block14_cross_dataset_winner": [
+    {
+      "profile": "no_counter",
+      "acc_delta_combatfix_minus_fixed": 0.016666666666666607,
+      "auc_delta_combatfix_minus_fixed": 0.001662685312909029,
+      "logloss_delta_combatfix_minus_fixed": -0.005093770338210679
+    },
+    {
+      "profile": "full",
+      "acc_delta_combatfix_minus_fixed": 0.013733333333333375,
+      "auc_delta_combatfix_minus_fixed": -0.0007483115330608747,
+      "logloss_delta_combatfix_minus_fixed": -0.004636250341138237
+    },
+    {
+      "profile": "no_counter_no_losses",
+      "acc_delta_combatfix_minus_fixed": 0.012199999999999989,
+      "auc_delta_combatfix_minus_fixed": -0.0010108380370562609,
+      "logloss_delta_combatfix_minus_fixed": -0.0033536614419188426
+    }
+  ],
+  "final_recommendation": "Freeze the remake around RF + real_v3_2_combatfix_smoke3000 + no_counter, then only reopen if a larger staged run or full-data run overturns it."
+}

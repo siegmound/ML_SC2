@@ -1,0 +1,30 @@
+{
+  "accuracy": 0.5821899381221415,
+  "balanced_accuracy": 0.5833666934735686,
+  "best_cv_score": -0.7376444269312489,
+  "best_params": {
+    "clf__C": 1.0,
+    "clf__class_weight": "balanced"
+  },
+  "confusion_matrix": [
+    [
+      924,
+      640
+    ],
+    [
+      913,
+      1240
+    ]
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke500",
+  "log_loss": 0.6715058282564561,
+  "model_name": "logreg",
+  "n_rows": 3717,
+  "n_test_replays": 100,
+  "n_test_rows": 3717,
+  "n_train_replays": 400,
+  "n_train_rows": 15007,
+  "roc_auc": 0.6197021226552375,
+  "seed": 42
+}

@@ -1,0 +1,19 @@
+RF block11 candidate run: seed=44 rows train=30000 val=12000 test=19268
+Candidate {'n_estimators': 300, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} fold=1 score=-0.661565
+Candidate {'n_estimators': 300, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} fold=2 score=-0.675554
+Candidate {'n_estimators': 300, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} fold=3 score=-0.666436
+Candidate {'n_estimators': 300, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} mean_score=-0.667852
+Candidate {'n_estimators': 500, 'max_depth': 20, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} fold=1 score=-0.663216
+Candidate {'n_estimators': 500, 'max_depth': 20, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} fold=2 score=-0.675504
+Candidate {'n_estimators': 500, 'max_depth': 20, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} fold=3 score=-0.667468
+Candidate {'n_estimators': 500, 'max_depth': 20, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None} mean_score=-0.668729
+Candidate {'n_estimators': 500, 'max_depth': None, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} fold=1 score=-0.662929
+Candidate {'n_estimators': 500, 'max_depth': None, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} fold=2 score=-0.675489
+Candidate {'n_estimators': 500, 'max_depth': None, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} fold=3 score=-0.666896
+Candidate {'n_estimators': 500, 'max_depth': None, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} mean_score=-0.668438
+Candidate {'n_estimators': 700, 'max_depth': 24, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} fold=1 score=-0.662374
+Candidate {'n_estimators': 700, 'max_depth': 24, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} fold=2 score=-0.675229
+Candidate {'n_estimators': 700, 'max_depth': 24, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} fold=3 score=-0.665827
+Candidate {'n_estimators': 700, 'max_depth': 24, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'} mean_score=-0.667810
+Best params after checkpointed search: {'n_estimators': 700, 'max_depth': 24, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced_subsample'}
+Best CV score: -0.667810

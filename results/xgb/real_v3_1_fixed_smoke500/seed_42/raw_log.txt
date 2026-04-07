@@ -1,0 +1,4 @@
+Running XGB validation search stage=smoke scoring=neg_log_loss device=cpu
+Materialized rows train=5000 val=1500 test=1500
+Best params: {'max_depth': 4, 'learning_rate': 0.05, 'min_child_weight': 1, 'subsample': 0.8, 'colsample_bytree': 0.8, 'reg_lambda': 1.0}
+Best validation score: -0.662985

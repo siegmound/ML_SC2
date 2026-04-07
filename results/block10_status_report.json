@@ -1,0 +1,19 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "n_rows": 95480,
+  "n_replays": 2508,
+  "completed_models": [
+    "logreg"
+  ],
+  "attempted_models": [
+    "logreg",
+    "rf",
+    "xgb"
+  ],
+  "notes": [
+    "rf and xgb candidate-final attempts were not stable enough in this session to claim completed runs",
+    "smoke3000 materialization completed from full v3_1_fixed dataset"
+  ],
+  "detailed_csv": "/mnt/data/ml_sc2_remake/results/block10_candidate/block10_logreg_multiseed.csv",
+  "leaderboard_csv": "/mnt/data/ml_sc2_remake/results/block10_candidate/block10_candidate_leaderboard.csv"
+}

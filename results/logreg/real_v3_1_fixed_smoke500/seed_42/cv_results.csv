@@ -1,0 +1,5 @@
+params,fold,score,scoring
+"{'clf__C': 1.0, 'clf__class_weight': None}",1,-0.7464265217907996,neg_log_loss
+"{'clf__C': 1.0, 'clf__class_weight': None}",2,-0.7305023167852691,neg_log_loss
+"{'clf__C': 1.0, 'clf__class_weight': 'balanced'}",1,-0.7472722305878131,neg_log_loss
+"{'clf__C': 1.0, 'clf__class_weight': 'balanced'}",2,-0.7280166232746846,neg_log_loss

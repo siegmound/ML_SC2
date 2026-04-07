@@ -1,0 +1,8 @@
+{
+  "metrics_summary": "results\\deep_final\\real_v3_1_fixed\\seed_43\\metrics_summary.json",
+  "config_used": "results\\deep_final\\real_v3_1_fixed\\seed_43\\config_used.json",
+  "validation_search_results": "results\\deep_final\\real_v3_1_fixed\\seed_43\\validation_search_results.csv",
+  "best_training_history": "results\\deep_final\\real_v3_1_fixed\\seed_43\\best_training_history.csv",
+  "validation_predictions": "results\\deep_final\\real_v3_1_fixed\\seed_43\\validation_predictions.csv",
+  "test_predictions": "results\\deep_final\\real_v3_1_fixed\\seed_43\\test_predictions.csv"
+}

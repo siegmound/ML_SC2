@@ -1,0 +1,20 @@
+{
+  "dataset_name": "canonical_v1",
+  "dataset_version": "0.1.0",
+  "parser_version": "clean_room_v1",
+  "bridge_version": "clean_room_v1",
+  "builder_version": "clean_room_v1",
+  "snapshot_step_sec": 15,
+  "early_cut_sec": 120,
+  "min_match_sec": 180,
+  "max_match_sec": 1800,
+  "target_name": "p1_wins",
+  "group_name": "replay_id",
+  "time_name": "time_sec",
+  "number_rows": 0,
+  "number_replays": 0,
+  "number_features": 0,
+  "feature_list": [],
+  "build_timestamp": "YYYY-MM-DDTHH:MM:SSZ",
+  "git_commit": "unknown"
+}

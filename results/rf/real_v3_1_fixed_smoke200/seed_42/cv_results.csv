@@ -1,0 +1,5 @@
+params,fold,score,scoring
+"{'n_estimators': 150, 'max_depth': 12, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None}",1,-0.6917533402277908,neg_log_loss
+"{'n_estimators': 150, 'max_depth': 12, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': None}",2,-0.6797930013262639,neg_log_loss
+"{'n_estimators': 200, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced'}",1,-0.6919580149058192,neg_log_loss
+"{'n_estimators': 200, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced'}",2,-0.6815291250815316,neg_log_loss

@@ -1,0 +1,50 @@
+{
+  "dataset_name": "real_v3_1_fixed",
+  "seed": 43,
+  "model": "rf",
+  "profile": "no_counter",
+  "n_rows_train": 571203,
+  "n_rows_val": 142558,
+  "n_rows_test": 178286,
+  "n_features": 58,
+  "validation_metrics": {
+    "accuracy": 0.6183027259080515,
+    "balanced_accuracy": 0.6169647052648018,
+    "roc_auc": 0.6692740900221714,
+    "log_loss": 0.6472167613888917,
+    "confusion_matrix": [
+      [
+        39742,
+        29166
+      ],
+      [
+        25248,
+        48402
+      ]
+    ]
+  },
+  "test_metrics": {
+    "accuracy": 0.607086366848771,
+    "balanced_accuracy": 0.6053008741134314,
+    "roc_auc": 0.6524343679851397,
+    "log_loss": 0.6540412316915537,
+    "confusion_matrix": [
+      [
+        48123,
+        37107
+      ],
+      [
+        32944,
+        60112
+      ]
+    ]
+  },
+  "rf_params": {
+    "n_estimators": 700,
+    "max_depth": 24,
+    "min_samples_split": 4,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "class_weight": "balanced_subsample"
+  }
+}

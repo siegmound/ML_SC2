@@ -1,0 +1,49 @@
+{
+  "best_cv_score": -0.6678079462108356,
+  "best_params": {
+    "class_weight": null,
+    "max_depth": 16,
+    "max_features": "sqrt",
+    "min_samples_leaf": 2,
+    "min_samples_split": 5,
+    "n_estimators": 300
+  },
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "metrics": {
+    "accuracy": 0.602665533903255,
+    "balanced_accuracy": 0.6005064952100694,
+    "best_cv_score": -0.6678079462108356,
+    "best_params": {
+      "class_weight": null,
+      "max_depth": 16,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 5,
+      "n_estimators": 300
+    },
+    "block11_candidate": true,
+    "confusion_matrix": [
+      [
+        4608,
+        4606
+      ],
+      [
+        2877,
+        6742
+      ]
+    ],
+    "cv_scoring": "neg_log_loss",
+    "dataset_name": "real_v3_1_fixed_smoke3000",
+    "log_loss": 0.6581620102681639,
+    "model_name": "rf",
+    "n_rows": 18833,
+    "n_test_replays": 502,
+    "n_test_rows": 18833,
+    "n_train_replays": 2005,
+    "n_train_rows": 42000,
+    "roc_auc": 0.6457805240528021,
+    "seed": 43
+  },
+  "phase": "completed",
+  "seed": 43
+}

@@ -1,0 +1,14 @@
+{
+  "dataset_zip": "data\\processed\\starcraft_full_dataset_v3_2_combatfix.zip",
+  "split_json": "data\\processed\\splits\\real_v3_2_combatfix_split_seed_44.json",
+  "dataset_name": "real_v3_2_combatfix_fullrf_clean",
+  "profile": "no_counter",
+  "seed": 44,
+  "n_estimators": 700,
+  "max_depth": 24,
+  "min_samples_split": 4,
+  "min_samples_leaf": 2,
+  "max_features": "sqrt",
+  "class_weight": "balanced_subsample",
+  "n_jobs": -1
+}

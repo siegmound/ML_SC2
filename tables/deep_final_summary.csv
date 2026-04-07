@@ -1,0 +1,2 @@
+dataset,model,profile,acc_mean,acc_std,balacc_mean,balacc_std,auc_mean,auc_std,logloss_mean,logloss_std
+v3_1_fixed,deep_final,best candidate per seed,0.6093,0.0051,0.6083,0.0042,0.6581,0.0041,0.6506,0.0025

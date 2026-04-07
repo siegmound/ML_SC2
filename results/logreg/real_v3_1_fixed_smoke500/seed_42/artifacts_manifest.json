@@ -1,0 +1,9 @@
+{
+  "artifacts": [
+    "config_used.json",
+    "metrics_summary.json",
+    "predictions.csv",
+    "cv_results.csv",
+    "raw_log.txt"
+  ]
+}

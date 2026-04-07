@@ -1,0 +1,2 @@
+dataset_name,profile,accuracy_mean,accuracy_std,roc_auc_mean,roc_auc_std,log_loss_mean,log_loss_std,n_runs,n_features_mean
+real_v3_2_combatfix_smoke3000,no_counter,0.6015333333333334,0.0113443084114164,0.6268306751875902,0.0119212069699006,0.6640122675134749,0.0028882971217471,3,66.0

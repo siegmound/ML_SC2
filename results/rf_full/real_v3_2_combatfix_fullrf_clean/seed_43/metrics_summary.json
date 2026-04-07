@@ -1,0 +1,34 @@
+{
+  "dataset_name": "real_v3_2_combatfix_fullrf_clean",
+  "model_name": "rf_full",
+  "profile": "no_counter",
+  "seed": 43,
+  "n_rows_train": 571203,
+  "n_rows_val": 142558,
+  "n_rows_test": 178286,
+  "n_rows_train_full": 713761,
+  "n_features": 66,
+  "accuracy": 0.6061721054934207,
+  "balanced_accuracy": 0.6045345856016514,
+  "roc_auc": 0.6531928261193395,
+  "log_loss": 0.6532830837063315,
+  "confusion_matrix": [
+    [
+      48345,
+      36885
+    ],
+    [
+      33329,
+      59727
+    ]
+  ],
+  "params": {
+    "n_estimators": 700,
+    "max_depth": 24,
+    "min_samples_split": 4,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "class_weight": "balanced_subsample",
+    "n_jobs": -1
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "source": "transcribed_from_user_console_output_in_chat",
+  "note": "These RF smoke6000 profile results were not parsed from uploaded metrics JSON files in this session; they were entered from the user console output verbatim.",
+  "rows": [
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 42,
+      "profile": "full",
+      "accuracy": 0.5833,
+      "roc_auc": 0.6186,
+      "log_loss": 0.6689,
+      "n_features": 73
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 42,
+      "profile": "no_counter",
+      "accuracy": 0.5823,
+      "roc_auc": 0.6252,
+      "log_loss": 0.6669,
+      "n_features": 66
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 42,
+      "profile": "no_counter_no_losses",
+      "accuracy": 0.5857,
+      "roc_auc": 0.6203,
+      "log_loss": 0.6689,
+      "n_features": 63
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 43,
+      "profile": "full",
+      "accuracy": 0.5784,
+      "roc_auc": 0.621,
+      "log_loss": 0.668,
+      "n_features": 73
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 43,
+      "profile": "no_counter",
+      "accuracy": 0.5875,
+      "roc_auc": 0.6241,
+      "log_loss": 0.6671,
+      "n_features": 66
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 43,
+      "profile": "no_counter_no_losses",
+      "accuracy": 0.5846,
+      "roc_auc": 0.6241,
+      "log_loss": 0.6667,
+      "n_features": 63
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 44,
+      "profile": "full",
+      "accuracy": 0.5938,
+      "roc_auc": 0.6325,
+      "log_loss": 0.665,
+      "n_features": 73
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 44,
+      "profile": "no_counter",
+      "accuracy": 0.596,
+      "roc_auc": 0.6338,
+      "log_loss": 0.6645,
+      "n_features": 66
+    },
+    {
+      "dataset_name": "real_v3_2_combatfix_smoke6000",
+      "seed": 44,
+      "profile": "no_counter_no_losses",
+      "accuracy": 0.5866,
+      "roc_auc": 0.6256,
+      "log_loss": 0.6673,
+      "n_features": 63
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 42,
+      "profile": "full",
+      "accuracy": 0.5863,
+      "roc_auc": 0.6242,
+      "log_loss": 0.6668,
+      "n_features": 64
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 42,
+      "profile": "no_counter",
+      "accuracy": 0.5785,
+      "roc_auc": 0.6264,
+      "log_loss": 0.6661,
+      "n_features": 58
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 42,
+      "profile": "no_counter_no_losses",
+      "accuracy": 0.5824,
+      "roc_auc": 0.6256,
+      "log_loss": 0.6674,
+      "n_features": 55
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 43,
+      "profile": "full",
+      "accuracy": 0.5835,
+      "roc_auc": 0.6237,
+      "log_loss": 0.6671,
+      "n_features": 64
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 43,
+      "profile": "no_counter",
+      "accuracy": 0.5889,
+      "roc_auc": 0.6279,
+      "log_loss": 0.6658,
+      "n_features": 58
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 43,
+      "profile": "no_counter_no_losses",
+      "accuracy": 0.5823,
+      "roc_auc": 0.6215,
+      "log_loss": 0.6673,
+      "n_features": 55
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 44,
+      "profile": "full",
+      "accuracy": 0.5884,
+      "roc_auc": 0.6311,
+      "log_loss": 0.6655,
+      "n_features": 64
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 44,
+      "profile": "no_counter",
+      "accuracy": 0.5944,
+      "roc_auc": 0.6337,
+      "log_loss": 0.664,
+      "n_features": 58
+    },
+    {
+      "dataset_name": "real_v3_1_fixed_smoke6000",
+      "seed": 44,
+      "profile": "no_counter_no_losses",
+      "accuracy": 0.5883,
+      "roc_auc": 0.6311,
+      "log_loss": 0.6656,
+      "n_features": 55
+    }
+  ]
+}

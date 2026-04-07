@@ -1,0 +1,23 @@
+{
+  "package_name": "ml_sc2_remake_final_delivery",
+  "base": "ml_sc2_remake_block16_deep_integrated",
+  "integrated_items": [
+    "cleaned deep finalist runner",
+    "final report refinement markdown",
+    "latex refinement snippet",
+    "final csv summary tables",
+    "final project status note",
+    "delivery readme"
+  ],
+  "final_recommendations": {
+    "classification": "RF + v3_1_fixed + no_counter",
+    "probabilities": "XGB + v3_1_fixed + full"
+  },
+  "cleanup_applied": true,
+  "canonical_xgb_runner": "scripts/53_run_xgb_full_gpu_fixed_v3.py",
+  "canonical_deep_runner": "scripts/64_run_deep_finalist.py",
+  "external_datasets": [
+    "data/processed/starcraft_full_dataset_v3_1_fixed.zip",
+    "data/processed/starcraft_full_dataset_v3_2_combatfix.zip"
+  ]
+}

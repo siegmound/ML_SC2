@@ -1,0 +1,103 @@
+{
+  "imports": [
+    {
+      "files": [
+        "artifacts_manifest.json",
+        "block11_search_results.csv",
+        "block11_status.json",
+        "config_used.json",
+        "feature_importance.csv",
+        "metrics_summary.json",
+        "permutation_importance.csv",
+        "predictions.csv",
+        "raw_log.txt"
+      ],
+      "model": "rf",
+      "run_dir": "/mnt/data/ml_sc2_remake_work/ml_sc2_remake/results/block11_imported/rf/real_v3_1_fixed_smoke3000/seed_42",
+      "seed": 42,
+      "zip_path": "/mnt/data/rfseed_42.zip"
+    },
+    {
+      "files": [
+        "artifacts_manifest.json",
+        "block11_search_results.csv",
+        "block11_status.json",
+        "config_used.json",
+        "feature_importance.csv",
+        "metrics_summary.json",
+        "permutation_importance.csv",
+        "predictions.csv",
+        "raw_log.txt"
+      ],
+      "model": "rf",
+      "run_dir": "/mnt/data/ml_sc2_remake_work/ml_sc2_remake/results/block11_imported/rf/real_v3_1_fixed_smoke3000/seed_43",
+      "seed": 43,
+      "zip_path": "/mnt/data/rfseed_43.zip"
+    },
+    {
+      "files": [
+        "artifacts_manifest.json",
+        "block11_search_results.csv",
+        "block11_status.json",
+        "config_used.json",
+        "feature_importance.csv",
+        "metrics_summary.json",
+        "permutation_importance.csv",
+        "predictions.csv",
+        "raw_log.txt"
+      ],
+      "model": "rf",
+      "run_dir": "/mnt/data/ml_sc2_remake_work/ml_sc2_remake/results/block11_imported/rf/real_v3_1_fixed_smoke3000/seed_44",
+      "seed": 44,
+      "zip_path": "/mnt/data/rfseed_44.zip"
+    },
+    {
+      "files": [
+        "artifacts_manifest.json",
+        "block11_status.json",
+        "block11_validation_search.csv",
+        "config_used.json",
+        "feature_importance.csv",
+        "metrics_summary.json",
+        "predictions.csv",
+        "raw_log.txt"
+      ],
+      "model": "xgb",
+      "run_dir": "/mnt/data/ml_sc2_remake_work/ml_sc2_remake/results/block11_imported/xgb/real_v3_1_fixed_smoke3000/seed_42",
+      "seed": 42,
+      "zip_path": "/mnt/data/xgbseed_42.zip"
+    },
+    {
+      "files": [
+        "artifacts_manifest.json",
+        "block11_status.json",
+        "block11_validation_search.csv",
+        "config_used.json",
+        "feature_importance.csv",
+        "metrics_summary.json",
+        "predictions.csv",
+        "raw_log.txt"
+      ],
+      "model": "xgb",
+      "run_dir": "/mnt/data/ml_sc2_remake_work/ml_sc2_remake/results/block11_imported/xgb/real_v3_1_fixed_smoke3000/seed_43",
+      "seed": 43,
+      "zip_path": "/mnt/data/xgbseed_43.zip"
+    },
+    {
+      "files": [
+        "artifacts_manifest.json",
+        "block11_status.json",
+        "block11_validation_search.csv",
+        "config_used.json",
+        "feature_importance.csv",
+        "metrics_summary.json",
+        "predictions.csv",
+        "raw_log.txt"
+      ],
+      "model": "xgb",
+      "run_dir": "/mnt/data/ml_sc2_remake_work/ml_sc2_remake/results/block11_imported/xgb/real_v3_1_fixed_smoke3000/seed_44",
+      "seed": 44,
+      "zip_path": "/mnt/data/xgbseed_44.zip"
+    }
+  ]
+}

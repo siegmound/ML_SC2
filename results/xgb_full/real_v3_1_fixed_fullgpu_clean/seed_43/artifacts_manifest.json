@@ -1,0 +1,7 @@
+{
+  "metrics_summary": "results\\xgb_full\\real_v3_1_fixed_fullgpu_clean\\seed_43\\metrics_summary.json",
+  "predictions": "results\\xgb_full\\real_v3_1_fixed_fullgpu_clean\\seed_43\\predictions.csv",
+  "feature_importance": "results\\xgb_full\\real_v3_1_fixed_fullgpu_clean\\seed_43\\feature_importance.csv",
+  "config_used": "results\\xgb_full\\real_v3_1_fixed_fullgpu_clean\\seed_43\\config_used.json",
+  "model": "results\\xgb_full\\real_v3_1_fixed_fullgpu_clean\\seed_43\\model.json"
+}
