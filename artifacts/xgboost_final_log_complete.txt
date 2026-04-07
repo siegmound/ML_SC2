@@ -1,0 +1,121 @@
+[FINAL XGBOOST BENCHMARK ON v3_1_fixed]
+
+Migliori parametri strutturali: {'learning_rate': 0.05, 'max_depth': 6}
+Miglior score CV (train only): 0.6066
+
+--- FASE 2: Addestramento finale con early stopping su VALIDATION ---
+[0]     validation_0-logloss:0.69026
+[50]    validation_0-logloss:0.65683
+[100]   validation_0-logloss:0.65218
+[150]   validation_0-logloss:0.65017
+[200]   validation_0-logloss:0.64918
+[250]   validation_0-logloss:0.64836
+[300]   validation_0-logloss:0.64787
+[350]   validation_0-logloss:0.64777
+[400]   validation_0-logloss:0.64762
+[450]   validation_0-logloss:0.64750
+[500]   validation_0-logloss:0.64748
+[538]   validation_0-logloss:0.64754
+Addestramento terminato all'albero numero: 488
+
+========================================
+VALUTAZIONE FINALE SU TEST PURO
+========================================
+Accuracy          : 0.6193
+Balanced Accuracy : 0.6154
+ROC-AUC           : 0.6665
+Log Loss          : 0.6451
+
+Confusion Matrix:
+[[46590 35982]
+ [32043 64084]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.5925    0.5642    0.5780     82572
+           1     0.6404    0.6667    0.6533     96127
+
+    accuracy                         0.6193    178699
+   macro avg     0.6165    0.6154    0.6156    178699
+weighted avg     0.6183    0.6193    0.6185    178699
+
+
+--- TOP FEATURE IMPORTANCE ---
+                   feature  importance
+5              diff_income    0.085401
+2             diff_workers    0.075842
+1        diff_combat_score    0.032885
+6                tech_diff    0.028322
+31       p2_num_unit_types    0.026734
+29                p2_scout    0.023615
+18       p1_num_unit_types    0.023509
+51         diff_income_60s    0.022526
+56        diff_income_120s    0.021108
+16                p1_scout    0.019976
+32           p2_tech_level    0.019651
+12               p1_combat    0.017976
+63        loss_trade_ratio    0.017458
+7   army_supply_ratio_diff    0.017426
+54        diff_combat_120s    0.017088
+
+--- ACCURACY VS DURATA (con sample count) ---
+   duration_min_bin  accuracy  n_samples  n_replays
+0               0.0  0.585325       1799        217
+1               5.0  0.643520      38911       1705
+2              10.0  0.628495      69353       1719
+3              15.0  0.611935      41627        688
+4              20.0  0.576960      19627        246
+5              25.0  0.568410       7382         74
+
+Analisi completata.
+File salvati:
+- xgb_accuracy_vs_duration_cleanv3.png
+- xgb_feature_importance_cleanv3.csv
+- xgb_accuracy_vs_duration_cleanv3.csv
+
+
+[TEST 1 XGBOOST EXPORT RUN ON v3_1_fixed]
+
+Migliori parametri strutturali: {'learning_rate': 0.05, 'max_depth': 6}
+Miglior score CV (train only): 0.6066
+[0]     validation_0-logloss:0.69026
+[50]    validation_0-logloss:0.65683
+[100]   validation_0-logloss:0.65218
+[150]   validation_0-logloss:0.65017
+[200]   validation_0-logloss:0.64918
+[250]   validation_0-logloss:0.64836
+[300]   validation_0-logloss:0.64787
+[350]   validation_0-logloss:0.64777
+[400]   validation_0-logloss:0.64762
+[450]   validation_0-logloss:0.64750
+[500]   validation_0-logloss:0.64748
+[538]   validation_0-logloss:0.64754
+
+========================================
+VALUTAZIONE FINALE SU TEST PURO
+========================================
+Accuracy          : 0.6193
+Balanced Accuracy : 0.6154
+ROC-AUC           : 0.6665
+Log Loss          : 0.6451
+
+Confusion Matrix:
+[[46590 35982]
+ [32043 64084]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0     0.5925    0.5642    0.5780     82572
+           1     0.6404    0.6667    0.6533     96127
+
+    accuracy                         0.6193    178699
+   macro avg     0.6165    0.6154    0.6156    178699
+weighted avg     0.6183    0.6193    0.6185    178699
+
+
+File salvati:
+- xgb_test_clean_v3_1_fixed_test_predictions.csv
+- xgb_test_clean_v3_1_fixed_summary.json
+
