@@ -1,4 +1,4 @@
-# ML_SC2 Remake
+# ML_SC2 
 
 Clean-room remake of the StarCraft II outcome-prediction project.
 
