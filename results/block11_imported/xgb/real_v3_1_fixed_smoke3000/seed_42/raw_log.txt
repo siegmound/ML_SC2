@@ -1,0 +1,4 @@
+XGB block11 candidate run: seed=42 rows train=35000 val=12000 test=19452 device=cpu
+Resuming from existing search log with 4 completed candidates
+Best params after checkpointed validation search: {'max_depth': 6, 'learning_rate': 0.05, 'min_child_weight': 5, 'subsample': 0.9, 'colsample_bytree': 0.9, 'reg_lambda': 2.0}
+Best validation score: -0.659507

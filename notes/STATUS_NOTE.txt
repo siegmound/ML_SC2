@@ -1,0 +1,23 @@
+Current status snapshot
+=======================
+
+Files in this bundle were generated from two kinds of evidence:
+1) Parsed metrics_summary.json files found inside uploaded zip artifacts.
+2) RF smoke6000 profile results transcribed from the user's console output in chat.
+
+Solidly supported by uploaded zip metrics in this session:
+- RF vs XGB on real_v3_1_fixed_smoke3000 (seed 42,43,44)
+- XGB on real_v3_2_combatfix_smoke6000 (seed 42,43,44)
+
+Supported only by console transcription in this session:
+- RF profile study on smoke6000 for both dataset variants.
+
+Best currently supported staged result:
+- XGB on real_v3_2_combatfix_smoke6000
+  accuracy_mean = 0.595750
+  balanced_accuracy_mean = 0.592413
+  roc_auc_mean = 0.637648
+  log_loss_mean = 0.661325
+
+Next recommended step:
+- run full single-seed XGB on real_v3_2_combatfix full dataset and save metrics_summary.json.

@@ -1,0 +1,16 @@
+{
+  "candidate_params": [
+    {
+      "clf__C": 1.0,
+      "clf__class_weight": null
+    },
+    {
+      "clf__C": 1.0,
+      "clf__class_weight": "balanced"
+    }
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke200",
+  "dataset_zip": "data/processed/real_v3_1_fixed_smoke200.zip",
+  "split_json": "data/processed/splits/split_seed_42.json"
+}

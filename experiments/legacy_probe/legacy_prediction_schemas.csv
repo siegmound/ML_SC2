@@ -1,0 +1,2 @@
+source_zip,member_path,columns,rows,n_replays,time_min,time_max,probability_columns,prediction_columns,target_present
+/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/test4pred_cal.zip,mlp_torch_gpu_v3_1_export_test_predictions.csv,"['replay_id', 'time_sec', 'y_true', 'y_prob_mlp', 'y_pred_mlp']",178699,4649,135.0,1785.0,['y_prob_mlp'],['y_pred_mlp'],True

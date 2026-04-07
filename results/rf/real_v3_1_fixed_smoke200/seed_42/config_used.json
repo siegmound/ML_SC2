@@ -1,0 +1,28 @@
+{
+  "candidate_params": [
+    {
+      "class_weight": null,
+      "max_depth": 12,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 5,
+      "n_estimators": 150
+    },
+    {
+      "class_weight": "balanced",
+      "max_depth": 16,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "min_samples_split": 5,
+      "n_estimators": 200
+    }
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke200",
+  "dataset_zip": "data/processed/real_v3_1_fixed_smoke200.zip",
+  "fast_smoke": true,
+  "max_test_rows": 2000,
+  "max_train_rows": 5000,
+  "max_val_rows": 2000,
+  "split_json": "data/processed/splits/split_seed_42.json"
+}

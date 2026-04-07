@@ -1,0 +1,23 @@
+{
+  "best_iteration": null,
+  "best_params": null,
+  "cv_accuracy": null,
+  "dataset_path": null,
+  "device": null,
+  "legacy_member_path": "sc2_project_freeze_final/artifacts/test1_xgb_vs_rf_bootstrap_summary.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip",
+  "model": null,
+  "n_features": null,
+  "n_replays_test": 4649,
+  "n_replays_total": null,
+  "n_replays_train": null,
+  "n_replays_val": null,
+  "notes": "Replay-level paired bootstrap reconstructed from recorded test output.",
+  "rows": null,
+  "source_name": "sc2_project_freeze_final/artifacts/test1_xgb_vs_rf_bootstrap_summary.json",
+  "test_accuracy": null,
+  "test_auc": null,
+  "test_balanced_accuracy": null,
+  "test_logloss": null,
+  "validation_logloss": null
+}

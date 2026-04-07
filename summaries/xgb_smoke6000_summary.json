@@ -1,0 +1,20 @@
+{
+  "tag": "xgb_smoke6000",
+  "dataset_name": "real_v3_2_combatfix_smoke6000",
+  "model_name": "xgb",
+  "n_runs": 3,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "accuracy_mean": 0.5957499999999999,
+  "accuracy_std": 0.002502082466000425,
+  "balanced_accuracy_mean": 0.5924134203563703,
+  "balanced_accuracy_std": 0.0026860794880138937,
+  "roc_auc_mean": 0.6376480161859086,
+  "roc_auc_std": 0.003044659100130177,
+  "log_loss_mean": 0.6613246270625005,
+  "log_loss_std": 0.0013514364383778342,
+  "source": "parsed_from_metrics_summary_json_in_uploaded_zip_files"
+}

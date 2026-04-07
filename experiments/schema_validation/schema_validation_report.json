@@ -1,0 +1,24 @@
+{
+  "dataset_validation": null,
+  "prediction_validations": [
+    {
+      "columns": [
+        "replay_id",
+        "time_sec",
+        "y_true",
+        "y_prob_mlp",
+        "y_pred_mlp"
+      ],
+      "missing_columns": [],
+      "ok": true,
+      "path": "predictions/01_mlp_torch_gpu_v3_1_export_test_predictions.csv",
+      "required_columns": [
+        "replay_id",
+        "time_sec",
+        "y_true"
+      ],
+      "rows": 178699,
+      "unexpected_object_columns": []
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+model_name: logreg
+cv_scoring: neg_log_loss

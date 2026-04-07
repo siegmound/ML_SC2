@@ -1,0 +1,26 @@
+{
+  "best_iteration": 488,
+  "best_params": {
+    "learning_rate": 0.05,
+    "max_depth": 6
+  },
+  "cv_accuracy": 0.6066,
+  "dataset_path": "starcraft_full_dataset_v3_1_fixed.csv",
+  "device": null,
+  "legacy_member_path": "sc2_project_freeze_final/artifacts/xgb_clean_v3_1_fixed_summary.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip",
+  "model": "XGBoost",
+  "n_features": null,
+  "n_replays_test": null,
+  "n_replays_total": null,
+  "n_replays_train": null,
+  "n_replays_val": null,
+  "notes": "Frozen main model summary used in bootstrap/calibration comparisons.",
+  "rows": null,
+  "source_name": "sc2_project_freeze_final/artifacts/xgb_clean_v3_1_fixed_summary.json",
+  "test_accuracy": 0.6193319492554519,
+  "test_auc": 0.6664887274496327,
+  "test_balanced_accuracy": 0.615447290491411,
+  "test_logloss": 0.6451409213065206,
+  "validation_logloss": null
+}

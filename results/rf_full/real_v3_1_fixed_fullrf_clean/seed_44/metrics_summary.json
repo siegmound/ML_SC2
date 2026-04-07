@@ -1,0 +1,34 @@
+{
+  "dataset_name": "real_v3_1_fixed_fullrf_clean",
+  "model_name": "rf_full",
+  "profile": "no_counter",
+  "seed": 44,
+  "n_rows_train": 572155,
+  "n_rows_val": 141524,
+  "n_rows_test": 178368,
+  "n_rows_train_full": 713679,
+  "n_features": 58,
+  "accuracy": 0.6148692590599211,
+  "balanced_accuracy": 0.6126632571803022,
+  "roc_auc": 0.6616011385328887,
+  "log_loss": 0.6499678446535175,
+  "confusion_matrix": [
+    [
+      48248,
+      36081
+    ],
+    [
+      32614,
+      61425
+    ]
+  ],
+  "params": {
+    "n_estimators": 700,
+    "max_depth": 24,
+    "min_samples_split": 4,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "class_weight": "balanced_subsample",
+    "n_jobs": -1
+  }
+}

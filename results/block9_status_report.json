@@ -1,0 +1,50 @@
+{
+  "files": [
+    "block9_all_detailed.csv",
+    "block9_model_leaderboard.csv",
+    "real_v3_1_fixed_smoke1500_logreg_multiseed_detailed.csv",
+    "real_v3_1_fixed_smoke1500_logreg_multiseed_summary.json",
+    "real_v3_1_fixed_smoke1500_rf_multiseed_detailed.csv",
+    "real_v3_1_fixed_smoke1500_rf_multiseed_summary.json",
+    "real_v3_1_fixed_smoke1500_xgb_multiseed_detailed.csv",
+    "real_v3_1_fixed_smoke1500_xgb_multiseed_summary.json"
+  ],
+  "leaderboard": [
+    {
+      "model_name": "logreg",
+      "n_runs": 3,
+      "accuracy_mean": 0.5978611465765896,
+      "accuracy_std": 0.026279821430962278,
+      "balanced_accuracy_mean": 0.5948030711511395,
+      "balanced_accuracy_std": 0.022527930863313537,
+      "roc_auc_mean": 0.6415047103269429,
+      "roc_auc_std": 0.02863978717009577,
+      "log_loss_mean": 0.6620356771985689,
+      "log_loss_std": 0.02367048688901569
+    },
+    {
+      "model_name": "xgb",
+      "n_runs": 3,
+      "accuracy_mean": 0.5963117484221548,
+      "accuracy_std": 0.03452406054757905,
+      "balanced_accuracy_mean": 0.5897773017725183,
+      "balanced_accuracy_std": 0.020435414979588243,
+      "roc_auc_mean": 0.6289211707634487,
+      "roc_auc_std": 0.023997398647393232,
+      "log_loss_mean": 0.6675557796914466,
+      "log_loss_std": 0.018236326760473258
+    },
+    {
+      "model_name": "rf",
+      "n_runs": 3,
+      "accuracy_mean": 0.593200639561463,
+      "accuracy_std": 0.038990418563262096,
+      "balanced_accuracy_mean": 0.5870537312357711,
+      "balanced_accuracy_std": 0.02187957309697994,
+      "roc_auc_mean": 0.6282519449426428,
+      "roc_auc_std": 0.029106168522387774,
+      "log_loss_mean": 0.6671294613144815,
+      "log_loss_std": 0.01528744040408822
+    }
+  ]
+}

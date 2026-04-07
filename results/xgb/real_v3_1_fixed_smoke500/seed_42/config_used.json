@@ -1,0 +1,30 @@
+{
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke500",
+  "dataset_zip": "data/processed/real_v3_1_fixed_smoke500.zip",
+  "device": "cpu",
+  "fast_smoke": true,
+  "max_test_rows": 1500,
+  "max_train_rows": 5000,
+  "max_val_rows": 1500,
+  "search_space": [
+    {
+      "colsample_bytree": 0.8,
+      "learning_rate": 0.05,
+      "max_depth": 4,
+      "min_child_weight": 1,
+      "reg_lambda": 1.0,
+      "subsample": 0.8
+    },
+    {
+      "colsample_bytree": 0.8,
+      "learning_rate": 0.05,
+      "max_depth": 5,
+      "min_child_weight": 3,
+      "reg_lambda": 1.0,
+      "subsample": 0.8
+    }
+  ],
+  "search_stage": "smoke",
+  "split_json": "/mnt/data/ml_sc2_remake_block8_work/data/processed/splits/real_v3_1_fixed_smoke500_split_seed_42.json"
+}

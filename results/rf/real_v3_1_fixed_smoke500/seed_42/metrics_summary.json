@@ -1,0 +1,35 @@
+{
+  "accuracy": 0.612,
+  "balanced_accuracy": 0.6035573754991308,
+  "best_cv_score": -0.6977092803120961,
+  "best_params": {
+    "class_weight": "balanced",
+    "max_depth": 16,
+    "max_features": "sqrt",
+    "min_samples_leaf": 2,
+    "min_samples_split": 5,
+    "n_estimators": 200
+  },
+  "confusion_matrix": [
+    [
+      349,
+      289
+    ],
+    [
+      293,
+      569
+    ]
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke500",
+  "fast_smoke": true,
+  "log_loss": 0.6610902314031778,
+  "model_name": "rf",
+  "n_rows": 1500,
+  "n_test_replays": 100,
+  "n_test_rows": 1500,
+  "n_train_replays": 398,
+  "n_train_rows": 6500,
+  "roc_auc": 0.6375782789895919,
+  "seed": 42
+}

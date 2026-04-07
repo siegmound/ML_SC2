@@ -1,0 +1,33 @@
+{
+  "sources": [
+    {
+      "dataset": "v3_1_fixed",
+      "model": "xgb",
+      "profile": "full",
+      "zip": "results/xgb_full/real_v3_1_fixed_fullgpu_clean/real_v3_1_fixed_fullgpu_clean.zip"
+    },
+    {
+      "dataset": "v3_2_combatfix",
+      "model": "xgb",
+      "profile": "full",
+      "zip": "results/xgb_full/real_v3_2_combatfix_fullgpu_clean/xgbreal_v3_2_combatfix_fullgpu_clean.zip"
+    },
+    {
+      "dataset": "v3_1_fixed",
+      "model": "rf",
+      "profile": "no_counter",
+      "zip": "results/rf_full/real_v3_1_fixed_fullrf_clean/real_v3_1_fixed_fullrf_clean.zip"
+    },
+    {
+      "dataset": "v3_2_combatfix",
+      "model": "rf",
+      "profile": "no_counter",
+      "zip": "results/rf_full/real_v3_2_combatfix_fullrf_clean/rfreal_v3_2_combatfix_fullrf_clean.zip"
+    }
+  ],
+  "outputs": [
+    "block16_full_detailed.csv",
+    "block16_full_summary.csv",
+    "block16_winners.csv"
+  ]
+}

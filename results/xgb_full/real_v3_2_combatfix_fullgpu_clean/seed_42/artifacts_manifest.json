@@ -1,0 +1,7 @@
+{
+  "metrics_summary": "results\\xgb_full\\real_v3_2_combatfix_fullgpu_clean\\seed_42\\metrics_summary.json",
+  "predictions": "results\\xgb_full\\real_v3_2_combatfix_fullgpu_clean\\seed_42\\predictions.csv",
+  "feature_importance": "results\\xgb_full\\real_v3_2_combatfix_fullgpu_clean\\seed_42\\feature_importance.csv",
+  "config_used": "results\\xgb_full\\real_v3_2_combatfix_fullgpu_clean\\seed_42\\config_used.json",
+  "model": "results\\xgb_full\\real_v3_2_combatfix_fullgpu_clean\\seed_42\\model.json"
+}

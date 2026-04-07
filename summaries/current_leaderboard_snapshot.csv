@@ -1,0 +1,5 @@
+experiment,dataset,model,profile,accuracy_mean,balanced_accuracy_mean,roc_auc_mean,log_loss_mean,source
+smoke3000,real_v3_1_fixed_smoke3000,rf,full,0.5935853680149877,0.5933646901919908,0.6371340296754726,0.6632605328088848,zip_metrics_json
+smoke3000,real_v3_1_fixed_smoke3000,xgb,full,0.588444897821368,0.5872001826823209,0.6336591278961966,0.6665613572738588,zip_metrics_json
+smoke6000,real_v3_2_combatfix_smoke6000,xgb,full,0.5957499999999999,0.5924134203563703,0.6376480161859086,0.6613246270625005,zip_metrics_json
+smoke6000,real_v3_2_combatfix_smoke6000,rf,no_counter,0.5886,,0.6276999999999999,0.6661666666666667,user_console_transcription

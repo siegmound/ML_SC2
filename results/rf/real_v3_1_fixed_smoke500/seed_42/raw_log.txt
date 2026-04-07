@@ -1,0 +1,4 @@
+Running RF group-aware CV search with scoring=neg_log_loss; fast_smoke=True
+Materialized rows train=5000 val=1500 test=1500
+Best params: {'n_estimators': 200, 'max_depth': 16, 'min_samples_split': 5, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'class_weight': 'balanced'}
+Best CV score: -0.697709

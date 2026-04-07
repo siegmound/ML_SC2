@@ -1,0 +1,20 @@
+{
+  "tag": "rf_smoke3000",
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "model_name": "rf",
+  "n_runs": 3,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "accuracy_mean": 0.5935853680149877,
+  "accuracy_std": 0.007409629735499107,
+  "balanced_accuracy_mean": 0.5933646901919908,
+  "balanced_accuracy_std": 0.005339542916205208,
+  "roc_auc_mean": 0.6371340296754726,
+  "roc_auc_std": 0.008377047553097627,
+  "log_loss_mean": 0.6632605328088848,
+  "log_loss_std": 0.005860555679442005,
+  "source": "parsed_from_metrics_summary_json_in_uploaded_zip_files"
+}

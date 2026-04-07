@@ -1,0 +1,51 @@
+{
+  "best_params": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.03,
+    "max_depth": 5,
+    "min_child_weight": 1,
+    "reg_lambda": 1.0,
+    "subsample": 0.8
+  },
+  "best_validation_score": -0.674586589671948,
+  "dataset_name": "real_v3_1_fixed_smoke3000",
+  "metrics": {
+    "accuracy": 0.592098975203101,
+    "balanced_accuracy": 0.5884030938424023,
+    "best_iteration": 87,
+    "best_params": {
+      "colsample_bytree": 0.8,
+      "learning_rate": 0.03,
+      "max_depth": 5,
+      "min_child_weight": 1,
+      "reg_lambda": 1.0,
+      "subsample": 0.8
+    },
+    "best_validation_score": -0.674586589671948,
+    "block11_candidate": true,
+    "confusion_matrix": [
+      [
+        3838,
+        5376
+      ],
+      [
+        2306,
+        7313
+      ]
+    ],
+    "cv_scoring": "neg_log_loss",
+    "dataset_name": "real_v3_1_fixed_smoke3000",
+    "device": "cpu",
+    "log_loss": 0.6642869789725059,
+    "model_name": "xgb",
+    "n_rows": 18833,
+    "n_test_replays": 502,
+    "n_test_rows": 18833,
+    "n_train_replays": 2006,
+    "n_train_rows": 47000,
+    "roc_auc": 0.631997218622529,
+    "seed": 43
+  },
+  "phase": "completed",
+  "seed": 43
+}

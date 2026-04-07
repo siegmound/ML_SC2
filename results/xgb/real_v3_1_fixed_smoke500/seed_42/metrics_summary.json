@@ -1,0 +1,38 @@
+{
+  "accuracy": 0.576,
+  "balanced_accuracy": 0.5677545112699924,
+  "best_iteration": 37,
+  "best_params": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.05,
+    "max_depth": 4,
+    "min_child_weight": 1,
+    "reg_lambda": 1.0,
+    "subsample": 0.8
+  },
+  "best_validation_score": -0.6629854398212301,
+  "confusion_matrix": [
+    [
+      327,
+      311
+    ],
+    [
+      325,
+      537
+    ]
+  ],
+  "cv_scoring": "neg_log_loss",
+  "dataset_name": "real_v3_1_fixed_smoke500",
+  "device": "cpu",
+  "fast_smoke": true,
+  "log_loss": 0.6772957703598853,
+  "model_name": "xgb",
+  "n_rows": 1500,
+  "n_test_replays": 100,
+  "n_test_rows": 1500,
+  "n_train_replays": 398,
+  "n_train_rows": 6500,
+  "roc_auc": 0.5899235575209654,
+  "search_stage": "smoke",
+  "seed": 42
+}

@@ -1,0 +1,28 @@
+{
+  "dataset_name": "real_v3_1_fixed_smoke1500",
+  "model_name": "xgb",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "aggregate": {
+    "accuracy": {
+      "mean": 0.5963117484221547,
+      "std": 0.034524060547579075
+    },
+    "balanced_accuracy": {
+      "mean": 0.5897773017725183,
+      "std": 0.02043541497958826
+    },
+    "roc_auc": {
+      "mean": 0.6289211707634487,
+      "std": 0.0239973986473932
+    },
+    "log_loss": {
+      "mean": 0.6675557796914466,
+      "std": 0.018236326760473258
+    }
+  },
+  "detailed_csv": "/mnt/data/ml_sc2_remake/results/block9_multiseed/real_v3_1_fixed_smoke1500_xgb_multiseed_detailed.csv"
+}

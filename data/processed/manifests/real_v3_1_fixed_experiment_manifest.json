@@ -1,0 +1,7 @@
+{
+  "dataset_name": "real_v3_1_fixed",
+  "dataset_version": "v3_1_fixed",
+  "experiment_name": "dataset_registration_real_v3_1_fixed",
+  "source_zip": "starcraft_full_dataset_v3_1_fixed.zip",
+  "status": "registered"
+}

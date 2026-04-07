@@ -1,0 +1,29 @@
+{
+  "best_iteration": null,
+  "best_params": {
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 4,
+    "min_samples_split": 10,
+    "n_estimators": 300
+  },
+  "cv_accuracy": 0.6063,
+  "dataset_path": "starcraft_full_dataset_v3_1_fixed.csv",
+  "device": null,
+  "legacy_member_path": "sc2_project_freeze_final/artifacts/rf_clean_v3_1_summary.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip",
+  "model": "random_forest",
+  "n_features": 64,
+  "n_replays_test": 4649,
+  "n_replays_total": 23241,
+  "n_replays_train": 14873,
+  "n_replays_val": 3719,
+  "notes": null,
+  "rows": 892047,
+  "source_name": "sc2_project_freeze_final/artifacts/rf_clean_v3_1_summary.json",
+  "test_accuracy": 0.618,
+  "test_auc": 0.6643,
+  "test_balanced_accuracy": 0.6153,
+  "test_logloss": 0.6487,
+  "validation_logloss": null
+}

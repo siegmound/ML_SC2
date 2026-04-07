@@ -1,0 +1,10 @@
+{
+  "n_constant_features": 0,
+  "n_features": 64,
+  "n_replays": 500,
+  "n_rows": 18724,
+  "target_balance": {
+    "0": 0.45567186498611406,
+    "1": 0.5443281350138859
+  }
+}

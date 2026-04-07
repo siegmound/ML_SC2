@@ -1,0 +1,23 @@
+{
+  "best_iteration": null,
+  "best_params": null,
+  "cv_accuracy": null,
+  "dataset_path": null,
+  "device": null,
+  "legacy_member_path": "test2_calibration_summary_xgb_vs_rf.json",
+  "legacy_source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/calib_test.zip",
+  "model": null,
+  "n_features": null,
+  "n_replays_test": null,
+  "n_replays_total": null,
+  "n_replays_train": null,
+  "n_replays_val": null,
+  "notes": null,
+  "rows": null,
+  "source_name": "test2_calibration_summary_xgb_vs_rf.json",
+  "test_accuracy": null,
+  "test_auc": null,
+  "test_balanced_accuracy": null,
+  "test_logloss": null,
+  "validation_logloss": null
+}

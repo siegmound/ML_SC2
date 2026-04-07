@@ -1,0 +1,136 @@
+{
+  "dataset_name": "legacy_v3_1_fixed_from_artifacts",
+  "experiment_name": "legacy_freeze_import",
+  "models": [
+    {
+      "dataset_path_reported": null,
+      "model": null,
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/01_test2_calibration_summary_xgb_vs_rf.json",
+      "test_accuracy": null,
+      "test_auc": null,
+      "test_logloss": null
+    },
+    {
+      "dataset_path_reported": null,
+      "model": null,
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/02_test3_duration_comparison_v3_1_summary.json",
+      "test_accuracy": null,
+      "test_auc": null,
+      "test_logloss": null
+    },
+    {
+      "dataset_path_reported": "starcraft_full_dataset_v3_1_fixed.csv",
+      "model": "MLP_PyTorch",
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/03_mlp_torch_gpu_v3_1_summary.json",
+      "test_accuracy": 0.611598,
+      "test_auc": 0.662624,
+      "test_logloss": 0.648304
+    },
+    {
+      "dataset_path_reported": "starcraft_full_dataset_v3_1_fixed.csv",
+      "model": "random_forest",
+      "n_features": 64,
+      "n_replays_total": 23241,
+      "rows": 892047,
+      "summary_path": "summaries/04_rf_clean_v3_1_summary.json",
+      "test_accuracy": 0.618,
+      "test_auc": 0.6643,
+      "test_logloss": 0.6487
+    },
+    {
+      "dataset_path_reported": "starcraft_full_dataset_v3_1_fixed.csv",
+      "model": "random_forest",
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/05_rf_test_clean_v3_1_summary.json",
+      "test_accuracy": 0.6185037409274814,
+      "test_auc": 0.6641953845275458,
+      "test_logloss": 0.6483285479067915
+    },
+    {
+      "dataset_path_reported": null,
+      "model": null,
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/06_test1_xgb_vs_rf_bootstrap_summary.json",
+      "test_accuracy": null,
+      "test_auc": null,
+      "test_logloss": null
+    },
+    {
+      "dataset_path_reported": null,
+      "model": null,
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/07_test2_calibration_summary_xgb_vs_rf.json",
+      "test_accuracy": null,
+      "test_auc": null,
+      "test_logloss": null
+    },
+    {
+      "dataset_path_reported": null,
+      "model": null,
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/08_test3_duration_comparison_v3_1_summary.json",
+      "test_accuracy": null,
+      "test_auc": null,
+      "test_logloss": null
+    },
+    {
+      "dataset_path_reported": "starcraft_full_dataset_v3_1_fixed.csv",
+      "model": "MLP_PyTorch",
+      "n_features": 64,
+      "n_replays_total": 23241,
+      "rows": 892047,
+      "summary_path": "summaries/09_mlp_torch_gpu_v3_1_export_summary.json",
+      "test_accuracy": 0.6100257975702158,
+      "test_auc": 0.6620248474570631,
+      "test_logloss": 0.6487730111884316
+    },
+    {
+      "dataset_path_reported": null,
+      "model": null,
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/10_test4_calibration_summary_xgb_rf_mlp.json",
+      "test_accuracy": null,
+      "test_auc": null,
+      "test_logloss": null
+    },
+    {
+      "dataset_path_reported": "starcraft_full_dataset_v3_1_fixed.csv",
+      "model": "XGBoost",
+      "n_features": null,
+      "n_replays_total": null,
+      "rows": null,
+      "summary_path": "summaries/11_xgb_clean_v3_1_fixed_summary.json",
+      "test_accuracy": 0.6193319492554519,
+      "test_auc": 0.6664887274496327,
+      "test_logloss": 0.6451409213065206
+    }
+  ],
+  "prediction_artifacts": [
+    {
+      "canonical_path": "predictions/01_mlp_torch_gpu_v3_1_export_test_predictions.csv",
+      "member_path": "mlp_torch_gpu_v3_1_export_test_predictions.csv",
+      "n_replays": 4649,
+      "rows": 178699,
+      "source_zip": "/mnt/data/sc2_project_freeze_final.zip::sc2_project_freeze_final/artifacts/test4pred_cal.zip"
+    }
+  ]
+}

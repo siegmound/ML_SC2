@@ -1,0 +1,3 @@
+source_dataset,best_classifier_model,best_classifier_profile,best_classifier_accuracy_mean,best_classifier_roc_auc_mean,best_prob_model,best_prob_profile,best_prob_log_loss_mean
+v3_1_fixed,rf,no_counter,0.6132878487059376,0.6605422732630978,xgb,full,0.6484374312430871
+v3_2_combatfix,rf,no_counter,0.612830226331811,0.6602976904229175,xgb,full,0.6485737262420805

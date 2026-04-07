@@ -1,0 +1,45 @@
+{
+  "dataset_name": "real_v3_1_fixed",
+  "seed": 44,
+  "model": "xgb",
+  "profile": "full",
+  "device": "cuda",
+  "n_rows_train": 572155,
+  "n_rows_val": 141524,
+  "n_rows_test": 178368,
+  "n_features": 64,
+  "best_iteration": 1047,
+  "best_score": 0.6447941295745065,
+  "validation_metrics": {
+    "accuracy": 0.6161499109691643,
+    "balanced_accuracy": 0.6145349380568277,
+    "roc_auc": 0.6676869771207263,
+    "log_loss": 0.6447941275601078,
+    "confusion_matrix": [
+      [
+        38567,
+        30000
+      ],
+      [
+        24324,
+        48633
+      ]
+    ]
+  },
+  "test_metrics": {
+    "accuracy": 0.6109335755292429,
+    "balanced_accuracy": 0.6072851280994509,
+    "roc_auc": 0.658516761183566,
+    "log_loss": 0.649051853272861,
+    "confusion_matrix": [
+      [
+        45560,
+        38769
+      ],
+      [
+        30628,
+        63411
+      ]
+    ]
+  }
+}
