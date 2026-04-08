@@ -1,22 +1,23 @@
 # ML_SC2
 
-Clean-room remake of the StarCraft II outcome-prediction project.
+Clean-room remake of a StarCraft II outcome-prediction project based on replay snapshots and replay-group-aware evaluation.
 
-This repository replaces the older patch-heavy structure with a canonical remake on `main`, while the historical line is preserved separately in branch `v1.2`.
+This repository uses `main` as the canonical **v2.0-final remake**.
+The older historical line is preserved separately in branch `v1.2`.
 
 ## Repository status
 
-- `main` is the **v2.0-final remake**
-- `v1.2` preserves the **older original branch**
-- the repository already contains the final processed dataset archives under `data/processed/`
-- final multi-seed tables, calibration summaries, and final runner scripts are committed
-- replay-group-aware evaluation is the default discipline for final claims
+- `main` contains the cleaned remake intended for final delivery.
+- `v1.2` preserves the older original structure for historical reference.
+- Final processed dataset archives are committed under `data/processed/`.
+- Final multi-seed tables, calibration summaries, and final runner scripts are committed.
+- Replay-group-aware evaluation is the default discipline for final claims.
 
 ## Final conclusions
 
-- **Classification-oriented recommendation:** RF + `v3_1_fixed` + `no_counter`
-- **Probability-oriented recommendation:** XGB + `v3_1_fixed` + full features
-- the deep finalist is competitive, but does not beat the two final tabular candidates
+- **Classification-oriented recommendation:** Random Forest + `v3_1_fixed` + `no_counter`
+- **Probability-oriented recommendation:** XGBoost + `v3_1_fixed` + full features
+- The deep finalist is competitive, but does not beat the two final tabular candidates.
 
 Canonical final summary files:
 
@@ -28,14 +29,15 @@ Canonical final summary files:
 
 ## Replay source
 
-The replay corpus used by this project is sourced from **SC2ReSet: StarCraft II Esport Replaypack Set** on Zenodo.
+The replay corpus documented by this project is sourced from **SC2ReSet: StarCraft II Esport Replaypack Set** on Zenodo.
 
 - Record: `14963356`
 - DOI: `10.5281/zenodo.14963356`
-- Version referenced here: `2.0.0`
+- Version referenced in this repository: `2.0.0`
 - Zenodo landing page: `https://zenodo.org/records/14963356`
 
-SC2ReSet is described by its authors as the raw replay repository used to generate **SC2EGSet**. The associated SC2EGSet publication describes the collection as containing replays from major and premiere StarCraft II tournaments since 2016.
+SC2ReSet is described by its authors as the raw replay repository used to generate **SC2EGSet**.
+The associated SC2EGSet publication describes the collection as containing replays from major and premiere StarCraft II tournaments since 2016.
 
 Examples of replaypacks visible on the Zenodo record include:
 
@@ -45,29 +47,31 @@ Examples of replaypacks visible on the Zenodo record include:
 - `2019_WCS_Grand_Finals.zip`
 - `2024_01_IEM_Katowice.zip`
 
-See also:
+Related provenance documents:
 
 - `data/raw/replay_sources.md`
 - `data/raw/replaypack_inventory.csv`
 - `docs/data_provenance.md`
 - `data/processed/manifests/upstream_replay_source_manifest.md`
 
-License note: raw StarCraft II data remains subject to the Blizzard EULA and, where applicable, the Blizzard AI and Machine Learning License. The upstream Zenodo record is labeled as `Other (Non-Commercial)`.
+License note: raw StarCraft II replay data remains subject to the Blizzard EULA and, where applicable, the Blizzard AI and Machine Learning License.
+The upstream Zenodo record is labeled as `Other (Non-Commercial)`.
 
 ## Repository layout
 
 ```text
 ML_SC2/
-├── configs/                 # model and experiment YAML configs
+├── configs/                    # model and experiment YAML configs
 ├── data/
-│   ├── raw/                 # replay subsets, provenance docs, inventories
-│   ├── interim/             # parser audits, feature audits
-│   └── processed/           # zipped datasets, manifests, split files
-├── docs/                    # methodology, schema, freeze and status docs
-├── experiments/             # structured outputs from studies
-├── results/                 # logs, summaries, tables, figures, predictions
-├── scripts/                 # executable runners and audit tools
-└── src/sc2proj/             # package code
+│   ├── raw/                    # replay subsets, provenance docs, inventories
+│   ├── interim/                # parser audits, feature audits
+│   └── processed/              # zipped datasets, manifests, split files
+├── docs/                       # methodology, schema, freeze and status docs
+├── experiments/                # structured outputs from studies
+├── results/                    # logs, summaries, tables, figures, predictions
+├── scripts/                    # executable runners and audit tools
+├── tables/                     # final published summary tables
+└── src/sc2proj/                # package code
 ```
 
 ## Core principles
@@ -121,4 +125,6 @@ python scripts/17_internal_audit.py --strict-style
 
 ## Provenance and scope note
 
-The repository documents the upstream replay source and the replaypack inventory visible on the Zenodo v2.0.0 record. Exact reconstruction of the locally used subset still depends on project-side filtering choices, parser validity checks, and any replay-level exclusions recorded by the project pipeline.
+The repository documents the upstream replay source and the replaypack inventory visible on the Zenodo `v2.0.0` record.
+
+Exact reconstruction of the locally used subset still depends on project-side filtering choices, parser validity checks, and any replay-level exclusions recorded by the project pipeline.

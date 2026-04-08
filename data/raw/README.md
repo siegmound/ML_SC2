@@ -1,19 +1,16 @@
-# Raw data
+# Raw data directory
 
-This directory stores raw-material notes and small local subsets related to the replay pipeline.
+This directory contains local raw-material references used by the repository, including:
 
-## Contents
+- replay provenance documents
+- replaypack inventories
+- optional local replay subsets used for smoke testing or parser validation
 
-- `replay_subsets/`: local replay samples or smoke-test subsets that are kept inside the repository
-- `replay_sources.md`: canonical statement of upstream replay provenance
-- `replaypack_inventory.csv`: replaypack-level inventory copied from the Zenodo v2.0.0 record
-
-## Upstream source
-
-The main upstream replay source documented for this repository is:
+The upstream public replay source documented by this project is:
 
 - **SC2ReSet: StarCraft II Esport Replaypack Set**
 - Zenodo record `14963356`
 - DOI `10.5281/zenodo.14963356`
 
-The repository keeps provenance metadata locally even when the entire upstream raw corpus is not versioned in Git.
+Not every upstream replay needs to be committed directly to this repository for the source to be documented.
+The canonical source description is kept in `replay_sources.md`.

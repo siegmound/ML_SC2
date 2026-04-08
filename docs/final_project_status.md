@@ -2,16 +2,16 @@
 
 ## Stable final conclusions
 
-- RF and XGB are effectively tied as final tabular candidates.
-- RF is marginally stronger as a classifier.
-- XGB is marginally stronger as a probability-oriented model.
-- The best RF profile remains `no_counter`.
-- The deep challenger is competitive, but does not surpass RF or XGB.
+- Random Forest and XGBoost are effectively tied as the final tabular candidates.
+- Random Forest is marginally stronger as a classifier.
+- XGBoost is marginally stronger as a probability-oriented model.
+- The best Random Forest profile remains `no_counter`.
+- The deep challenger is competitive, but does not surpass Random Forest or XGBoost.
 
 ## Calibration conclusion
 
-- RF benefits from post-hoc calibration.
-- XGB is already well calibrated in uncalibrated form.
+- Random Forest benefits from post-hoc calibration.
+- XGBoost is already well calibrated in uncalibrated form.
 
 Therefore:
 
@@ -20,7 +20,9 @@ Therefore:
 
 ## Data provenance status
 
-The upstream replay source is now explicitly documented in the repository:
+The upstream replay source is explicitly documented in the repository as **SC2ReSet: StarCraft II Esport Replaypack Set** (Zenodo record `14963356`, DOI `10.5281/zenodo.14963356`, version `2.0.0`).
+
+Provenance documents linked from the final repository state:
 
 - `data/raw/replay_sources.md`
 - `data/raw/replaypack_inventory.csv`

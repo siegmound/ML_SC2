@@ -23,6 +23,7 @@ REQUIRED_PATHS = [
     "docs/data_provenance.md",
     "docs/known_limitations.md",
     "docs/repo_freeze_checklist.md",
+    "docs/final_project_status.md",
     "data/raw/README.md",
     "data/raw/replay_sources.md",
     "data/raw/replaypack_inventory.csv",
@@ -159,6 +160,7 @@ def main() -> None:
 
     out_dir = repo_root / "results" / "logs"
     out_dir.mkdir(parents=True, exist_ok=True)
+
     text_report = out_dir / "reproducibility_check.txt"
     json_report = out_dir / "reproducibility_check.json"
 
@@ -177,8 +179,10 @@ def main() -> None:
     )
 
     has_dep_issue = any(dep_mismatches.values())
+
     if missing_paths:
         raise SystemExit(f"Missing required files or directories: {missing_paths}")
+
     if args.strict and has_dep_issue:
         raise SystemExit(
             "Dependency alignment mismatch detected. "
