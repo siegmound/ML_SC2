@@ -4,26 +4,35 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ml-sc2-remake"
-version = "0.1.0"
+version = "2.0.0"
 description = "Clean-room remake of a StarCraft II match outcome prediction project"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-  {name = "Jose Luis Pineda Fritas"}
+  { name = "Jose Luis Pineda Fritas" }
 ]
+keywords = ["machine-learning", "starcraft-ii", "xgboost", "random-forest", "calibration"]
 dependencies = [
-  "numpy",
-  "pandas",
-  "scipy",
-  "scikit-learn",
-  "matplotlib",
-  "PyYAML",
-  "tqdm",
-  "joblib",
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "scipy>=1.13",
+  "scikit-learn>=1.5",
+  "matplotlib>=3.9",
+  "PyYAML>=6.0",
+  "tqdm>=4.66",
+  "joblib>=1.4",
+  "xgboost>=2.1",
+  "sc2reader>=1.8",
+  "pyarrow>=17.0",
+  "torch>=2.4",
+  "skorch>=1.0",
 ]
 
+[project.urls]
+Repository = "https://github.com/siegmound/ML_SC2"
+
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
