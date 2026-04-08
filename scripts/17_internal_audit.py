@@ -50,6 +50,7 @@ def main() -> None:
             continue
 
         lines = text.splitlines()
+
         if path.name != "17_internal_audit.py":
             task_markers = ("TO" + "DO", "FIX" + "ME")
             if any(marker in text for marker in task_markers):
@@ -81,18 +82,22 @@ def main() -> None:
         lines_out.append("SYNTAX ERRORS:")
         lines_out.extend(syntax_errors)
         lines_out.append("")
+
     if empty_files:
         lines_out.append("EMPTY FILES:")
         lines_out.extend(empty_files)
         lines_out.append("")
+
     if marker_hits:
         lines_out.append("TASK MARKER HITS:")
         lines_out.extend(marker_hits)
         lines_out.append("")
+
     if long_lines:
         lines_out.append("LONG LINE WARNINGS:")
         lines_out.extend(long_lines)
         lines_out.append("")
+
     if compressed_files:
         lines_out.append("COMPRESSED FILE WARNINGS:")
         lines_out.extend(compressed_files)
@@ -100,7 +105,6 @@ def main() -> None:
 
     out_dir = args.repo_root / "results" / "logs"
     out_dir.mkdir(parents=True, exist_ok=True)
-
     text_report = out_dir / "internal_audit.txt"
     json_report = out_dir / "internal_audit.json"
 

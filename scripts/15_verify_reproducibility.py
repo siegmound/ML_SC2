@@ -20,8 +20,14 @@ REQUIRED_PATHS = [
     "docs/methodology.md",
     "docs/dataset_schema.md",
     "docs/experiment_registry.md",
+    "docs/data_provenance.md",
     "docs/known_limitations.md",
     "docs/repo_freeze_checklist.md",
+    "data/raw/README.md",
+    "data/raw/replay_sources.md",
+    "data/raw/replaypack_inventory.csv",
+    "data/processed/manifests/upstream_replay_source_manifest.md",
+    "paper/README.md",
     "paper/final_results_refinement.tex",
     "tables/final_full_multiseed_summary.csv",
     "tables/deep_final_summary.csv",
@@ -54,10 +60,17 @@ DEPENDENCY_WHITELIST = {
     "skorch",
 }
 
+ALIAS_MAP = {
+    "pytorch": "torch",
+    "scikit_learn": "scikit-learn",
+    "pyyaml": "pyyaml",
+}
+
 
 def normalize_requirement_name(entry: str) -> str:
     token = re.split(r"[<>=!~;\[\]\s]", entry.strip(), maxsplit=1)[0]
-    return token.lower().replace("_", "-")
+    token = token.lower().replace("_", "-")
+    return ALIAS_MAP.get(token, token)
 
 
 def parse_requirements(path: Path) -> set[str]:
@@ -106,8 +119,8 @@ def main() -> None:
         help="Exit non-zero on dependency mismatches as well as missing files.",
     )
     args = parser.parse_args()
-    repo_root = args.repo_root
 
+    repo_root = args.repo_root
     lines: list[str] = []
     missing_paths: list[str] = []
 
@@ -141,13 +154,11 @@ def main() -> None:
     lines.append(f"requirements={sorted(requirements_names)}")
     lines.append(f"pyproject={sorted(pyproject_names)}")
     lines.append(f"environment={sorted(environment_names)}")
-
     for key, values in dep_mismatches.items():
         lines.append(f"{key}={values}")
 
     out_dir = repo_root / "results" / "logs"
     out_dir.mkdir(parents=True, exist_ok=True)
-
     text_report = out_dir / "reproducibility_check.txt"
     json_report = out_dir / "reproducibility_check.json"
 
@@ -169,7 +180,10 @@ def main() -> None:
     if missing_paths:
         raise SystemExit(f"Missing required files or directories: {missing_paths}")
     if args.strict and has_dep_issue:
-        raise SystemExit("Dependency alignment mismatch detected. See results/logs/reproducibility_check.json")
+        raise SystemExit(
+            "Dependency alignment mismatch detected. "
+            "See results/logs/reproducibility_check.json"
+        )
 
 
 if __name__ == "__main__":
