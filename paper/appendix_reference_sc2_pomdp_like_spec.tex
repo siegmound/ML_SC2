@@ -1,0 +1,231 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{parskip}
+
+\definecolor{accent}{RGB}{24,76,140}
+\definecolor{textgray}{RGB}{70,70,70}
+\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent, pdftitle={SC2 POMDP-like Model Mini Specification}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{accent}{SC2 POMDP-like Mini Specification}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{14pt}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+
+\begin{document}
+
+\begin{titlepage}
+    \vspace*{2.5cm}
+    {\Huge \textbf{Mini Specification of an SC2 POMDP-like Model} \par}
+    \vspace{0.8cm}
+    {\Large A formal abstraction for replay-based strategic inference \par}
+    \vspace{1.2cm}
+    {\large Jose Pineda \par}
+    \vspace{0.3cm}
+    {\large March 20, 2026 \par}
+    \vfill
+    \noindent\colorbox{accent!8}{\parbox{\dimexpr\textwidth-2\fboxsep\relax}{
+    \textcolor{textgray}{This note defines a compact POMDP-like formalization for StarCraft II replay snapshots. The goal is not to claim that replay snapshots are full latent states, but to model them as partial observations of an underlying strategic process and to connect them with belief-like inference learned from historical replay trajectories.}}}
+    \vfill
+\end{titlepage}
+
+\onehalfspacing
+
+\section{Purpose and Scope}
+This document defines a compact formal specification for an \emph{SC2 POMDP-like} model. The model is intended for replay-based strategic inference, not for a full game-engine reconstruction of StarCraft II. The key idea is that each discrete replay snapshot should be interpreted as a \emph{partial observation} of an underlying latent strategic state rather than as the complete state itself.
+
+The formalism is inspired by the standard POMDP structure, but it is adapted to the practical constraints of replay-derived machine learning: engineered features, partial scouting information, high-level strategic actions, and policy estimation from historical data.
+
+\section{Core Objects}
+We define the model as the tuple
+\[
+\mathcal{M} = (S, A, O, T, Z, R, b_0).
+\]
+Its elements are interpreted as follows.
+
+\subsection{Latent State Space \texorpdfstring{$S$}{S}}
+At each discrete time step $t$, the match is assumed to occupy a latent strategic state
+\[
+s_t \in S.
+\]
+The latent state is not fully observed by the learner. Conceptually, it includes the most relevant aspects of the real match configuration, such as:
+\begin{itemize}[leftmargin=1.8em]
+    \item economic situation of both players,
+    \item worker counts and production capacity,
+    \item army composition and relative combat potential,
+    \item tech progression and upgrades,
+    \item expansion structure and map control,
+    \item hidden information and uncertainty about the opponent,
+    \item current strategic intention or timing window.
+\end{itemize}
+
+In this formulation, $s_t$ is the \emph{true underlying state}, while replay features are only a compressed and partial view of it.
+
+\subsection{Observation Space \texorpdfstring{$O$}{O}}
+At time $t$, the learner receives an observation
+\[
+o_t \in O,
+\]
+obtained from replay parsing and feature engineering. We represent it as a vector
+\[
+o_t = [x_1, x_2, \dots, x_n],
+\]
+where the components may include worker differentials, combat score differentials, spending quotient, scouting indicators, army entropy, recent losses, and short-term or medium-term temporal deltas.
+
+The observation is produced by an observation map
+\[
+o_t = \phi(s_t, \varepsilon_t),
+\]
+where $\phi$ is the feature-extraction process and $\varepsilon_t$ captures incompleteness, aggregation, and uncertainty. This is the central modeling choice: the replay snapshot is an \emph{observation proxy}, not the full latent state.
+
+\subsection{Action Space \texorpdfstring{$A$}{A}}
+Actions are modeled at a strategic level rather than at the level of individual game commands. Let
+\[
+A = \{a_1, a_2, \dots, a_k\}.
+\]
+A practical action set may include categories such as:
+\begin{itemize}[leftmargin=1.8em]
+    \item economic focus,
+    \item worker growth,
+    \item army production,
+    \item technology advancement,
+    \item offensive pressure,
+    \item defensive stabilization,
+    \item expansion,
+    \item scouting and information gathering.
+\end{itemize}
+
+This abstraction deliberately reduces the action space to interpretable macro-decisions suitable for learning from replay statistics.
+
+\section{Dynamics and Observation Process}
+
+\subsection{Transition Model \texorpdfstring{$T$}{T}}
+The latent match dynamics are described by the transition kernel
+\[
+T(s_{t+1}\mid s_t, a_t),
+\]
+which defines the probability of moving from state $s_t$ to state $s_{t+1}$ after selecting action $a_t$.
+
+Intuitively, different strategic actions affect the future trajectory in different ways. For example, a stronger economic focus may improve long-term growth while weakening short-term combat readiness; aggressive military investment may improve immediate pressure while reducing long-term flexibility.
+
+\subsection{Observation Model \texorpdfstring{$Z$}{Z}}
+The observation process is described by
+\[
+Z(o_{t+1}\mid s_{t+1}, a_t),
+\]
+which defines the probability of receiving observation $o_{t+1}$ after the system transitions to $s_{t+1}$.
+
+This term is where scouting becomes conceptually important. Better information-gathering actions may increase the quality of the future observation, whereas poor scouting leaves the agent with a noisier or less complete view of the latent state.
+
+\section{Belief and Data-Driven Approximation}
+In a classical POMDP, the agent maintains a belief state
+\[
+b_t(s) = P(s_t = s \mid o_{1:t}, a_{1:t-1}),
+\]
+which is a probability distribution over latent states conditioned on the history of observations and actions.
+
+In the replay-driven setting considered here, an exact belief over full game states is generally impractical. Instead, we introduce a learned belief surrogate
+\[
+\hat{b}_t = f(o_t, h_t, \mathcal{D}),
+\]
+where:
+\begin{itemize}[leftmargin=1.8em]
+    \item $o_t$ is the current observation,
+    \item $h_t$ is a short observation history or temporal context,
+    \item $\mathcal{D}$ is the replay training set,
+    \item $f$ is a data-driven estimator.
+\end{itemize}
+
+A useful implementation is to define $\hat{b}_t$ over a set of latent strategic classes rather than over raw full states:
+\[
+\hat{b}_t = [p(c_1\mid o_t), \dots, p(c_m\mid o_t)],
+\]
+where each class $c_i$ represents a strategic condition such as an economic lead, an unstable army advantage, hidden tech risk, a timing attack window, or a greedy but exposed position.
+
+This is the most important conceptual bridge of the model: historical replay trajectories are not themselves the belief, but they can be used to \emph{estimate} a belief-like representation or a policy prior conditioned on partial observations.
+
+\section{Policy and Objective}
+A policy selects an action using either the learned belief surrogate or the observation directly:
+\[
+\pi(a_t\mid \hat{b}_t)
+\qquad \text{or} \qquad
+\pi(a_t\mid o_t).
+\]
+The first version is more faithful to the POMDP viewpoint, while the second version is closer to standard supervised or imitation-style learning.
+
+The reward structure may be defined in two complementary ways.
+
+\subsection{Terminal Reward}
+A terminal objective can be written as
+\[
+R_T =
+\begin{cases}
+1 & \text{if the player wins,}\\
+0 & \text{if the player loses.}
+\end{cases}
+\]
+This matches the simplest replay-prediction objective.
+
+\subsection{Dense Strategic Reward}
+A denser reward may capture intermediate advantage:
+\[
+r_t = \alpha\,\Delta \mathrm{Eco}_t + \beta\,\Delta \mathrm{Army}_t + \gamma\,\Delta \mathrm{MapControl}_t + \delta\,\Delta \mathrm{WinProb}_t,
+\]
+where the coefficients weight the contribution of different strategic components.
+
+The global optimization target is then
+\[
+\max_{\pi} \; \mathbb{E}\left[\sum_{t=0}^{T} \lambda^t r_t\right],
+\]
+with discount factor $\lambda \in [0,1]$.
+
+\section{Compact Interpretation}
+The full conceptual pipeline can be summarized as
+\[
+s_t \longrightarrow o_t \longrightarrow \hat{b}_t \longrightarrow a_t \longrightarrow s_{t+1}.
+\]
+This makes the intended semantics explicit:
+\begin{itemize}[leftmargin=1.8em]
+    \item $s_t$ is the hidden strategic reality,
+    \item $o_t$ is the replay-derived partial observation,
+    \item $\hat{b}_t$ is a learned belief surrogate,
+    \item $a_t$ is a high-level strategic action,
+    \item $s_{t+1}$ is the next latent strategic state.
+\end{itemize}
+
+\section{Practical Reading of the Model}
+This specification should be interpreted carefully.
+\begin{enumerate}[leftmargin=1.8em]
+    \item A replay snapshot is \textbf{not} the true game state.
+    \item Historical replays are \textbf{not} the belief itself.
+    \item Historical replays \textbf{can} be used to estimate belief-like strategic representations and action values under partial observability.
+    \item The resulting model is therefore best described as \textbf{POMDP-like} rather than as a strict full POMDP solved exactly over the true StarCraft II state space.
+\end{enumerate}
+
+\section{Military Analogy Note}
+The same abstract structure appears naturally in military simulation and decision support. In that setting, the latent state corresponds to the real battlefield situation, observations come from sensors, reconnaissance, and intelligence, actions correspond to courses of action, and the reward captures mission success, survivability, or control of key areas.
+
+The analogy should not be overstated: StarCraft II is cleaner, more controlled, and far less ambiguous than real military environments. Nevertheless, the convergence is conceptually meaningful. In both domains, the decision-maker operates under partial observability, maintains uncertainty about the true state of the world, and must choose actions whose value depends on both hidden reality and available evidence.
+
+\section{Conclusion}
+The SC2 POMDP-like model proposed here provides a disciplined way to interpret replay snapshots, strategic features, scouting information, and historical trajectories within a sequential decision-making framework. Its main contribution is conceptual clarity: replay features are treated as partial observations of a latent strategic process, while replay history becomes a source for estimating belief-like representations and strategic action quality.
+
+This formalization is sufficiently rigorous to support future extensions toward sequence models, retrieval-based policy suggestion, latent strategic clustering, or more explicit adversarial decision models such as partially observable stochastic games.
+
+\end{document}
