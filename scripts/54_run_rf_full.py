@@ -62,11 +62,13 @@ def run():
     ap.add_argument('--class-weight', choices=['none', 'balanced', 'balanced_subsample'], default='balanced_subsample')
     ap.add_argument('--n-jobs', type=int, default=-1)
     ap.add_argument('--random-state', type=int, default=42)
+    ap.add_argument('--fit-partition', choices=['train', 'train_val'], default='train_val')
+    ap.add_argument('--output-root', default='results/rf_full')
     args = ap.parse_args()
 
     dataset_zip = Path(args.dataset_zip)
     split_json = Path(args.split_json)
-    out_dir = Path('results') / 'rf_full' / args.dataset_name
+    out_dir = Path(args.output_root) / args.dataset_name
 
     print(f'Loading dataset from {dataset_zip} ...', flush=True)
     df = load_dataset_from_zip(dataset_zip)
@@ -98,9 +100,11 @@ def run():
 
     class_weight = None if args.class_weight == 'none' else args.class_weight
 
-    # Train on train+val for final full-data seed evaluation, using chosen hyperparams.
+    # Preserve the archived train+val behavior by default. Train-only is a
+    # separate B2 protocol and should use --output-root results/b2_... .
     X_train_full = pd.concat([X_train, X_val], axis=0)
     y_train_full = pd.concat([y_train, y_val], axis=0)
+    X_fit, y_fit = (X_train, y_train) if args.fit_partition == 'train' else (X_train_full, y_train_full)
 
     clf = RandomForestClassifier(
         n_estimators=args.n_estimators,
@@ -113,7 +117,7 @@ def run():
         random_state=seed,
     )
 
-    clf.fit(X_train_full, y_train_full)
+    clf.fit(X_fit, y_fit)
 
     y_prob = clf.predict_proba(X_test)[:, 1]
     y_pred = (y_prob >= 0.5).astype(np.int32)
@@ -127,6 +131,8 @@ def run():
         'n_rows_val': int(len(X_val)),
         'n_rows_test': int(len(X_test)),
         'n_rows_train_full': int(len(X_train_full)),
+        'n_rows_fit': int(len(X_fit)),
+        'fit_partition': args.fit_partition,
         'n_features': int(len(feature_cols)),
         'accuracy': float(accuracy_score(y_test, y_pred)),
         'balanced_accuracy': float(balanced_accuracy_score(y_test, y_pred)),
@@ -169,6 +175,8 @@ def run():
         'dataset_name': args.dataset_name,
         'profile': args.profile,
         'seed': seed,
+        'fit_partition': args.fit_partition,
+        'n_rows_fit': int(len(X_fit)),
         **metrics['params'],
     })
     save_json(run_dir / 'artifacts_manifest.json', {
