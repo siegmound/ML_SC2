@@ -1,0 +1,14 @@
+# S1 immutable v3.1 window-index experiment (no model training).
+dataset: data/processed/starcraft_full_dataset_v3_1_fixed.zip
+feature_manifest: data/processed/manifests/b3_feature_lineage_v1.json
+group_key: replay_id
+time_key: time_sec
+target_key: p1_wins
+step_sec: 15
+window_lengths: [9, 17, 33]
+stride: 1
+expected_full_counts:
+  9: {windows: 706952, replay_groups: 22700}
+  17: {windows: 530870, replay_groups: 20834}
+  33: {windows: 250457, replay_groups: 12910}
+output_root: results/sequential
