@@ -13,3 +13,12 @@
 - XGB's historical calibration reuses the same validation partition as XGB early stopping; calibration and tuning were not independent. B2 adds a four-way grouped runner, `scripts/67_run_strict_calibration.py`, for future re-evaluation.
 - The test replay subsets were inspected during earlier project development, so subsequent experiments must not claim a never-seen blind test, even when the new code evaluates selected models only.
 - No B2 full-scale GPU/deep retraining has yet been performed; B2 smoke tests alone do not establish full-scale equivalence or new model rankings.
+
+## B3 parser and dataset provenance limitations (2026-11-17)
+
+- The B3 parser now rejects unknown/ambiguous winners, non-1v1 games and invalid winner IDs rather than silently encoding unknown matches as `p1_wins=0`.
+- Recent unit losses now use the replay-time live-tag inventory, which avoids the initial-base-lookup early-break undercount. Corrected code is regression-tested on synthetic replay events, **not** yet revalidated on all raw replay files.
+- The dataset builder rejects duplicate replay basenames originating from distinct replaypack directories and refuses to overwrite either frozen final ZIP by name. A successful new run must use a distinct dataset name.
+- Clean-room parsing and feature generation remain **not equivalent** to the historical 64/73-feature datasets. The B3 feature manifest names 35 v3.1 fields missing from the parser and nine new v3.2 fields, but does not invent their original feature-engineering formulas.
+- The 816-replay discrepancy (24,057 documented upstream minus 23,241 processed) remains **unattributed** without raw replay IDs, extraction logs and filtering decisions. An arithmetic difference is not evidence that each of these 816 was excluded for a specific parser reason.
+- The local v3.2 archive available to this B3 session did not pass ZIP central-directory validation; its actual ZIP content/header was **not** rescanned here. The v3.2 schema is established from GitHub's saved full-XGB config files. A fresh LFS pull and archive check are required in B4.
