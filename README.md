@@ -155,3 +155,19 @@ python scripts/66_check_matched_train_budget.py --check
 The corrected Deep MLP runner now evaluates test only for the validation-selected candidate (default output under `results/b2_deep_strict`); historical deep metrics remain archived.
 
 For stricter future calibration, `scripts/67_run_strict_calibration.py` deterministically partitions original validation replay groups into **tuning** and **calibration** subsets. No full-data B2 recalibration or Deep rerun has been claimed; use `docs/audit/B2_METHODS_2026-11-17.md` for exact commands, tests, and scientific caveats. Existing PDF/PPTX exports are awaiting B5 regeneration.
+
+## B3 parser and frozen-dataset provenance
+
+B3 hardens the replay parser: unknown winners are filtered, recent losses follow time-aware live tags, and the builder refuses to overwrite frozen dataset archives or merge distinct replays sharing a basename.
+
+Machine-readable lineage: `data/processed/manifests/b3_feature_lineage_v1.json`.
+
+```bash
+python scripts/68_verify_feature_lineage.py
+python scripts/69_audit_replay_lineage.py --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip
+python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+The feature-lineage checker compares the current clean-room **38** predictors to archived **64** (v3.1) and **73** (v3.2). The original feature-engineering transformations have not all been recovered, so the clean-room replay-to-dataset route is **not a full reproduction of either final dataset**.
+
+The preserved v3.1 dataset was independently scanned: 892,047 snapshots, 23,241 distinct replay IDs, no contradictory winners or duplicate replay/time keys. Original exclusions (24,057 documented upstream vs 23,241 final) cannot be attributed without a source replay audit. See `docs/audit/B3_PARSER_AND_PROVENANCE_2026-11-17.md`.
