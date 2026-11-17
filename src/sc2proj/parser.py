@@ -155,6 +155,8 @@ class SnapshotParser:
         epms: Dict[int, int],
         recent_losses: Dict[int, int],
     ) -> Dict[str, float | int | str]:
+        if p1_pid == p2_pid or winner_pid not in (p1_pid, p2_pid):
+            raise ValueError("Snapshot requires two distinct player IDs and a known winner")
         time_sec = round(loop / self.loops_per_second, 1)
         p1_army, p1_workers, p1_army_supply, p1_total_supply, p1_tech = self._army_breakdown(inventories[p1_pid])
         p2_army, p2_workers, p2_army_supply, p2_total_supply, p2_tech = self._army_breakdown(inventories[p2_pid])
@@ -219,7 +221,7 @@ class SnapshotParser:
             "trend120_combat_p1": delta_from(self._history_ago(120), p1_combat, "p1_combat"),
             "rolling_std_combat_p1_120": self._rolling_std("p1_combat", 120),
             "rolling_std_workers_p1_120": self._rolling_std("p1_workers", 120),
-            "p1_wins": int(winner_pid == p1_pid) if winner_pid is not None else 0,
+            "p1_wins": int(winner_pid == p1_pid),
         }
 
         self.history.append(state_now)
