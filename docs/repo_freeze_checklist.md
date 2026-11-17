@@ -52,7 +52,7 @@ These checks are distinct from the historical results and from B4 clean-clone re
 - [x] Record per-input source paths and reason-coded exclusions in new builder manifests.
 - [x] Add automatic feature-lineage manifest and drift check for 38/64/73 schemas.
 - [x] Independently census frozen v3.1 replay IDs and outcome consistency.
-- [x] Synthetic/parser/builder/provenance unit tests and combined B1+B2+B3 tests PASS (21/21).
+- [x] Synthetic/parser/builder/provenance unit tests and combined B1+B2+B3 tests PASS (23/23).
 - [ ] Reconstruct original 64/73-feature formulas and prove replay-to-table parity.
 - [ ] Obtain raw replaypack-level audit identifying the original 816 missing replays by exact ID and exclusion reason.
 - [ ] Pull full v3.2 ZIP via Git LFS and independently validate its archive/header and content.
