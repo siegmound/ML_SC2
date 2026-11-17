@@ -29,3 +29,17 @@ Check these only after rerunning the relevant commands on the intended frozen st
 - [ ] README, provenance docs, and final summary docs agree on replay source wording
 - [ ] GitHub About metadata, topics, and repository license are finalized
 - [ ] release tag prepared from the audited state
+
+## B2 methodological sign-off (must precede release tag)
+
+- [x] Train-only RF/XGB retrospective evidence recorded and verifiable from stored predictions
+- [x] Historical RF train+val versus XGB train-only training-budget asymmetry documented
+- [x] Deep candidate runner no longer evaluates test during candidate search (toy regression test)
+- [x] Calibration helper rejects validation/test replay overlap
+- [x] Strict grouped train/tune/calibrate/test runner added and smoke-tested for RF and XGB
+- [ ] Full-size strict four-way RF/XGB run completed for all three seeds
+- [ ] Full-data Deep selected-candidate-only run completed for all three seeds
+- [ ] Revised methodology conclusions synchronized with regenerated PDF and PPTX
+- [ ] New full-scale outputs independently checked and evaluated for statistical uncertainty
+
+These checks are distinct from the historical results and from B4 clean-clone reproducibility sign-off.
