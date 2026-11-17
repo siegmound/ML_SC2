@@ -154,3 +154,32 @@ An actual GitHub Actions B5 build and its binary output were **not**
 observed as completed in this session. The corrected full paper and deck
 must be generated from the exact repository sources and visually certified
 before treating the GitHub binary artifact versions as final.
+
+
+## 8. Final remote integrity comparison
+
+GitHub comparison after B5 source, CI, tests and publication-document edits
+(2026-11-17), before appending this sign-off:
+
+- `main` is **identical** to B0 immutable baseline commit
+  `33660e2b4fc4bd75df0824bbb7fa7c2096d13831`
+  (ahead=0, behind=0).
+- The correction branch is **96 commits ahead of main**, with **54 changed
+  paths** across B0–B5.
+- The two canonical binary exports are byte-for-byte unchanged:
+  - `paper/sc2_outcome_prediction_paper.pdf` Git blob
+    `93799530ae5909e4fa6024609c8afc0b4c7e56a4`
+  - `paper/sc2_outcome_prediction_presentation.pptx` Git blob
+    `facbd43efe63b2052e11799afc95923f58671eee`
+- No changes appear in frozen dataset ZIPs, final RF/XGB/Deep results or
+  historical calibration results.
+- The B5 audit gate manifest remains **BLOCKED_PENDING_EVIDENCE**,
+  with **10 explicitly false gates**.
+- Source consistency was cross-checked against all four CSV/LaTeX rows.
+  A GitHub Actions B5 run has not been independently confirmed as PASS.
+- This sign-off adds **documentation only**, not release authority.
+
+**Final engineering disposition:** B5 editable source corrections and
+review-generation machinery are complete, but **release remains blocked**.
+Do not merge or tag this working branch as the scientifically certified
+final state until the remaining B2, B3, B4 and visual-export gates pass.
