@@ -141,3 +141,17 @@ python scripts/58_verify_final_table.py --check
 The repository documents the upstream replay source and the replaypack inventory visible on the Zenodo `v2.0.0` record.
 
 Exact reconstruction of the locally used subset still depends on project-side filtering choices, parser validity checks, and any replay-level exclusions recorded by the project pipeline.
+
+## B2 methodology corrections (working branch)
+
+The original results remain frozen. The original full tabular comparison is not a controlled equal-training-budget test: RF fits train+validation whereas XGB fits train and uses validation for early stopping.
+
+A separate *retrospective* matched train-only comparison was reproduced from six saved RF/XGB run directories, with replay- and snapshot-level identity checks. Its published table can be validated without training:
+
+```bash
+python scripts/66_check_matched_train_budget.py --check
+```
+
+The corrected Deep MLP runner now evaluates test only for the validation-selected candidate (default output under `results/b2_deep_strict`); historical deep metrics remain archived.
+
+For stricter future calibration, `scripts/67_run_strict_calibration.py` deterministically partitions original validation replay groups into **tuning** and **calibration** subsets. No full-data B2 recalibration or Deep rerun has been claimed; use `docs/audit/B2_METHODS_2026-11-17.md` for exact commands, tests, and scientific caveats. Existing PDF/PPTX exports are awaiting B5 regeneration.
