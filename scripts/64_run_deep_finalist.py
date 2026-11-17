@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import joblib
 import torch
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, roc_auc_score, log_loss, confusion_matrix
 from sklearn.preprocessing import QuantileTransformer, StandardScaler
@@ -454,6 +455,12 @@ def run():
     val_preds.to_csv(out_dir / 'validation_predictions.csv', index=False)
     test_preds.to_csv(out_dir / 'test_predictions.csv', index=False)
 
+    # Save only the validation-selected model, never intermediate test-scored candidates.
+    # Loading is intended for checkpoints produced by this trusted project code.
+    torch.save({name: tensor.detach().cpu() for name, tensor in best['best_model_state'].items()},
+               out_dir / 'selected_model_state.pt')
+    joblib.dump(best['scaler'], out_dir / 'selected_scaler.joblib', compress=3)
+
     with open(out_dir / 'config_used.json', 'w', encoding='utf-8') as f:
         json.dump({
             'best_candidate': best['candidate'],
@@ -470,6 +477,8 @@ def run():
             'validation_predictions': str(out_dir / 'validation_predictions.csv'),
             'test_predictions': str(out_dir / 'test_predictions.csv'),
             'config_used': str(out_dir / 'config_used.json'),
+            'selected_model_state': str(out_dir / 'selected_model_state.pt'),
+            'selected_scaler': str(out_dir / 'selected_scaler.joblib'),
         }, f, indent=2)
 
     print(json.dumps(summary, indent=2))
