@@ -23,3 +23,18 @@ Two conclusions are now stable.
 The replay corpus behind this project is sourced from **SC2ReSet: StarCraft II Esport Replaypack Set** on Zenodo (`10.5281/zenodo.14963356`, record `14963356`, version `2.0.0`), described by its authors as the raw replay repository used to generate **SC2EGSet**.
 
 See `docs/data_provenance.md` and `data/raw/replay_sources.md` for the explicit provenance chain from upstream replaypacks to local processed datasets.
+
+## B2 matched-fit retrospective sensitivity analysis
+
+The original final tabular table above uses asymmetric fit budgets (RF train+validation, XGB train+validation for early stopping but train only for fitted trees). B2 verifies six **historical train-only** RF/XGB runs against their stored per-snapshot predictions. Training rows, validation rows, test replay IDs, snapshot keys and labels match between both models for each seed.
+
+| Metric (3-seed mean) | RF no_counter (train only) | XGB full (train only) |
+|---|---:|---:|
+| Accuracy | 0.612270 | 0.612792 |
+| Balanced accuracy | 0.610068 | 0.609328 |
+| ROC-AUC | 0.658147 | 0.660058 |
+| Log loss (lower better) | 0.651698 | 0.648437 |
+
+These differences are small and **do not establish statistical significance**. XGB used validation for early stopping; identical train rows alone do not mean identical model-selection procedures. The test set had been inspected during historic development, so this retrospective sensitivity analysis is not a new blind evaluation.
+
+For calibration, XGB historically reuses validation for early stopping and post-hoc fitting. A four-way replay-disjoint B2 pipeline (train/tune/calibrate/test) is now implemented and smoke-tested, but full-data reruns are still required. Original calibration numbers remain unchanged.
