@@ -79,14 +79,29 @@ def partition(df: pd.DataFrame, plan: dict, model: str):
     return parts
 
 
+def calibration_errors(y, prob, n_bins: int = 15):
+    bin_ids = np.digitize(prob, np.linspace(0, 1, n_bins + 1)[1:-1], right=True)
+    ece, mce = 0.0, 0.0
+    for index in range(n_bins):
+        mask = bin_ids == index
+        if not np.any(mask):
+            continue
+        gap = abs(float(np.mean(prob[mask])) - float(np.mean(y[mask])))
+        ece += float(np.mean(mask)) * gap
+        mce = max(mce, gap)
+    return float(ece), float(mce)
+
+
 def metrics(y, prob):
     pred = (prob >= 0.5).astype(int)
+    ece, mce = calibration_errors(y, prob)
     return {
         'accuracy': float(accuracy_score(y, pred)),
         'balanced_accuracy': float(balanced_accuracy_score(y, pred)),
         'roc_auc': float(roc_auc_score(y, prob)),
         'log_loss': float(log_loss(y, prob)),
         'brier': float(brier_score_loss(y, prob)),
+        'ece_15': ece, 'mce_15': mce,
     }
 
 
