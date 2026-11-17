@@ -34,6 +34,9 @@ jobs:
       - name: Source/table consistency without large datasets
         run: python scripts/72_verify_publication.py
 
+      - name: B5 source-consistency regression tests
+        run: python -m unittest discover -s tests -p "test_b5_publication.py" -v
+
       - name: Verify release is still blocked (expected)
         run: |
           if python scripts/72_verify_publication.py --release; then
