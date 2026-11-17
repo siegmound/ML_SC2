@@ -171,3 +171,38 @@ python -m unittest discover -s tests -p 'test_*.py' -v
 The feature-lineage checker compares the current clean-room **38** predictors to archived **64** (v3.1) and **73** (v3.2). The original feature-engineering transformations have not all been recovered, so the clean-room replay-to-dataset route is **not a full reproduction of either final dataset**.
 
 The preserved v3.1 dataset was independently scanned: 892,047 snapshots, 23,241 distinct replay IDs, no contradictory winners or duplicate replay/time keys. Original exclusions (24,057 documented upstream vs 23,241 final) cannot be attributed without a source replay audit. See `docs/audit/B3_PARSER_AND_PROVENANCE_2026-11-17.md`.
+
+## B4 verification and Git LFS integrity (correction branch)
+
+The correction branch adds `scripts/70_verify_freeze.py` and
+`.github/workflows/b4-reproducibility.yml`. The checker preserves the
+B0 SHA-1 values of **31 historical Git objects**, and compares the two
+dataset Git LFS pointer OIDs and sizes with the B0 baseline manifest.
+
+A lightweight verification **does not download 563 MB of datasets**:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-ci.txt
+python scripts/70_verify_freeze.py --mode pointer
+python scripts/15_verify_reproducibility.py --strict
+python -m unittest discover -s tests -p "test_b4_freeze.py" -v
+```
+
+For the actual dataset archives, run `git lfs pull` followed by
+`python scripts/70_verify_freeze.py --mode payload`. The latter requires
+both complete dataset ZIPs and validates their SHA-256 values and column
+schemas. The locally supplied v3.2 ZIP was incomplete; **GitHub LFS
+payload integrity has not yet been certified**.
+
+New RF experiments can opt into `--save-model`, which emits
+`model.joblib`; the selected-only Deep MLP runner saves its chosen
+weights and scaler. The full-data opt-in GitHub Actions job performs
+dependency installation, LFS validation and all synthetic tests, but it
+has **not** been reported as passing. The Python package floor is now 3.11;
+`requirements-ci.txt` pins only the lightweight audit dependency. A
+full scientific dependency lock is still required for exact GPU reruns.
+
+See `docs/audit/B4_REPRODUCIBILITY_2026-11-17.md` for commands,
+limitations, and the uncompleted remote checks.
