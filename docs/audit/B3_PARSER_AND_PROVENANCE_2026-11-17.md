@@ -178,3 +178,24 @@ raw-replay end-to-end comparisons remain B4 and/or additional provenance work.
 
 **B3 engineering corrections are complete. The separate historical replay-to-
 dataset reconstruction and source exclusion audit are not yet certifiable.**
+
+
+## Final remote comparison (2026-11-17)
+
+- GitHub reports `main` as **identical** to original B0 commit
+  `33660e2b4fc4bd75df0824bbb7fa7c2096d13831`
+  (ahead=0, behind=0).
+- At the comparison preceding this sign-off, the correction branch was
+  **55 commits ahead** over 38 changed paths in total across B0–B3.
+- No frozen dataset ZIP, historical RF/XGB/Deep result, compiled PDF or
+  PowerPoint appeared in the changed-file list.
+- All seven critical B3 local code/schema files were read back from
+  GitHub with the same Git blob SHA-1 as the exact locally tested versions;
+  `tests/test_b3_feature_lineage.py` also matched.
+- The combined B1+B2+B3 suite was executed locally after these changes
+  and passed **23/23** tests.
+- This final sign-off is itself a documentation-only commit. A full
+  clean-clone strict audit and raw replay reconstruction are still pending.
+
+**B3 STATUS: engineering changes verified; historical raw-to-dataset parity
+and exclusion provenance unresolved and explicitly not certified.**
