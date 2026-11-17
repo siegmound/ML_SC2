@@ -53,7 +53,8 @@ def verify_paper(root: Path, mapping: dict) -> dict:
         "full-data reruns are pending",
         "remote Git LFS payload availability",
     )
-    missing = [value for value in tokens if value not in source]
+    normalized = re.sub(r"\\s+", " ", source)
+    missing = [value for value in tokens if value not in normalized]
     if missing:
         raise ValueError(f"Methodological caveats missing from paper: {missing}")
     if "Final project paper v6.2" in source or "pdfauthor={OpenAI}" in source:
