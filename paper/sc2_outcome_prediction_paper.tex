@@ -256,8 +256,8 @@ The final protocol therefore enforces:
 \begin{itemize}
     \item split by \texttt{replay\_id},
     \item no replay may cross train, validation, and test,
-    \item validation is reserved for model selection, early stopping, profile selection, and calibration fitting,
-    \item test is used once for final evaluation.
+    \item historical validation was used for model selection, early stopping, and post-hoc calibration fitting; the revised B2 protocol separates tuning and calibration replay groups,
+    \item test replay groups are disjoint from fitting groups, but a pristine one-shot test claim cannot be made for the historical exploratory experiments.
 \end{itemize}
 
 The final benchmark uses three replay-aware seeds: 42, 43, and 44. This seed-level repetition is not cosmetic. It answers a central question of the project: whether a conclusion survives changes in the train/validation/test assignment or whether it depends on a favorable split.
@@ -300,18 +300,20 @@ This distinction turns out to be essential. A model can be competitive as a clas
 
 \textbf{XGBoost.} XGB is used as the strongest boosted-tree probability model. The final full runner uses histogram tree construction, validation-based early stopping, and full feature inputs. The final GPU runner is evaluated on full replay-aware splits, one seed per output directory, so that the final evidence is easy to inspect and aggregate.
 
-\textbf{Deep MLP challenger.} The deep branch is not used to define the early staged story. Instead, after the tabular finalists stabilize, the project introduces a deep challenger on full \texttt{v3\_1\_fixed}. Candidate selection is performed on validation over a controlled candidate family that varies feature profile, scaler, activation, and architecture. Test is touched only once per chosen candidate.
+\textbf{Comparability caveat.} The historical final RF runner fits on train plus validation after hyperparameter selection, whereas the XGB runner fits on train and uses validation for early stopping. These historical fits therefore have different fitting budgets. An additional retrospective B2 comparison pairs saved train-only RF and XGB runs on identical test replay snapshots across the three seeds; its small differences are descriptive rather than evidence of statistical superiority.
+
+\textbf{Deep MLP challenger.} The deep branch is not used to define the early staged story. Instead, after the tabular finalists stabilize, the project introduces a deep challenger on full \texttt{v3\_1\_fixed}. Candidate selection is performed on validation over a controlled candidate family that varies feature profile, scaler, activation, and architecture. The historical implementation also evaluated test probabilities for every candidate, despite validation-based automatic selection. The corrected B2 runner evaluates test only for the validation-selected winner; archived historical results retain their original provenance.
 
 \subsection{Calibration methodology}
-Calibration is treated as a held-out experiment rather than as descriptive post-processing. For each finalist and seed:
+The archived calibration study fits post-hoc mappings without fitting the calibrator on test labels, but remains a retrospective three-way evaluation. For each finalist and seed:
 \begin{enumerate}
     \item the model produces validation predictions and test predictions;
     \item a calibrator is fit on validation predictions only;
-    \item the calibrated mapping is applied to the untouched test predictions;
+    \item the calibrated mapping is applied to the stored test probabilities;
     \item uncalibrated, Platt-scaled, and isotonic-calibrated outputs are compared on test.
 \end{enumerate}
 
-This makes the calibration conclusion directly comparable to the final model benchmark rather than being artificially inflated by test leakage. It also gives the project a second, more stringent lens on model quality: not only whether a model predicts the correct winner, but whether the confidence attached to that prediction is trustworthy.
+The calibrator is not fitted on test labels. However, the historical XGB runner also uses validation for early stopping, so the calibration set is not independent of tuning, and test data had been inspected during project development. We therefore interpret the archived calibration comparison as retrospective. B2 adds a four-way replay-grouped training/tuning/calibration/test runner; full-scale experiments using that runner remain pending.
 
 
 \section{Experiments}
@@ -394,7 +396,7 @@ The deep branch is intentionally placed after the tabular finalists stabilize. I
 The deep experiment therefore functions as a strong challenger rather than as an exploratory curiosity. It asks whether a flexible non-linear learner, given the same replay-aware protocol and a controlled model-selection procedure, can produce a better final result than the tabular ensembles. This keeps the project from overcommitting too early to trees alone.
 
 \subsection{Calibration experiment}
-The calibration experiment is a final-layer experiment rather than an auxiliary appendix. Once the finalists are fixed, each finalist is re-evaluated through a stricter probability-quality lens. Validation predictions are used to fit post-hoc mappings, and test predictions remain untouched until the final calibrated evaluation. The purpose is to determine whether the finalist that looks strongest on log loss is also the finalist with the most trustworthy probabilities after held-out calibration is taken into account.
+The archived calibration experiment is a retrospective probability-quality comparison. Post-hoc mappings are fitted on validation predictions and compared on test, but historical reuse of validation for XGB early stopping and repeated project-level inspection of test results limit independent-holdout claims. The B2 four-way replay-grouped runner separates tuning from calibration and preserves previous outputs; new full-scale four-way scores are not substituted into the historical tables.
 
 
 \section{Results}
@@ -490,18 +492,18 @@ The project also examined whether prediction quality shifts across different mat
 
 
 \section{Calibration}
-Calibration was treated as a proper validation-to-test procedure rather than as a descriptive add-on. For each finalist and seed, the model first produced validation predictions and test predictions. Two post-hoc calibrators were then fit on validation only:
+The archived calibration evaluation is a three-way, retrospective validation-to-test analysis. For each finalist and seed, post-hoc calibrators were fitted on validation predictions (not on test labels). The historical XGB model also used this validation set for early stopping, so tuning and calibration were not independent. Two mappings were evaluated:
 \begin{itemize}
     \item Platt scaling,
     \item isotonic regression.
 \end{itemize}
-The learned mappings were finally applied to the untouched test predictions. This protocol matters because calibration can otherwise be made artificially optimistic by leaking information from the final test split into the probability mapping itself. In other words, the calibration step was evaluated under the same held-out discipline as the classifier comparison.
+The mappings were applied to saved test predictions, without fitting the mappings on test labels. The numerical comparison remains informative but cannot certify a pristine test set or independent calibration split. The new B2 four-way runner removes the tuning/calibration overlap for future full-scale reruns.
 
 Table~\ref{tab:calibration} summarizes the aggregated calibration comparison on \texttt{v3\_1\_fixed}. The table is especially useful because it distinguishes two very different probability behaviors. RF starts from a probability output that is already competitive, but still noticeably benefits from post-hoc correction. XGB, by contrast, is already strong in uncalibrated form, and the post-hoc transforms do not produce a meaningful additional gain.
 
 \begin{table}[H]
 \centering
-\caption{Rigorous calibration summary on \texttt{v3\_1\_fixed}. Lower is better for Brier, ECE, and MCE.}
+\caption{Retrospective three-way calibration summary on \texttt{v3\_1\_fixed}. Lower is better for Brier, ECE, and MCE.}
 \label{tab:calibration}
 \begin{tabularx}{\textwidth}{l l c c c c}
 \toprule
@@ -546,7 +548,7 @@ enlarge x limits=0.25
 \label{fig:calibration}
 \end{figure}
 
-The calibration conclusion is therefore very clear:
+The retrospective calibration results suggest the following, subject to the protocol caveats above:
 \begin{itemize}
     \item RF benefits noticeably from post-hoc calibration;
     \item XGB is already well calibrated in uncalibrated form;
