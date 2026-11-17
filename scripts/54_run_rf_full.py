@@ -4,6 +4,8 @@ import json
 import zipfile
 from pathlib import Path
 
+import joblib
+
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -64,6 +66,7 @@ def run():
     ap.add_argument('--random-state', type=int, default=42)
     ap.add_argument('--fit-partition', choices=['train', 'train_val'], default='train_val')
     ap.add_argument('--output-root', default='results/rf_full')
+    ap.add_argument('--save-model', action='store_true', help='Save fitted RF checkpoint (opt-in).')
     args = ap.parse_args()
     if args.fit_partition == 'train' and args.output_root == 'results/rf_full':
         ap.error('--fit-partition train requires --output-root outside historical results/rf_full')
@@ -154,6 +157,8 @@ def run():
 
     run_dir = out_dir / f'seed_{seed}'
     run_dir.mkdir(parents=True, exist_ok=True)
+    if args.save_model:
+        joblib.dump(clf, run_dir / 'model.joblib', compress=3)
 
     pred_df = pd.DataFrame({
         'replay_id': test_df['replay_id'].values,
@@ -179,6 +184,7 @@ def run():
         'seed': seed,
         'fit_partition': args.fit_partition,
         'n_rows_fit': int(len(X_fit)),
+        'save_model': bool(args.save_model),
         **metrics['params'],
     })
     save_json(run_dir / 'artifacts_manifest.json', {
@@ -188,7 +194,7 @@ def run():
             'artifacts_manifest.json',
             'predictions.csv',
             'feature_importance.csv',
-        ]
+        ] + (['model.joblib'] if args.save_model else [])
     })
 
     print(json.dumps({
