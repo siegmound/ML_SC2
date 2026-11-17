@@ -46,6 +46,8 @@ REQUIRED_PATHS = [
     "tests/test_b3_parser.py",
     "tests/test_b3_builder.py",
     "tests/test_b3_replay_lineage.py",
+    "tests/test_b3_feature_lineage.py",
+    "docs/audit/B3_PARSER_AND_PROVENANCE_2026-11-17.md",
     "data/processed/manifests/b3_feature_lineage_v1.json",
     "data/processed/manifests/b3_replay_census_v3_1_fixed.json",
     "src/sc2proj/bridge.py",
