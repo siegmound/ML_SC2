@@ -38,3 +38,17 @@ The original RF-vs-XGB recommendation remains a **historical descriptive** resul
 The original calibration tables are retrospective three-way validation-to-test results. For XGB, fitting the calibrator on the validation set reused for early stopping means tuning and calibration were not independent. The new four-way B2 runner separates these groups, but has **only passed synthetic smoke tests**; no new full-data calibration outcome is yet certified.
 
 The historical Deep MLP test-peeking behavior has been corrected in the runner. Its original published metrics are preserved and must not be called strict one-shot-test evidence. Detailed audit: `docs/audit/B2_METHODS_2026-11-17.md`.
+
+## B4 engineering reproducibility update (2026-11-17)
+
+The correction branch now carries a fast GitHub Actions verification workflow,
+an opt-in full LFS/data verification path, and a Git SHA/LFS checker that
+compares 31 historical artifacts against the B0 baseline. The Python
+minimum version has been aligned with the 3.11 environment. New RF runs
+can save checkpoints, while the selected Deep candidate saves its CPU
+state and preprocessing scaler.
+
+**Status:** source-level code tests passed locally (30/30), but the clean
+GitHub clone, complete v3.2 LFS pull, remote CI status and exact GPU
+environment lock remain unverified. Historical scientific claims are
+unchanged. See `docs/audit/B4_REPRODUCIBILITY_2026-11-17.md`.
