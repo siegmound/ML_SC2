@@ -24,3 +24,6 @@ datasets/*.csv
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Review-only generated B5 publications and LaTeX build outputs
+dist/
