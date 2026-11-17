@@ -40,6 +40,14 @@ Old working filenames that can now be retired or moved to an archive folder:
 - `sc2_project_rigorous_presentation.pptx`
 - `final_results_refinement.tex` (keep only if you still want a historical snippet)
 
-## Repo note
+## B1 correction versus final exported binaries
 
-If you have a newer manually updated presentation file with the corrected slide 3 pipeline text, replace `sc2_outcome_prediction_presentation.pptx` with that revised deck before pushing to the repository.
+The repository's canonical LaTeX source and summary tables have been updated
+to resolve the XGB / v3_2_combatfix standard-deviation discrepancy.
+
+**Still pending B5:** regenerate and inspect the PDF and PowerPoint binaries,
+including the final benchmark table. The currently committed binary exports
+were not rewritten in B1 and must not be presented as newly corrected.
+
+The exact archived pre-correction state is recorded in
+`docs/audit/b0_baseline_manifest_2026-11-17.json` on the audit branch.
