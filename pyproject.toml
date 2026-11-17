@@ -7,7 +7,7 @@ name = "ml-sc2-remake"
 version = "2.0.0"
 description = "Clean-room remake of a StarCraft II match outcome prediction project"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
   { name = "Jose Luis Pineda Fritas" }
 ]
