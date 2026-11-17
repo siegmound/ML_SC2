@@ -18,8 +18,10 @@ REQUIRED_PATHS = [
     "README.md",
     "requirements.txt",
     "requirements-ci.txt",
+    "requirements-publishing.txt",
     "pyproject.toml",
     ".github/workflows/b4-reproducibility.yml",
+    ".github/workflows/b5-publication-review.yml",
     "environment.yml",
     "docs/methodology.md",
     "docs/dataset_schema.md",
@@ -46,6 +48,9 @@ REQUIRED_PATHS = [
     "scripts/68_verify_feature_lineage.py",
     "scripts/69_audit_replay_lineage.py",
     "scripts/70_verify_freeze.py",
+    "scripts/71_refresh_presentation.py",
+    "scripts/72_verify_publication.py",
+    "scripts/73_build_b5_artifacts.py",
     "scripts/66_check_matched_train_budget.py",
     "scripts/67_run_strict_calibration.py",
     "tests/test_b3_parser.py",
@@ -56,8 +61,11 @@ REQUIRED_PATHS = [
     "tests/test_block16_publication.py",
     "tests/test_b4_freeze.py",
     "tests/test_b4_checkpoints.py",
+    "tests/test_b5_publication.py",
     "docs/audit/B3_PARSER_AND_PROVENANCE_2026-11-17.md",
     "docs/audit/B4_REPRODUCIBILITY_2026-11-17.md",
+    "docs/audit/B5_PUBLICATION_AND_RELEASE_2026-11-17.md",
+    "docs/audit/b5_release_gates_2026-11-17.json",
     "data/processed/manifests/b3_feature_lineage_v1.json",
     "data/processed/manifests/b3_replay_census_v3_1_fixed.json",
     "src/sc2proj/bridge.py",
@@ -235,6 +243,25 @@ def main() -> None:
         }
     lines.extend(["", "FEATURE LINEAGE CHECK", str(feature_lineage_check)])
 
+    publication_check = {
+        "checked": False,
+        "passed": None,
+        "message": "Run with --strict to verify paper and table source consistency.",
+    }
+    if args.strict and not missing_paths:
+        result = subprocess.run(
+            [sys.executable, str(repo_root / "scripts/72_verify_publication.py"),
+             "--repo-root", str(repo_root)],
+            text=True, capture_output=True, check=False,
+        )
+        publication_check = {
+            "checked": True,
+            "passed": result.returncode == 0,
+            "returncode": result.returncode,
+            "message": (result.stdout + result.stderr).strip(),
+        }
+    lines.extend(["", "B5 PUBLICATION SOURCE CHECK", str(publication_check)])
+
     out_dir = repo_root / "results" / "logs"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -249,6 +276,7 @@ def main() -> None:
                 "dependency_mismatches": dep_mismatches,
                 "final_table_check": table_check,
                 "feature_lineage_check": feature_lineage_check,
+                "publication_check": publication_check,
             },
             indent=2,
             sort_keys=True,
@@ -273,6 +301,9 @@ def main() -> None:
             "Feature lineage manifest mismatch. "
             "See results/logs/reproducibility_check.json"
         )
+
+    if args.strict and publication_check["checked"] and not publication_check["passed"]:
+        raise SystemExit("Paper/table source mismatch; see results/logs/reproducibility_check.json")
 
     if args.strict and has_dep_issue:
         raise SystemExit(
