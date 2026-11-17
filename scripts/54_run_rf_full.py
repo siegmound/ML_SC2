@@ -65,6 +65,8 @@ def run():
     ap.add_argument('--fit-partition', choices=['train', 'train_val'], default='train_val')
     ap.add_argument('--output-root', default='results/rf_full')
     args = ap.parse_args()
+    if args.fit_partition == 'train' and args.output_root == 'results/rf_full':
+        ap.error('--fit-partition train requires --output-root outside historical results/rf_full')
 
     dataset_zip = Path(args.dataset_zip)
     split_json = Path(args.split_json)
