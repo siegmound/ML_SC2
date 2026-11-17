@@ -74,3 +74,21 @@ sha256sum data/processed/starcraft_full_dataset_v3_1_fixed.zip
 The expected B0 SHA-256 is `65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`. Note that `scripts/70_verify_freeze.py --mode payload` verifies **both** v3.1 and v3.2, and will fail if v3.2 has not been downloaded.
 
 **Do not run historical RF/XGB/deep training scripts in S1.** S1 builds no new trained model or published classification metrics.
+
+### FAIR troubleshooting: Git LFS is not installed
+
+A fresh clone can leave a ~134-byte LFS pointer at the dataset path when `git-lfs` is unavailable. A pointer is **not** a corrupt dataset, and `--dry-run` still requires the real ZIP because it inspects the CSV schema and counts actual windows.
+
+On Debian/Ubuntu machines **with sudo permission**:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git-lfs
+git lfs install --local
+git lfs pull --include='data/processed/starcraft_full_dataset_v3_1_fixed.zip' --exclude=''
+sha256sum data/processed/starcraft_full_dataset_v3_1_fixed.zip
+```
+
+If the shared HPC workstation does not permit `sudo`, ask the administrator for Git LFS or install the `git-lfs` conda-forge binary in a user-controlled environment and ensure its `bin` directory is on `PATH` for the same shell before running the `git lfs` commands. Do not modify the historical ZIP manually, and do not commit downloaded dataset payloads.
+
+The SHA-256 of the **real** v3.1 archive must match the B0 manifest above. Only then retry the three `--dry-run` checks and smoke/full index construction.
