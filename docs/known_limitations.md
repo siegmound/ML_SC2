@@ -46,3 +46,16 @@
   validation instead. Large generated CSV files are skipped by the
   source-style text scanner; their numerical validity is checked by
   separate run/summary or replay-lineage tools.
+
+## B5 publication boundary (2026-11-17)
+
+The canonical paper source is audited, but the existing checked-in PDF and
+PPTX were **not** regenerated or rewritten on the correction branch.
+A repository-local build script and GitHub Actions workflow can create
+review-only exports, whose status remains unverified until their actual
+build logs and rendered pages are inspected. The historically uploaded
+18-slide presentation used for local visual review is not byte-identical
+to the canonical GitHub presentation, so local slide-render evidence does
+not prove the remote review build succeeds. No scientific rerun evidence,
+full feature-lineage parity or production-ready Git LFS/ML environment
+lock has been completed by publication formatting alone.
