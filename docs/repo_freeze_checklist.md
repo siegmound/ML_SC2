@@ -59,3 +59,22 @@ These checks are distinct from the historical results and from B4 clean-clone re
 - [ ] Re-run representative real replay parser tests and compare against frozen reference outcomes.
 
 The unchecked items are *not* implicitly completed by the schema manifest or synthetic tests.
+
+## B4 remote reproducibility and environment gates
+
+- [x] Minimum Python version set to 3.11, matching `tomllib`.
+- [x] Frozen Git objects and Git LFS pointer validation implemented for 31 B0 artifacts.
+- [x] Separate actual dataset payload SHA-256/size/ZIP-header verification implemented.
+- [x] GitHub Actions workflow added to correction branch, with fast and opt-in full jobs.
+- [x] Optional RF checkpoint and selected Deep weights/scaler persistence tested.
+- [x] Local combined regression suite PASS (30/30).
+- [ ] Fresh independent GitHub clone and exact dependency installation verified.
+- [ ] GitHub Actions fast job confirmed successful from its actual run logs.
+- [ ] Git LFS full v3.2 payload re-fetched and SHA-256 verified.
+- [ ] GitHub Actions full-data opt-in job run and evidence archived.
+- [ ] Full ML dependency/driver/torch/XGBoost/CUDA lock reproduced.
+- [ ] Full B2 calibration/Deep reruns completed, checked against claimed final results.
+
+The checked items document engineering and local test evidence only;
+they do not imply that either remote CI job has passed or that the
+scientific run results have been exactly reproduced.
