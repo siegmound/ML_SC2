@@ -94,3 +94,23 @@ B1 is complete **for source/table/README fixes** once the GitHub compare
 shows only the intended B0 + B1 files have changed and `main` is unchanged.
 PDF/PPTX regeneration is deliberately deferred to B5, and methodological
 retraining, replay parsing and full reproducibility remain B2–B4.
+
+## B1 sign-off — 2026-11-17
+
+- **B1 status: COMPLETE** for source tables, documentation paths, and automated statistical regression checks.
+- GitHub comparison: `main` is **identical** to baseline commit
+  `33660e2b4fc4bd75df0824bbb7fa7c2096d13831`.
+- Correction branch is **14 commits ahead of main**, with **13 changed paths**
+  at sign-off (including the two original B0 audit documents and this report).
+- GitHub readback confirms corrected CSV, Markdown and LaTeX values.
+- The Git blob SHA-1 of both new Python files matched the exact locally
+  tested code. **3/3 regression tests passed** in the isolated fixture.
+- The compiled PDF and presentation SHA-1 values were unchanged from B0:
+  `93799530ae5909e4fa6024609c8afc0b4c7e56a4` (PDF);
+  `facbd43efe63b2052e11799afc95923f58671eee` (PPTX).
+- The final GitHub compare was run before adding this sign-off paragraph.
+  This additional B1 documentation commit does not modify program code,
+  experimental data, or frozen results.
+
+**Remaining:** full fresh-clone strict checks in B4; regenerate and verify
+compiled PDF and PPTX in B5. Do not mark those tasks complete yet.
