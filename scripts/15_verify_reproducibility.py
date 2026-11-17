@@ -41,6 +41,16 @@ REQUIRED_PATHS = [
     "scripts/15_verify_reproducibility.py",
     "scripts/17_internal_audit.py",
     "scripts/58_verify_final_table.py",
+    "scripts/68_verify_feature_lineage.py",
+    "scripts/69_audit_replay_lineage.py",
+    "tests/test_b3_parser.py",
+    "tests/test_b3_builder.py",
+    "tests/test_b3_replay_lineage.py",
+    "data/processed/manifests/b3_feature_lineage_v1.json",
+    "data/processed/manifests/b3_replay_census_v3_1_fixed.json",
+    "src/sc2proj/bridge.py",
+    "src/sc2proj/parser.py",
+    "src/sc2proj/builder.py",
     "results/block16_final/block16_full_detailed.csv",
     "results/block16_final/block16_full_summary.csv",
     "scripts/53_run_xgb_full_gpu_fixed_v3.py",
@@ -188,6 +198,31 @@ def main() -> None:
         }
     lines.extend(["", "FINAL TABLE CHECK", str(table_check)])
 
+    feature_lineage_check = {
+        "checked": False,
+        "passed": None,
+        "message": "Run with --strict to verify feature schema lineage.",
+    }
+    if args.strict and not missing_paths:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(repo_root / "scripts/68_verify_feature_lineage.py"),
+                "--repo-root",
+                str(repo_root),
+            ],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        feature_lineage_check = {
+            "checked": True,
+            "passed": result.returncode == 0,
+            "returncode": result.returncode,
+            "message": (result.stdout + result.stderr).strip(),
+        }
+    lines.extend(["", "FEATURE LINEAGE CHECK", str(feature_lineage_check)])
+
     out_dir = repo_root / "results" / "logs"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -201,6 +236,7 @@ def main() -> None:
                 "missing_paths": missing_paths,
                 "dependency_mismatches": dep_mismatches,
                 "final_table_check": table_check,
+                "feature_lineage_check": feature_lineage_check,
             },
             indent=2,
             sort_keys=True,
@@ -217,6 +253,12 @@ def main() -> None:
     if args.strict and table_check["checked"] and not table_check["passed"]:
         raise SystemExit(
             "Published Block 16 table mismatch. "
+            "See results/logs/reproducibility_check.json"
+        )
+
+    if args.strict and feature_lineage_check["checked"] and not feature_lineage_check["passed"]:
+        raise SystemExit(
+            "Feature lineage manifest mismatch. "
             "See results/logs/reproducibility_check.json"
         )
 
