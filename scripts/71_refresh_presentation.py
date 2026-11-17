@@ -69,7 +69,9 @@ def text(slide, x, y, w, h, value, size=15, color=(29, 41, 57),
 
 
 def add_audit_slide(presentation) -> None:
-    slide = presentation.slides.add_slide(presentation.slide_layouts[6])
+    blank = next((layout for layout in presentation.slide_layouts
+                  if len(layout.placeholders) == 0), presentation.slide_layouts[0])
+    slide = presentation.slides.add_slide(blank)
     slide.background.fill.solid()
     slide.background.fill.fore_color.rgb = RGBColor(243, 245, 247)
     navy = (11, 41, 74)
