@@ -206,3 +206,30 @@ full scientific dependency lock is still required for exact GPU reruns.
 
 See `docs/audit/B4_REPRODUCIBILITY_2026-11-17.md` for commands,
 limitations, and the uncompleted remote checks.
+
+## B5 audited publication and release readiness
+
+The **canonical editable paper source** was updated to reconcile the archived
+Block 16 values and the B2/B3/B4 methodological and provenance caveats. It
+explicitly treats the original RF/XGB/Deep/calibration benchmark as a
+*retrospective study*, not as a newly validated blind-test experiment.
+
+B5 adds an 18-to-19-slide review deck generator, a PDF/PPTX build script,
+source/table/slide consistency checks and a separate publishing workflow:
+
+```bash
+python scripts/72_verify_publication.py
+# On a workstation with latexmk and requirements-publishing.txt installed:
+python scripts/73_build_b5_artifacts.py --output-dir dist/b5
+python scripts/72_verify_publication.py \
+  --deck dist/b5/sc2_outcome_prediction_presentation_B5_REVIEW.pptx
+```
+
+**The PDFs/PPTXs currently committed to `paper/` are still historical binary
+exports** and have not been replaced by audited B5 copies. The build only
+produces ignored review artifacts; an actual remote build and visual inspection
+remain unverified. The release is **BLOCKED_PENDING_EVIDENCE**, as recorded
+in `docs/audit/b5_release_gates_2026-11-17.json`.
+
+No Git tag or merge into `main` is authorized by the source-only audit. See
+`docs/audit/B5_PUBLICATION_AND_RELEASE_2026-11-17.md`.
