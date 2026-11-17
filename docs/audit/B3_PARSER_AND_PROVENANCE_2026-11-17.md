@@ -1,0 +1,180 @@
+# B3 — Parser, feature lineage, and replay provenance
+
+**Date:** 2026-11-17  
+**Repository:** `siegmound/ML_SC2`  
+**Correction branch:** `audit/sc2-corrections-2026-11-17`  
+**Immutable B0 baseline:** `33660e2b4fc4bd75df0824bbb7fa7c2096d13831`
+
+## Summary and sign-off
+
+**B3 code corrections, schema inventory and processed-v3.1 replay census: PASS.**
+
+**Historical replay-to-final-dataset reproduction: OPEN / NOT CERTIFIED.**
+
+This audit explicitly distinguishes corrections to the future clean-room parser
+from evidence for the **already frozen datasets**. No historical source ZIP,
+train/validation/test split, prediction, training output or model metric was
+rewritten in B3.
+
+## A. Verified parser bugs and changes
+
+### Unknown-winner and invalid-match labels
+
+Before B3, `SnapshotParser.build_snapshot` encoded
+`winner_pid is None` as `p1_wins=0`, a false negative target.
+
+After B3:
+- The replay bridge returns `filtered / missing_winner` for no winner.
+- It returns `filtered / ambiguous_winner` if multiple winners are reported.
+- It returns `filtered / invalid_winner_pid` if the winner ID does not match
+  the two participants.
+- Non-1v1 matches are filtered with `not_one_vs_one`; invalid player IDs fail.
+- Direct snapshot construction rejects unknown or invalid winner IDs.
+- Filtered metadata now reports `parse_status=filtered` consistently.
+
+### `recent_losses` for units born after the starting workers
+
+Before B3, the bridge's `tag_to_owner` pre-scan stopped as soon as
+starting positions for two players were found. A unit produced later in a game
+could die without an owner mapping and disappear from `recent_losses`.
+
+After B3, the same chronological live-unit-tag inventory used for snapshot
+inventory accounting also returns the per-player number of deaths in the
+preceding snapshot window, `(t-15,t]` under the standard interval. This
+fixes attribution for later-born units in the supported born/init/death event
+stream. The test fixture includes player 1 and player 2 units created after
+the initial bases; their deaths register at 150 and 165 seconds, respectively.
+
+**Caveat:** Unit morphs, tag reuse, ownership changes and replay-version
+differences have not yet been exhaustively validated against real SC2 events.
+Correctness for every replay type is not claimed from synthetic tests.
+
+## B. Dataset builder guardrails
+
+The clean-room `DatasetBuilder` now:
+- rejects new output filenames equal to the two frozen final dataset ZIPs;
+- rejects any existing output ZIP, manifest or audit CSV before writing;
+- rejects colliding replay basenames from distinct replaypack paths, because
+  the existing bridge uses `Path.name` as its replay identity;
+- records source path and explicit failure reasons in new raw-parser audits;
+- validates binary winner labels, replay/time uniqueness and constant label
+  within each replay;
+- records true retained IDs and `all_rows_removed_by_quality_filter`
+  exclusions if quality filtering eliminates a replay;
+- marks new outputs `independent_clean_room_not_reproduction_of_frozen_v3_1_or_v3_2`.
+
+The builder is intentionally **not** retrofitted to output archived v3.1/v3.2
+feature formulas that have not been recovered.
+
+## C. Exact feature *schema* gap
+
+The checker `scripts/68_verify_feature_lineage.py` reads the current parser
+snapshot dictionary using Python AST and the saved full XGBoost feature
+configurations for seeds 42, 43 and 44 of each dataset variant.
+
+Saved machine-readable file:
+`data/processed/manifests/b3_feature_lineage_v1.json`
+
+| Property | Count |
+|---|---:|
+| Clean-room parser predictors | 38 |
+| Final v3.1 predictors | 64 |
+| Final v3.2 predictors | 73 |
+| Field names shared by clean-room parser and v3.1 | 29 |
+| Final v3.1 fields absent from clean-room parser | 35 |
+| Clean-room-only fields absent from v3.1 | 9 |
+| v3.2 fields added beyond v3.1 | 9 |
+
+The **nine v3.2 additions** are:
+`counter_advantage_momentum_15`, `diff_matchup_power`,
+`diff_raw_army_power`, `diff_raw_army_power_60s`,
+`diff_raw_army_power_120s`, `diff_raw_army_power_vol_120`,
+`p1_raw_army_power`, `p2_raw_army_power`, and
+`raw_power_momentum_15`.
+
+A matching field name is **not proof of numerical parity**.
+The current repository has not yet recovered an end-to-end historical
+transform that produces all 64/73 feature values from raw replays.
+No invented formulas or guessed missing data were added in B3.
+
+The actual v3.1 CSV ZIP header was checked against the 64-feature ordered
+model configuration. The local v3.2 ZIP in this B3 session has an incomplete
+central directory and did **not** permit direct header verification;
+the v3.2 schema is drawn from three saved full-feature model configs on GitHub.
+Re-download and verify the v3.2 LFS payload in B4.
+
+## D. Frozen v3.1 replay census
+
+The streaming checker `scripts/69_audit_replay_lineage.py` read
+the original v3.1 frozen archive, verifying every row's
+`replay_id`, `time_sec`, and `p1_wins`.
+
+Saved evidence:
+`data/processed/manifests/b3_replay_census_v3_1_fixed.json`
+
+| Item | Value |
+|---|---:|
+| Snapshot rows read | 892,047 |
+| Distinct replay IDs | 23,241 |
+| Replays with player 1 as winner | 12,122 |
+| Snapshot seconds (min–max) | 135–1,785 |
+| Duplicated replay/time keys | 0 |
+| Conflicting winner labels within replay | 0 |
+| Documented upstream replay total | 24,057 |
+| Arithmetic difference | 816 |
+
+The figure **24,057** is from the documented source narrative, not from a
+complete per-file raw replay inventory in this B3 run. There are **no verified
+per-replay reasons for the 816 difference**. The status is explicitly
+`UNVERIFIED_NO_RAW_AUDIT`, not `reconciled`.
+
+The new checker can cross-reference a genuine raw-parser CSV with
+`--raw-audit-csv`; it rejects missing reasons, duplicate input replay IDs,
+or accepted raw IDs that disappear downstream without a filtering log.
+
+## E. Observed tests and exact GitHub code identity
+
+The local B3 fixture was assembled from the original final delivery source,
+and every changed source/test file was published to the GitHub correction
+branch and compared using Git blob SHA-1 against the locally tested bytes.
+
+- Bridge: `c322da3c7e71d85c1996d0cb2bad295ce0fafea6`
+- Snapshot parser: `73bab8d4644e4e2fdbe10ca2ad5256a522034381`
+- Dataset builder: `ada615f5c4744045fcf53ec6280d6e1c43722808`
+- Feature lineage checker: `432a224ec91a10f2a2b832c3113dc140eb6f631c`
+- Replay lineage checker: `d8116f366f23d86e0879bace32d4e4a3f69d6dfd`
+- Feature lineage manifest: `eec9c940221197ab425569e601dbd3ad9ebdb2a3`
+- v3.1 replay census: `efbf3f20b6094998c6436c0cf7a57d770547a624`
+
+**Test run:** `python -m unittest discover -s tests -p 'test_*.py' -q`  
+**Observed result:** **23 tests run, 23 PASS** (B1 + B2 + B3).
+
+Standalone B3 checks:
+```bash
+python scripts/68_verify_feature_lineage.py
+python scripts/68_verify_feature_lineage.py --zip-v3-1 data/processed/starcraft_full_dataset_v3_1_fixed.zip
+python scripts/69_audit_replay_lineage.py \
+  --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip
+```
+
+**Limitations:** the 23/23 suite passed in a local reconstructed test fixture,
+not a freshly cloned repository; clean-clone, full Git LFS fetch and real
+raw-replay end-to-end comparisons remain B4 and/or additional provenance work.
+
+## F. Remaining gates
+
+- [x] Reject unknown/invalid winner labels and non-1v1 inputs.
+- [x] Correct attribution of recent losses after early base detection.
+- [x] Protect frozen outputs and detect replay ID basename collisions.
+- [x] Preserve exclusion reason codes on new clean-room builds.
+- [x] Establish an exact, drift-checkable 38/64/73 feature schema inventory.
+- [x] Run frozen v3.1 replay census and validate labels and timestamps.
+- [x] Pass local combined regressions (23/23).
+- [ ] Recover raw replaypack-level identifiers and the 816 missing replay reasons.
+- [ ] Recover and validate all original feature engineering transforms.
+- [ ] Verify and count the complete v3.2 LFS ZIP from a fresh checkout.
+- [ ] Demonstrate old-vs-new feature value parity on representative raw replays.
+- [ ] Pass full clean-clone and dependency audit in B4.
+
+**B3 engineering corrections are complete. The separate historical replay-to-
+dataset reconstruction and source exclusion audit are not yet certifiable.**
