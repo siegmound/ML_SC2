@@ -142,5 +142,63 @@ class B2MethodologyTests(unittest.TestCase):
             calibrate.verify_prediction_partitions(frame, duplicated)
 
 
+    def test_four_way_split_is_deterministic_and_disjoint(self):
+        strict = load_script('67_run_strict_calibration.py')
+        plan = strict.split_four_way(toy_split())
+        self.assertEqual(plan, strict.split_four_way(toy_split()))
+        parts = [set(plan[name + '_groups']) for name in ('train', 'tune', 'calibration', 'test')]
+        for i, left in enumerate(parts):
+            for right in parts[i + 1:]:
+                self.assertFalse(left & right)
+        self.assertEqual(len(parts[1]) + len(parts[2]), len(toy_split()['val_groups']))
+        malformed = toy_split()
+        malformed['test_groups'] = malformed['val_groups']
+        with self.assertRaisesRegex(ValueError, 'Overlapping'):
+            strict.split_four_way(malformed)
+
+    def test_four_way_strict_calibration_runs_both_models(self):
+        rng = np.random.default_rng(99)
+        rows = []
+        for i in range(80):
+            for j in range(3):
+                rows.append({
+                    'replay_id': f'R{i}', 'time_sec': 135 + 15 * j,
+                    'p1_wins': i % 2, 'econ': float(i % 2) + rng.normal(),
+                    'army': rng.normal(), 'counter_power': rng.normal(),
+                })
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / 'toy.zip'
+            with zipfile.ZipFile(archive, 'w') as zf:
+                zf.writestr('toy.csv', pd.DataFrame(rows).to_csv(index=False))
+            split = root / 'split.json'
+            split.write_text(json.dumps({
+                'seed': 43, 'train_groups': [f'R{i}' for i in range(40)],
+                'val_groups': [f'R{i}' for i in range(40, 60)],
+                'test_groups': [f'R{i}' for i in range(60, 80)],
+            }))
+            for model in ('rf', 'xgb'):
+                cmd = [
+                    sys.executable, str(ROOT / 'scripts/67_run_strict_calibration.py'),
+                    '--dataset-zip', str(archive), '--split-json', str(split),
+                    '--dataset-name', 'toy', '--model', model,
+                    '--output-root', str(root / 'b2'), '--n-estimators', '15',
+                    '--num-boost-round', '25', '--early-stopping-rounds', '5',
+                ]
+                result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                output = root / 'b2/toy' / model / 'seed_43'
+                manifest = json.loads((output / 'split_manifest.json').read_text())
+                counts = json.loads((output / 'metrics_summary.json').read_text())
+                self.assertEqual(counts['partition_rows'], {
+                    'train': 120, 'tune': 30, 'calibration': 30, 'test': 60,
+                })
+                self.assertFalse(set(manifest['tune_groups']) & set(manifest['calibration_groups']))
+                self.assertEqual(len(pd.read_csv(output / 'test_predictions_platt.csv')), 60)
+                # No silently overwriting a prior experiment.
+                second = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                self.assertNotEqual(second.returncode, 0)
+
+
 if __name__ == '__main__':
     unittest.main()
