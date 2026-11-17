@@ -40,14 +40,23 @@ Old working filenames that can now be retired or moved to an archive folder:
 - `sc2_project_rigorous_presentation.pptx`
 - `final_results_refinement.tex` (keep only if you still want a historical snippet)
 
-## B1 correction versus final exported binaries
+## B5 audited source and review-only export status
 
-The repository's canonical LaTeX source and summary tables have been updated
-to resolve the XGB / v3_2_combatfix standard-deviation discrepancy.
+The canonical LaTeX source now contains the corrected population standard
+deviations and a separate methodological/provenance audit section (B2-B4).
+The original PDF and PowerPoint checked into `paper/` are still **historical
+binary exports**; they have **not** been replaced or verified as B5-corrected.
 
-**Still pending B5:** regenerate and inspect the PDF and PowerPoint binaries,
-including the final benchmark table. The currently committed binary exports
-were not rewritten in B1 and must not be presented as newly corrected.
+Use `python scripts/72_verify_publication.py` for source/table consistency.
+Install `requirements-publishing.txt` and a LaTeX distribution, then use
+`python scripts/73_build_b5_artifacts.py` to generate new **review-only**
+PDF/PPTX under ignored `dist/b5/`. The deck generator updates the old
+18-slide presentation to 19 slides and adds a release-readiness slide.
+Publication CI is defined in `.github/workflows/b5-publication-review.yml`;
+no successful remote run is claimed until logs/artifacts have been inspected.
+
+A clean full-data release is gated by the separate B2/B3/B4 outstanding items,
+and must not be tagged or merged based only on the corrected prose.
 
 The exact archived pre-correction state is recorded in
 `docs/audit/b0_baseline_manifest_2026-11-17.json` on the audit branch.
