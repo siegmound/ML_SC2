@@ -22,3 +22,27 @@
 - Clean-room parsing and feature generation remain **not equivalent** to the historical 64/73-feature datasets. The B3 feature manifest names 35 v3.1 fields missing from the parser and nine new v3.2 fields, but does not invent their original feature-engineering formulas.
 - The 816-replay discrepancy (24,057 documented upstream minus 23,241 processed) remains **unattributed** without raw replay IDs, extraction logs and filtering decisions. An arithmetic difference is not evidence that each of these 816 was excluded for a specific parser reason.
 - The local v3.2 archive available to this B3 session did not pass ZIP central-directory validation; its actual ZIP content/header was **not** rescanned here. The v3.2 schema is established from GitHub's saved full-XGB config files. A fresh LFS pull and archive check are required in B4.
+
+## B4 validation and environment limits (2026-11-17)
+
+- `scripts/70_verify_freeze.py --mode pointer` checks 31 archived Git
+  objects and both LFS references, but this is **not a payload download**.
+- The local v3.1 ZIP passed SHA-256; the provided v3.2 ZIP is incomplete.
+  Fresh LFS payload validation remains pending.
+- The container here could not contact GitHub over Git due to name
+  resolution and lacked `git lfs`; no fresh remote checkout is certified.
+- The GitHub Actions workflow was added to the *correction branch*;
+  job status remains unknown until actual runs complete and logs are
+  inspected. Manual workflow dispatch can require the workflow on
+  the default branch.
+- `requirements-ci.txt` pins the metadata CI tool dependency only.
+  Main model-training dependencies still have unbounded version ranges,
+  and CUDA/driver/GPU parity remains untested.
+- RF model joblib serialization is opt-in for new runs; historical RF
+  experiments cannot be assumed to have checkpoints. Deep new runs save
+  a selected-model weight state and scaler, not all candidate models.
+- The full source style lint `--strict-style` is not a passing
+  required CI gate; fast CI uses syntax audit and dedicated artifact
+  validation instead. Large generated CSV files are skipped by the
+  source-style text scanner; their numerical validity is checked by
+  separate run/summary or replay-lineage tools.
