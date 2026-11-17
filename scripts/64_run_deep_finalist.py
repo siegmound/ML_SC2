@@ -33,7 +33,7 @@ def parse_args():
     ap.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
     ap.add_argument('--candidate-set', choices=['strict'], default='strict')
     ap.add_argument('--selection-metric', choices=['neg_log_loss', 'roc_auc'], default='neg_log_loss')
-    ap.add_argument('--output-root', default='results/deep_final')
+    ap.add_argument('--output-root', default='results/b2_deep_strict')
     ap.add_argument('--random-state', type=int, default=42)
     return ap.parse_args()
 
@@ -256,20 +256,17 @@ def make_prediction_frame(df, y_true, y_prob):
     })
 
 
-def run_candidate(train_df, val_df, test_df, candidate, device, selection_metric, seed):
+def run_candidate(train_df, val_df, candidate, device, selection_metric, seed):
     features = select_features(train_df.columns, candidate['profile'])
 
     xtr_raw = train_df[features].to_numpy()
     ytr = train_df[TARGET].astype(np.int64).to_numpy()
     xva_raw = val_df[features].to_numpy()
     yva = val_df[TARGET].astype(np.int64).to_numpy()
-    xte_raw = test_df[features].to_numpy()
-    yte = test_df[TARGET].astype(np.int64).to_numpy()
 
     scaler = make_scaler(candidate['scaler'])
     xtr = scaler.fit_transform(xtr_raw)
     xva = scaler.transform(xva_raw)
-    xte = scaler.transform(xte_raw)
 
     train_loader, val_loader = build_loaders(xtr, ytr, xva, yva, candidate['batch_size'])
     model = MLP(len(features), candidate['hidden_dims'], candidate['dropout'], candidate['activation'], candidate['batch_norm']).to(device)
@@ -337,9 +334,7 @@ def run_candidate(train_df, val_df, test_df, candidate, device, selection_metric
         model.load_state_dict(best_state)
 
     val_prob = predict_prob(model, xva, device)
-    test_prob = predict_prob(model, xte, device)
     val_metrics = metrics_from_probs(yva, val_prob)
-    test_metrics = metrics_from_probs(yte, test_prob)
 
     if selection_metric == 'neg_log_loss':
         selection_score = -val_metrics['log_loss']
@@ -356,23 +351,20 @@ def run_candidate(train_df, val_df, test_df, candidate, device, selection_metric
         'best_model_state': deepcopy(model.state_dict()),
         'selection_score': float(selection_score),
         'validation_metrics': val_metrics,
-        'test_metrics': test_metrics,
         'validation_predictions': (yva, val_prob),
-        'test_predictions': (yte, test_prob),
-        'test_df': test_df[[GROUP, TIME]].copy(),
         'val_df': val_df[[GROUP, TIME]].copy(),
     }
 
 
 def run():
     args = parse_args()
-    set_seed(args.random_state)
     dataset_zip = Path(args.dataset_zip)
     split_json = Path(args.split_json)
 
     with open(split_json, 'r', encoding='utf-8') as f:
         split = json.load(f)
-    seed = split.get('seed', args.random_state)
+    seed = int(split.get('seed', args.random_state))
+    set_seed(seed)
 
     out_dir = Path(args.output_root) / args.dataset_name / f'seed_{seed}'
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -399,7 +391,7 @@ def run():
 
     for i, candidate in enumerate(candidates, start=1):
         print(f'Candidate {i}/{len(candidates)}: {candidate}')
-        result = run_candidate(train_df, val_df, test_df, candidate, device, args.selection_metric, seed)
+        result = run_candidate(train_df, val_df, candidate, device, args.selection_metric, seed)
         rows.append({
             'seed': seed,
             'candidate_name': candidate['name'],
@@ -409,10 +401,6 @@ def run():
             'val_balanced_accuracy': result['validation_metrics']['balanced_accuracy'],
             'val_roc_auc': result['validation_metrics']['roc_auc'],
             'val_log_loss': result['validation_metrics']['log_loss'],
-            'test_accuracy': result['test_metrics']['accuracy'],
-            'test_balanced_accuracy': result['test_metrics']['balanced_accuracy'],
-            'test_roc_auc': result['test_metrics']['roc_auc'],
-            'test_log_loss': result['test_metrics']['log_loss'],
             'n_features': len(result['features']),
         })
         if best is None or result['selection_score'] > best['selection_score']:
@@ -424,35 +412,24 @@ def run():
     best_history = pd.DataFrame(best['history'])
     best_history.to_csv(out_dir / 'best_training_history.csv', index=False)
 
+    # The test partition is evaluated only after validation has frozen the winner.
+    # This corrects test peeking in the historical candidate-search implementation.
     val_y, val_prob = best['validation_predictions']
-    test_y, test_prob = best['test_predictions']
+    val_preds = make_prediction_frame(best['val_df'], val_y, val_prob)
 
-    val_preds = make_prediction_frame(
-        pd.concat([best['val_df'], pd.DataFrame({'y_true': val_y, 'y_prob': val_prob})], axis=1),
-        pd.Series(val_y),
-        val_prob,
+    winner = best['candidate']
+    selected_model = MLP(
+        len(best['features']), winner['hidden_dims'], winner['dropout'],
+        winner['activation'], winner['batch_norm'],
+    ).to(device)
+    selected_model.load_state_dict(best['best_model_state'])
+    selected_x_test = best['scaler'].transform(
+        test_df[best['features']].to_numpy()
     )
-    test_preds = make_prediction_frame(
-        pd.concat([best['test_df'], pd.DataFrame({'y_true': test_y, 'y_prob': test_prob})], axis=1),
-        pd.Series(test_y),
-        test_prob,
-    )
-
-    # cleaner prediction frames
-    val_preds = pd.DataFrame({
-        GROUP: best['val_df'][GROUP].values,
-        TIME: best['val_df'][TIME].values,
-        'y_true': val_y,
-        'y_prob': val_prob,
-        'y_pred': (val_prob >= 0.5).astype(np.int32),
-    })
-    test_preds = pd.DataFrame({
-        GROUP: best['test_df'][GROUP].values,
-        TIME: best['test_df'][TIME].values,
-        'y_true': test_y,
-        'y_prob': test_prob,
-        'y_pred': (test_prob >= 0.5).astype(np.int32),
-    })
+    test_y = test_df[TARGET].astype(np.int64).to_numpy()
+    test_prob = predict_prob(selected_model, selected_x_test, device)
+    test_metrics = metrics_from_probs(test_y, test_prob)
+    test_preds = make_prediction_frame(test_df, test_y, test_prob)
 
     summary = {
         'dataset_name': args.dataset_name,
@@ -467,7 +444,8 @@ def run():
         'n_rows_test': int(len(test_df)),
         'n_features': int(len(best['features'])),
         'validation_metrics': best['validation_metrics'],
-        'test_metrics': best['test_metrics'],
+        'test_metrics': test_metrics,
+        'test_evaluation_policy': 'selected_candidate_only',
     }
 
     with open(out_dir / 'metrics_summary.json', 'w', encoding='utf-8') as f:
@@ -481,6 +459,7 @@ def run():
             'best_candidate': best['candidate'],
             'features': best['features'],
             'selection_metric': args.selection_metric,
+            'test_evaluation_policy': 'selected_candidate_only',
         }, f, indent=2)
 
     with open(out_dir / 'artifacts_manifest.json', 'w', encoding='utf-8') as f:
