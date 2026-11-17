@@ -78,3 +78,21 @@ The unchecked items are *not* implicitly completed by the schema manifest or syn
 The checked items document engineering and local test evidence only;
 they do not imply that either remote CI job has passed or that the
 scientific run results have been exactly reproduced.
+
+## B5 publication and release approval gates
+
+- [x] Correct the canonical LaTeX paper's historical protocol and provenance language.
+- [x] Preserve and cross-check the corrected 4-row, three-seed benchmark table.
+- [x] Add a review-only 19-slide PPTX generator with updated methodology text.
+- [x] Add source/table/deck consistency checker and default-deny release flags.
+- [x] Add a reproducible review-build command and GitHub Actions publication workflow.
+- [x] Preserve original compiled PDF/PPTX objects without overwriting.
+- [ ] Complete and inspect a B5 PDF built from the exact GitHub LaTeX source.
+- [ ] Complete and inspect a B5 PPTX generated from the exact GitHub canonical deck.
+- [ ] Confirm B5 publication workflow has passed on GitHub.
+- [ ] Complete outstanding full-scale B2, B3 and B4 evidence gates.
+- [ ] Approve release candidate and change B5 gate JSON to APPROVED with verified evidence.
+- [ ] Only then merge/promote reviewed PDF/PPTX and create a release tag.
+
+The new generators build **review exports only**, not automatic final publication.
+No release has been tagged in B5.
