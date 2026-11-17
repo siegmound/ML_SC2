@@ -43,3 +43,19 @@ Check these only after rerunning the relevant commands on the intended frozen st
 - [ ] New full-scale outputs independently checked and evaluated for statistical uncertainty
 
 These checks are distinct from the historical results and from B4 clean-clone reproducibility sign-off.
+
+## B3 parser/provenance completion gates
+
+- [x] Reject missing, ambiguous or foreign winner IDs before label generation.
+- [x] Calculate recent losses from tags known at the snapshot time.
+- [x] Detect colliding replay basenames and protect frozen dataset outputs.
+- [x] Record per-input source paths and reason-coded exclusions in new builder manifests.
+- [x] Add automatic feature-lineage manifest and drift check for 38/64/73 schemas.
+- [x] Independently census frozen v3.1 replay IDs and outcome consistency.
+- [x] Synthetic/parser/builder/provenance unit tests and combined B1+B2+B3 tests PASS (21/21).
+- [ ] Reconstruct original 64/73-feature formulas and prove replay-to-table parity.
+- [ ] Obtain raw replaypack-level audit identifying the original 816 missing replays by exact ID and exclusion reason.
+- [ ] Pull full v3.2 ZIP via Git LFS and independently validate its archive/header and content.
+- [ ] Re-run representative real replay parser tests and compare against frozen reference outcomes.
+
+The unchecked items are *not* implicitly completed by the schema manifest or synthetic tests.
