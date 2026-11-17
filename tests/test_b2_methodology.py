@@ -141,7 +141,6 @@ class B2MethodologyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'duplicated'):
             calibrate.verify_prediction_partitions(frame, duplicated)
 
-
     def test_four_way_split_is_deterministic_and_disjoint(self):
         strict = load_script('67_run_strict_calibration.py')
         plan = strict.split_four_way(toy_split())
