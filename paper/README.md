@@ -8,13 +8,16 @@ The canonical deliverables on the ML_SC2 v2.0 line are:
 
 See [README_paper_repo.md](./README_paper_repo.md) for naming and provenance.
 
-## B1 synchronization status
+## B1+B5 source synchronization; binary exports pending review
 
-The editable `.tex` has the corrected XGB / v3_2_combatfix population
-standard deviations, sourced from `results/block16_final/block16_full_summary.csv`.
-The committed PDF and PowerPoint are not yet regenerated. Their old table
-values remain **historical** until the B5 document export step. Do not
-describe the compiled files as corrected before that step is completed.
+The editable `.tex` contains the corrected XGB / v3_2_combatfix population
+standard deviations, and now explicitly explains the historical test,
+calibration and replay-lineage limitations found in B2–B4.
+
+**The committed PDF and PowerPoint remain historical exports.** The B5 scripts
+produce *review-only* PDF/PPTX under `dist/b5`; neither the original binaries
+nor the release tag should be replaced until compilation, visual checks,
+full-data protocol evidence and independent LFS/CI checks have passed.
 
 Source-of-truth check:
 
