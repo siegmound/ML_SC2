@@ -59,6 +59,10 @@ def text_is_single_line(path: Path) -> bool:
 
 
 def file_contains_markers(path: Path) -> list[str]:
+    # This module defines the marker vocabulary; do not flag that definition itself.
+    if path.resolve() == Path(__file__).resolve():
+        return []
+
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
