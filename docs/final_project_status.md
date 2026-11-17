@@ -30,3 +30,11 @@ Provenance documents linked from the final repository state:
 - `data/processed/manifests/upstream_replay_source_manifest.md`
 
 This closes the main public-facing provenance gap between replay origin, local raw material, and final processed datasets.
+
+## B2 methodology correction status (2026-11-17)
+
+The original RF-vs-XGB recommendation remains a **historical descriptive** result. Its training budget is asymmetric (RF: train+validation; XGB: train with validation early stopping). A separate matched train-only comparison is now reproducible at `results/b2_fit_budget/retrospective_train_only.csv`; it shows similarly small model differences and uses saved test scores that had already been inspected.
+
+The original calibration tables are retrospective three-way validation-to-test results. For XGB, fitting the calibrator on the validation set reused for early stopping means tuning and calibration were not independent. The new four-way B2 runner separates these groups, but has **only passed synthetic smoke tests**; no new full-data calibration outcome is yet certified.
+
+The historical Deep MLP test-peeking behavior has been corrected in the runner. Its original published metrics are preserved and must not be called strict one-shot-test evidence. Detailed audit: `docs/audit/B2_METHODS_2026-11-17.md`.
