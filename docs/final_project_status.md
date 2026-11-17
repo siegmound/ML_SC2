@@ -52,3 +52,18 @@ state and preprocessing scaler.
 GitHub clone, complete v3.2 LFS pull, remote CI status and exact GPU
 environment lock remain unverified. Historical scientific claims are
 unchanged. See `docs/audit/B4_REPRODUCIBILITY_2026-11-17.md`.
+
+## B5 publication and release update (2026-11-17)
+
+The canonical LaTeX paper now distinguishes the archived three-seed RF/XGB
+and Deep/Calibration evidence from B2–B4 unresolved protocol and provenance
+limitations. The benchmark table remains sourced from the frozen Block 16
+per-seed metrics (ddof=0), including the repaired XGB v3.2 deviations.
+
+A review-only 19-slide presentation generator and PDF/PPTX build pipeline
+have been added to the correction branch, with an explicit release gate
+manifest. **The canonical PDF and PPTX binary files have not been modified.**
+The corrected exports must be compiled from the repository and reviewed
+before being promoted; no GitHub Actions pass or release has been certified.
+Outstanding full-scale B2 experiments, B3 raw feature/exclusion provenance,
+and B4 CI/LFS/environment validations remain blocking.
