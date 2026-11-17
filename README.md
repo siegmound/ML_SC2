@@ -118,10 +118,23 @@ python scripts/17_internal_audit.py --strict-style
 
 ## Paper and delivery artifacts
 
-- final paper PDF: `paper/final_sc2_remake_paper_v6_2.pdf`
-- final presentation: `paper/sc2_project_rigorous_presentation.pptx`
-- refinement snippet: `paper/final_results_refinement.tex`
-- packaging note: `paper/README.md`
+Canonical paths:
+
+- editable paper source: `paper/sc2_outcome_prediction_paper.tex`
+- compiled paper: `paper/sc2_outcome_prediction_paper.pdf`
+- final presentation: `paper/sc2_outcome_prediction_presentation.pptx`
+- paper artifact guide: `paper/README_paper_repo.md`
+
+During the B1 correction branch, the source LaTeX and published CSV/Markdown tables
+were corrected to match the saved Block 16 population standard deviations. The
+existing compiled PDF and PowerPoint remain historical exports until the B5
+regeneration and visual verification; do not cite them as B1-corrected artifacts.
+
+Reproduce and check the table without training:
+
+```bash
+python scripts/58_verify_final_table.py --check
+```
 
 ## Provenance and scope note
 
