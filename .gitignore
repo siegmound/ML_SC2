@@ -4,6 +4,9 @@ __pycache__/
 .venv/
 venv/
 
+# Editable Python package metadata (pip install -e .)
+*.egg-info/
+
 # Local notebooks / editor state
 .ipynb_checkpoints/
 .vscode/
