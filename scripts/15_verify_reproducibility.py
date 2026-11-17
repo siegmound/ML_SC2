@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 try:
@@ -29,12 +31,18 @@ REQUIRED_PATHS = [
     "data/raw/replaypack_inventory.csv",
     "data/processed/manifests/upstream_replay_source_manifest.md",
     "paper/README.md",
-    "paper/final_results_refinement.tex",
+    "paper/README_paper_repo.md",
+    "paper/sc2_outcome_prediction_paper.tex",
+    "paper/sc2_outcome_prediction_paper.pdf",
+    "paper/sc2_outcome_prediction_presentation.pptx",
     "tables/final_full_multiseed_summary.csv",
     "tables/deep_final_summary.csv",
     "tables/rigorous_calibration_summary.csv",
     "scripts/15_verify_reproducibility.py",
     "scripts/17_internal_audit.py",
+    "scripts/58_verify_final_table.py",
+    "results/block16_final/block16_full_detailed.csv",
+    "results/block16_final/block16_full_summary.csv",
     "scripts/53_run_xgb_full_gpu_fixed_v3.py",
     "scripts/54_run_rf_full.py",
     "scripts/61_run_xgb_for_calibration.py",
@@ -158,6 +166,28 @@ def main() -> None:
     for key, values in dep_mismatches.items():
         lines.append(f"{key}={values}")
 
+    table_check = {
+        "checked": False,
+        "passed": None,
+        "message": "Run with --strict to verify the published table.",
+    }
+    if args.strict and not missing_paths:
+        cmd = [
+            sys.executable,
+            str(repo_root / "scripts/58_verify_final_table.py"),
+            "--repo-root",
+            str(repo_root),
+            "--check",
+        ]
+        result = subprocess.run(cmd, text=True, capture_output=True, check=False)
+        table_check = {
+            "checked": True,
+            "passed": result.returncode == 0,
+            "returncode": result.returncode,
+            "message": (result.stdout + result.stderr).strip(),
+        }
+    lines.extend(["", "FINAL TABLE CHECK", str(table_check)])
+
     out_dir = repo_root / "results" / "logs"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -170,6 +200,7 @@ def main() -> None:
             {
                 "missing_paths": missing_paths,
                 "dependency_mismatches": dep_mismatches,
+                "final_table_check": table_check,
             },
             indent=2,
             sort_keys=True,
@@ -182,6 +213,12 @@ def main() -> None:
 
     if missing_paths:
         raise SystemExit(f"Missing required files or directories: {missing_paths}")
+
+    if args.strict and table_check["checked"] and not table_check["passed"]:
+        raise SystemExit(
+            "Published Block 16 table mismatch. "
+            "See results/logs/reproducibility_check.json"
+        )
 
     if args.strict and has_dep_issue:
         raise SystemExit(
