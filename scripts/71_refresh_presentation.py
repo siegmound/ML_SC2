@@ -139,6 +139,8 @@ def build(source: Path, output: Path) -> dict:
         (10, "0.6486 ± 0.0030", "0.6486 ± 0.0024"),
         (10, "Three replay-aware seeds (42, 43, 44) on the two final dataset variants.",
             "Archived three-seed comparison; RF and XGB fitting budgets differ."),
+        (11, "The differences are real but very small, which is why the full multi-seed protocol matters.",
+            "The observed model gaps are small; a statistically decisive winner is not established."),
         (13, "The deep model was evaluated on the same full-data protocol rather than as a toy add-on.",
             "Historical Deep scores are descriptive; corrected test gating awaits full-data rerun."),
         (13, "• Test used once after model selection",
