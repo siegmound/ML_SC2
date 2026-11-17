@@ -166,3 +166,28 @@ For full CPU synthetic/integration tests, install all dependencies
 
 **B4 engineering controls are implemented, but end-to-end remote/environment
 reproducibility sign-off is OPEN until the unchecked gates are satisfied.**
+
+
+## Final B4 remote change verification (2026-11-17)
+
+- After all code and documentation changes, the GitHub comparison against
+  immutable B0 SHA `33660e2b4fc4bd75df0824bbb7fa7c2096d13831`
+  reports **`main` identical** (ahead=0; behind=0).
+- The correction branch was **72 commits ahead of main**, changing
+  **45 paths** across B0–B4, before this final documentation commit.
+- GitHub file readbacks matched the locally executed source bytes for:
+  `scripts/70_verify_freeze.py`,
+  `tests/test_b4_freeze.py`,
+  `tests/test_b4_checkpoints.py`,
+  `scripts/54_run_rf_full.py` and
+  `scripts/64_run_deep_finalist.py`.
+- **No protected frozen dataset ZIP, RF/XGB/Deep run result,
+  calibration result, PDF, or PPTX was in the branch diff.**
+- Local combined regression suite **30 tests PASS**.
+- The GitHub workflow definition was confirmed committed, **but no successful
+  remote Actions execution is asserted**. Full LFS payload validation and
+  exact scientific dependency lock remain OPEN.
+- This final sign-off is a documentation-only commit.
+
+**B4 status: source-level engineering complete; independent
+clone/CI/full-data reproducibility NOT YET CERTIFIED.**
