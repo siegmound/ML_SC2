@@ -1,7 +1,7 @@
 """Check archived experiment Git blobs and dataset Git LFS integrity.
 
-\`--mode pointer\` is fast and works with Git LFS smudge disabled.
-\`--mode payload\` additionally hashes both downloaded dataset archives and checks
+`--mode pointer` is fast and works with Git LFS smudge disabled.
+`--mode payload` additionally hashes both downloaded dataset archives and checks
 ZIP headers against saved XGBoost model feature lists (no GPU or retraining).
 Git HEAD objects are checked, so uncommitted edits do not spoof frozen history.
 """
