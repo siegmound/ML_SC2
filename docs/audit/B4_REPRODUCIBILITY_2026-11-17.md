@@ -370,3 +370,42 @@ runs were performed. Next remaining B4 tasks are an independently recreated
 and checked Python/CUDA runtime from an archived, sanitized lock and a
 successfully executed opt-in full-data CI run. Existing source correction
 and payload-integrity checks are already passed.
+
+
+## Candidate FAIR dependency lock inventory — 2026-11-18
+
+The user inspected the independently captured
+`~/HPC-POMDP/ML-SC2/b4_environment_evidence/pip_freeze.txt` on FAIR:
+**56 noncomment entries**. The inspection detected **one editable
+(`-e`) reference**, whose source is not printed in the terminal excerpt.
+The following installed distributions were observed with exact pins:
+
+| Dependency | Observed pip freeze |
+|---|---|
+| numpy | `numpy==2.5.5` |
+| pandas | `pandas==3.1.1` |
+| pyarrow | `pyarrow==26.0.1` |
+| sc2reader | `sc2reader==1.9.0` |
+| scikit-learn | `scikit-learn==1.9.1` |
+| scipy | `scipy==1.18.1` |
+| torch | `torch==2.15.0` |
+| xgboost | `xgboost==3.4.1` |
+
+A previously observed `torch.__version__` reported
+`2.15.0+cu132` and `torch.version.cuda` `13.2`;
+`pip freeze` by itself does **not** uniquely certify the CUDA-enabled
+wheel binary, its package-index origin, or driver/OS compatibility.
+
+**Next required checks:** classify the editable reference as this
+tabular repo or an external dependency *without publishing its URL*;
+produce a sanitized candidate pin list excluding only confirmed local
+editable installation; record full wheel and driver provenance; create
+an **independent** isolated Python 3.12 virtual environment and install
+from the resolved lock, installing the current clean checkout itself as
+an editable project; verify `pip check`, CUDA stack, full 34-test tabular
+suite, strict schema/table/source audits and frozen LFS hashes.
+No independent environment reconstruction has yet been observed, and
+the scientific runtime-lock condition remains **OPEN**.
+
+This inventory is **audit evidence**, not a change to the project's
+minima in `requirements.txt` or frozen scientific results.
