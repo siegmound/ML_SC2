@@ -65,7 +65,7 @@ class StageModelComparisonTests(unittest.TestCase):
         pred = pd.concat([predictions(), predictions().iloc[[0]]])
         with self.assertRaisesRegex(ValueError, "duplicate"):
             align_validation_model(cohort(), pred, "mlp")
-        with self.assertRaisesRegex(ValueError, "checkpoint"):
+        with self.assertRaisesRegex(ValueError, "same replay IDs at every stage"):
             validate_stage_cohort(cohort().iloc[:-1])
 
     def test_nonfinite_and_threshold_guards(self):
