@@ -78,7 +78,7 @@ def main() -> None:
         ap.error("S4 first GRU experiment is fixed to the 9-snapshot index")
     split = load_replay_partitions(args.split_json, index)
     prepared = prepare_sequential_data(index, split, args.dataset_zip, verify_sha=True)
-    model, report = fit_gru(prepared, config, device, smoke=args.smoke)
+    model, report = fit_gru(prepared, config, device, smoke=args.smoke, verbose=True)
     report.update({
         "dataset": "v3_1_fixed",
         "window_length": 9,
