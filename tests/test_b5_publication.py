@@ -30,11 +30,45 @@ class PublicationChecks(unittest.TestCase):
 
     def test_current_release_is_blocked_by_explicit_pending_evidence(self):
         gates = json.loads((ROOT / check.DEFAULT_GATES).read_text(encoding="utf-8"))
+        conditions = gates["conditions"]
         self.assertEqual(gates["release_status"], "BLOCKED_PENDING_EVIDENCE")
-        self.assertFalse(gates["conditions"]["b2_full_scale_four_way_and_deep_completed"])
-        self.assertFalse(gates["conditions"]["b4_clean_clone_and_remote_ci_passed"])
+        self.assertTrue(conditions)
+        self.assertTrue(all(type(value) is bool for value in conditions.values()))
+        self.assertIn("b2_full_scale_four_way_and_deep_completed", conditions)
+        self.assertIn("b3_raw_replay_to_final_feature_and_exclusion_provenance_resolved", conditions)
+        self.assertIn("b4_full_scientific_environment_locked", conditions)
+        # Already verified conditions may progress from False to True: don't
+        # hardcode their historical state. Release remains blocked until ALL
+        # conditions are satisfied and final approval is explicit.
+        self.assertTrue(any(not value for value in conditions.values()))
         with self.assertRaisesRegex(ValueError, "RELEASE BLOCKED"):
             check.release_gates(ROOT)
+
+    def test_release_rejects_approval_when_one_condition_is_unmet(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            root = Path(dirname)
+            (root / "gates.json").write_text(
+                json.dumps({
+                    "release_status": "APPROVED",
+                    "conditions": {"verified": True, "unverified": False},
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "RELEASE BLOCKED"):
+                check.release_gates(root, "gates.json")
+
+    def test_release_rejects_all_true_without_explicit_approval(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            root = Path(dirname)
+            (root / "gates.json").write_text(
+                json.dumps({
+                    "release_status": "BLOCKED_PENDING_EVIDENCE",
+                    "conditions": {"verified": True},
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "Release status not APPROVED"):
+                check.release_gates(root, "gates.json")
 
     def test_stale_standard_deviation_is_detected(self):
         with tempfile.TemporaryDirectory() as dirname:
