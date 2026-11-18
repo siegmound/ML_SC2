@@ -436,3 +436,56 @@ wheel/CUDA variant and 34-test suite, capture provenance/hashes, and
 re-run the deterministic validations. Do not set the full scientific
 environment lock or B5 release conditions until independent reproduction
 evidence is supplied.
+
+
+## Isolated Python/CUDA reproduction — FAIR evidence, 2026-11-18
+
+The user executed a new, separately created Python **3.12.3** virtual
+environment on FAIR (distinct from the original
+`$HOME/.venvs/ml-sc2`) using the already checked SHA-256 candidate
+`requirements_fair_candidate.txt`
+(`9dc23f0ea5936a158e8a5e271494768a2ce2163ed351c0e430a5bcfa1882787e`).
+
+**Observed in the supplied FAIR terminal log:**
+- Available home disk: ~15 TB; Python 3.12.3 in the new environment.
+- `pip install --dry-run -r`: resolved all 55 pinned distributions
+  from package indexes/cached wheel files without an error.
+- `pip install -r`: **SUCCESS**, 55 installed distributions including
+  PyTorch, CUDA/NVIDIA components, XGBoost and scikit-learn.
+- `pip install --no-deps -e .` from the **tabular audit clean checkout**:
+  **SUCCESS**, installed `ml-sc2-remake==2.0.0`.
+- `python -m pip check`: `No broken requirements found.`
+- Runtime: PyTorch `2.15.0+cu132`, torch CUDA `13.2`,
+  `torch.cuda.is_available() == True`, RTX 5090;
+  scikit-learn `1.9.1`, XGBoost `3.4.1`, NumPy `2.5.5`,
+  pandas `3.1.1`.
+- Actual CUDA tensor operation: `CUDA_TENSOR_TEST_PASS`.
+- Frozen artifact and both complete dataset payload validations:
+  `PASS: B0 protected Git blobs and LFS payload integrity`,
+  64 and 73 expected predictor fields and matching checksums.
+
+**One reproducibility-suite regression remains for this observed run:**
+The 34-test suite reported **one failure, one skipped**, solely
+`test_b5_publication.PublicationChecks.test_current_release_is_blocked_by_explicit_pending_evidence`.
+The test was written before verified B4 metadata CI and clone evidence
+closed `b4_clean_clone_and_remote_ci_passed`. It incorrectly asserted
+this specific release-gate flag must remain `false`, while the
+**release approval remained explicitly BLOCKED with other flags false**.
+No training failure, GPU failure, or source integrity failure was observed.
+
+A targeted fix was committed to
+`tests/test_b5_publication.py` at `dac91f05586d683a448eec05150d1414bb0c555e`,
+so tests now require default-deny logic, unresolved flags, and explicit
+approval rather than hardcoding a newly verified gate. Two extra
+negative-case tests verify that premature `APPROVED` cannot bypass a
+false condition and all-true flags cannot bypass an unapproved status.
+**The post-fix tests have not yet been reported from FAIR.**
+
+**Remaining to close the full scientific runtime-lock condition:**
+a successful independent full regression rerun with the corrected test,
+archiving reproducible artifact provenance (wheel hashes or equivalent,
+platform/Python/GPU driver and index information), and completing the
+opt-in full-data GitHub Actions workflow. Observed pip installs used
+cached wheels and version pins; this establishes environment reconstruction
+on FAIR, **not bitwise-identical wheel provenance or cross-host portability**.
+No historical models were retrained or original results overwritten.
