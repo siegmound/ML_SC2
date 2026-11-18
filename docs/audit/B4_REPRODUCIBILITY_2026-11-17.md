@@ -337,3 +337,36 @@ from that lock and rerun applicable checks; run and archive the full-data CI
 job; complete B2 full-size scientific experiments; recover B3 end-to-end
 raw replay-to-feature provenance. Existing retrospective test data cannot
 be reclassified as an uninspected holdout.
+
+
+## FAIR generated audit reports reviewed — 2026-11-18
+
+The user read both generated JSON reports from the **clean tabular checkout**,
+after completing `python scripts/15_verify_reproducibility.py --strict`
+and `python scripts/17_internal_audit.py`:
+
+`results/logs/reproducibility_check.json`
+- `missing_paths: []`: **PASS**
+- All six categories under `dependency_mismatches` were empty: **PASS**
+- `final_table_check.passed: true`: **PASS**
+- `feature_lineage_check.passed: true`: **PASS** for *schema/manifest consistency only*; this is **not** raw replay-to-feature numerical parity.
+- `publication_check.passed: true`: **PASS** for editable paper/table source consistency; this does **not** certify generated PDF/PPTX.
+
+`results/logs/internal_audit_report.json`
+- `syntax_errors: 0`: **PASS**
+- `marker_hits: 0`: **PASS**
+- `compressed_files: 9`: **style findings, unclassified** until per-path inspection.
+- `long_line_issues: 75`: **style findings, unclassified** until per-path inspection.
+
+The internal audit was invoked without `--strict-style` and therefore **does
+not certify zero style warnings**; its unclassified findings have no effect on
+the explicit B4 scientific environment lock or B5 publication gates. Avoid
+formatting frozen datasets, archived metrics, or unrelated generated evidence
+merely to suppress style counts.
+
+All artifacts are preserved in the user's local FAIR checkout; only summarized
+terminal diagnostics were provided for external review. No new model or dataset
+runs were performed. Next remaining B4 tasks are an independently recreated
+and checked Python/CUDA runtime from an archived, sanitized lock and a
+successfully executed opt-in full-data CI run. Existing source correction
+and payload-integrity checks are already passed.
