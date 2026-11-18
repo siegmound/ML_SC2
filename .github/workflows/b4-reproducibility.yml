@@ -66,11 +66,13 @@ jobs:
 
   full-data:
     name: Opt-in full LFS verification and CPU integration tests
-    # The workflow is not yet on default 'main', where manual dispatch is
-    # registered. Allow a one-time explicit audit-branch push to run full CI.
-    # Subsequent ordinary pushes and pull requests keep the expensive job off.
+    # The workflow is absent from default 'main', so manual dispatch cannot
+    # yet be used. One explicit B4 audit PR title marker opts in full-data CI.
+    # Remove the marker after the full job has started; all ordinary PR
+    # updates and pushes skip this expensive workflow.
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[b4-full]')) ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[b4-full]'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
