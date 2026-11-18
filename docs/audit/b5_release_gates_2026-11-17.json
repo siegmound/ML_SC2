@@ -14,7 +14,7 @@
     "pptx_visual_and_metric_inspection_passed": false,
     "b2_full_scale_four_way_and_deep_completed": false,
     "b3_raw_replay_to_final_feature_and_exclusion_provenance_resolved": false,
-    "b4_clean_clone_and_remote_ci_passed": false,
+    "b4_clean_clone_and_remote_ci_passed": true,
     "b4_v3_2_full_lfs_payload_verified": true,
     "b4_full_scientific_environment_locked": false,
     "release_candidate_review_approved": false
@@ -24,6 +24,7 @@
     "Historical metrics and datasets remain frozen; do not silently substitute new scientific results.",
     "GitHub PDF/PPTX currently contain historical exports and must not be labelled B5-corrected.",
     "No tag or merge to main until pending gates are verified and documented.",
-    "Full Git LFS v3.1 and v3.2 payloads verified by SHA-256, size, ZIP header and feature schema on FAIR clean checkout, 2026-11-18; B4 scientific reproducibility and release remain pending."
+    "Full Git LFS v3.1 and v3.2 payloads verified by SHA-256, size, ZIP header and feature schema on FAIR clean checkout, 2026-11-18; B4 scientific reproducibility and release remain pending.",
+    "B4 clean-checkout + lightweight remote CI scope verified: fresh FAIR clone, 34 tests (1 skipped), separate dataset LFS full payload PASS, GitHub Actions metadata job success at 21db900 / run 44397656659. Opt-in full-data GitHub Actions job was skipped, scientific runtime lock remains false; do not interpret this narrowly satisfied gate as end-to-end reproducibility."
   ]
 }
