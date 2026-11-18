@@ -158,7 +158,7 @@ For full CPU synthetic/integration tests, install all dependencies
 - [x] Support saved checkpoints for new RF and Deep training runs.
 - [x] Pass local 30/30 synthetic/code regressions.
 - [x] Confirm an actual GitHub Actions metadata job has succeeded.
-- [ ] Perform a clean GitHub clone from an independent host.
+- [x] Perform a clean GitHub clone from an independent host.
 - [ ] Download the complete v3.2 LFS object and verify its payload and ZIP.
 - [ ] Complete full-data CI run (including all code tests) and archive logs.
 - [ ] Generate a validated full scientific dependency lock / CUDA environment.
@@ -217,3 +217,36 @@ The separate B4 clean-clone, v3.2 payload verification, full integration suite,
 dependency/CUDA lock and B2 full-scale experiment conditions remain **OPEN**.
 The B5 release manifest stays `BLOCKED_PENDING_EVIDENCE`. This evidence
 update does not approve scientific release or a merge into `main`.
+
+
+## Independent FAIR checkout evidence — 2026-11-18
+
+The user performed a **fresh GitHub clone** on FAIR into the separate workspace
+`~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean`, from
+`audit/sc2-corrections-2026-11-17`, using `GIT_LFS_SKIP_SMUDGE=1`.
+The checkout completed (1,718 Git objects, 979 tracked working tree files).
+It is a fresh checkout independent of the previous working tree, **but uses
+the user's existing shared `~/.venvs/ml-sc2` virtual environment**, not a
+newly locked or independently installed Python dependency environment.
+
+**Observed PASS on the fresh checkout:**
+- `python scripts/70_verify_freeze.py --mode pointer`: **PASS**, 31
+  immutable Git objects and both Git LFS pointer metadata.
+- `python scripts/58_verify_final_table.py --check`: **PASS**.
+- `python scripts/66_check_matched_train_budget.py --check`: **PASS**
+  on matching historical train replay/label metrics.
+- `python -m unittest discover -s tests -p 'test_*.py' -q` with
+  `PYTHONPATH="$PWD/src"`: **34 tests OK, 1 skipped**.
+
+**Still OPEN:** FAIR reported `git: 'lfs' is not a git command`, so
+`git lfs install --local` and `git lfs pull` could not execute.
+The subsequent `python scripts/70_verify_freeze.py --mode payload`
+correctly **FAILED at the v3.1 dataset**, because the checkout was intentionally
+pointer-only. This is not evidence of payload corruption. Neither
+v3.1 nor v3.2 full payload integrity has yet passed in this fresh clone.
+Install or locate Git LFS, fetch both exact LFS objects, rerun payload audit,
+and capture an independent Python/CUDA dependency lock before closing the
+scientific reproducibility gate.
+
+This update does **not** clear B5 `BLOCKED_PENDING_EVIDENCE`, assert
+full B2 training reproduction, or authorize a formal release.
