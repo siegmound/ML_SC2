@@ -65,16 +65,21 @@ def csv_schema_from_zip(dataset_zip: str | Path) -> tuple[str, ...]:
     return columns
 
 
-def validate_schema(columns: tuple[str, ...], manifest: str | Path) -> tuple[str, ...]:
-    """Fail on feature addition, omission, or reordering vs frozen B3 v3.1."""
+def validate_schema(columns: tuple[str, ...], manifest: str | Path,
+                    dataset_variant: str = "v3_1_fixed") -> tuple[str, ...]:
+    """Fail on addition, omission, or reordering vs the frozen B3 variant schema."""
+    variants = {"v3_1_fixed": "v3_1_predictors",
+                "v3_2_combatfix": "v3_2_predictors"}
+    if dataset_variant not in variants:
+        raise ValueError(f"Unknown dataset variant: {dataset_variant}")
     spec = json.loads(Path(manifest).read_text(encoding="utf-8"))
-    expected = tuple(spec["v3_1_predictors"])
+    expected = tuple(spec[variants[dataset_variant]])
     actual = tuple(c for c in columns if c not in NON_FEATURES)
     if actual != expected:
         missing = sorted(set(expected) - set(actual))
         unexpected = sorted(set(actual) - set(expected))
         raise ValueError(
-            f"v3.1 feature schema mismatch: missing={missing}, unexpected={unexpected}, "
+            f"{dataset_variant} feature schema mismatch: missing={missing}, unexpected={unexpected}, "
             f"order_matches={actual == expected}"
         )
     return actual
