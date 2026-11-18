@@ -18,7 +18,8 @@ ARMS = ("v31_original64", "v32_common64", "v32_full73")
 REQUIRED = ("replay_id", "time_sec", "p1_wins")
 
 
-def select_exact_checkpoints(index, partitions, checkpoints: tuple[int, ...] = CHECKPOINTS):
+def select_exact_checkpoints(index, partitions, checkpoints: tuple[int, ...] = CHECKPOINTS,
+                             *, partition: str = "val"):
     """Select endpoint at ceil(p% * N)-th snapshot, or exclude entire replay.
 
     N is the number of stored snapshots in the complete source replay, not
@@ -33,9 +34,11 @@ def select_exact_checkpoints(index, partitions, checkpoints: tuple[int, ...] = C
     if int(index.manifest["window_length"]) != 9 or int(index.manifest["stride"]) != 1:
         raise ValueError("S8 requires the fixed nine-snapshot stride-one S1 index")
     rows = index.ordered_rows
-    validation_ids = partitions.groups["val"]
+    if partition not in ("train", "val"):
+        raise ValueError("Progress checkpoint selection permits train or val, never test")
+    validation_ids = partitions.groups[partition]
     val_rows = rows.loc[rows["replay_id"].astype(str).isin(validation_ids), list(REQUIRED)]
-    val_windows = index.windows.iloc[partitions.window_positions["val"]]
+    val_windows = index.windows.iloc[partitions.window_positions[partition]]
     window_keys = set(zip(val_windows["replay_id"].astype(str),
                           val_windows["time_sec"].to_numpy(dtype=np.int64)))
     if len(window_keys) != len(val_windows):
