@@ -280,3 +280,60 @@ Remaining B4: independent scientific Python/CUDA dependency inventory
 and tested lock, full integration CI (the previous optional full LFS job
 was skipped), and full-scale B2 reproducibility. This is **not** a
 replay-by-replay B3 parser/feature-lineage proof. B5 remains blocked.
+
+
+## FAIR scientific runtime inventory + strict source checks — 2026-11-18
+
+After the clean FAIR clone's full LFS payload audit passed, the user ran
+`git pull --ff-only` to commit
+`21db9001583385e4ef117ecbb627f8adfd78a1e2` and collected a
+read-only runtime inventory in their private FAIR workspace
+`~/HPC-POMDP/ML-SC2/b4_environment_evidence/`. The inventory files
+include `git_commit.txt`, `python_version.txt`, `pip_freeze.txt`,
+`pip_check.txt`, `nvidia_smi.txt` and `ml_runtime.txt`.
+Only the following command output has been supplied for review; the full
+pip freeze and driver inventory have not yet been independently inspected.
+
+| Component | Observed FAIR runtime |
+|---|---|
+| Python | 3.12.3 |
+| PyTorch | 2.15.0+cu132 |
+| PyTorch CUDA | 13.2 |
+| CUDA available | True |
+| GPU | NVIDIA GeForce RTX 5090 |
+| scikit-learn | 1.9.1 |
+| XGBoost | 3.4.1 |
+| NumPy | 2.5.5 |
+| pandas | 3.1.1 |
+| `python -m pip check` | `No broken requirements found.` |
+
+The user also invoked `python scripts/15_verify_reproducibility.py --strict`
+and `python scripts/17_internal_audit.py` on the clean checkout; both
+commands returned to the terminal with no visible failure message. These
+tools are silent on ordinary success and save machine-readable reports to
+`results/logs/reproducibility_check.json` and
+`results/logs/internal_audit_report.json`. The reports and explicit exit
+codes have **not yet been supplied**; do not infer zero unreported style
+findings. Note that `17_internal_audit.py` without `--strict-style`
+only fails for syntax errors; style warnings do not trigger failure.
+
+GitHub Actions run
+`44397656659`, from the audited branch head
+`21db9001583385e4ef117ecbb627f8adfd78a1e2`, completed
+**successfully** for lightweight source/metadata checks (job
+`135131785094`); its full LFS+CPU integration job
+`135131787784` was **skipped**.
+https://github.com/siegmound/ML_SC2/actions/runs/44397656659
+
+**B4 narrow engineering check:** GitHub clone on FAIR, full local
+replay-disjoint frozen dataset/payload checks, tabular integration suite
+(34 tests, 1 skipped) and remote lightweight metadata CI have all passed.
+This establishes the clean-checkout + light remote CI gate, distinct from
+the remaining full-data remote CI job and scientific environment lock.
+
+**Still open:** capture the actual `pip freeze` + GPU driver versions and
+archive a reproducible dependency lock; establish a new isolated environment
+from that lock and rerun applicable checks; run and archive the full-data CI
+job; complete B2 full-size scientific experiments; recover B3 end-to-end
+raw replay-to-feature provenance. Existing retrospective test data cannot
+be reclassified as an uninspected holdout.
