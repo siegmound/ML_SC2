@@ -567,3 +567,47 @@ B5's scientific environment lock remains **OPEN** pending verified wheel
 provenance, final reproducibility evidence, and sign-off. The source
 replay provenance (B3), full-scale experiments (B2), and PDF/PPTX release
 gates remain independently OPEN.
+
+
+## FAIR 55-wheel SHA256 lock and offline resolution — 2026-11-19
+
+The user completed a **Linux x86_64 / CPython 3.12** platform-specific
+wheelhouse under their private FAIR evidence directory, without altering
+the original scientific environment:
+
+- `54` prebuilt pinned wheels downloaded for the 55-package FAIR
+  dependency candidate, excluding the source-only package `mpyq==0.2.5`.
+- Original `mpyq-0.2.5.tar.gz` source distribution SHA-256
+  `30aaf5962be569f3f2b53978060cd047434ee4f5a215925dd6ff0fef04ec0007`.
+- Local `mpyq-0.2.5-py3-none-any.whl` build SHA-256
+  `66bbb6e3362c5c31c45c021d64e9a41527f8e6ead2f203222453edfbc60ef995`.
+  This is a **locally built** wheel, not a wheel published by mpyq's author.
+- The user confirmed exactly **55 wheels** in
+  `b4_environment_evidence/wheelhouse_cp312_linux_x86_64`.
+- Generated `b4_wheel_manifest.json` mapping every pinned package to
+  wheel filename, size and SHA-256 and
+  `requirements_fair_hashed.txt` with 55 package-specific hashes.
+- Program output: `B4_WHEEL_MANIFEST_PASS`; **55 verified wheels**.
+  SHA-256 of generated hashed lock:
+  `426447a0041887b1c2390cc63ae421280003bf17e3aee0feee041b7eb49d5e57`.
+- `python -m pip install --dry-run --ignore-installed --require-hashes
+  --no-index --find-links "$WHEELS"
+  -r "$EVIDENCE/requirements_fair_hashed.txt"`: **PASS**,
+  `Exit code: 0`, all 55 wheel dependencies resolved solely from
+  the local wheelhouse.
+
+**Interpretation:** verified per-file lock hashes and a fully offline
+pip resolver check now pass; all distribution bytes needed for this
+FAIR-compatible Linux/CPython platform are archived under the user's
+private FAIR path. The previous source-only `mpyq` obstacle is resolved.
+
+**Still not evidenced:** a completely fresh *installation* performed
+using `--require-hashes --no-index` (the preceding check was a dry run),
+its final `pip check` and 36-test regression output, and finalized
+host driver/OS provenance. Keep `b4_full_scientific_environment_locked`
+false pending this final reproducibility step and review. B2 and B3
+scientific evidence remain outside the scope of these B4 source/lock checks.
+
+The full-data GitHub Actions run `44420825024` previously succeeded
+on the isolated pre-sequential correction branch; this lock evidence
+does not authorize a paper/PPTX release or a merge to `main`.
