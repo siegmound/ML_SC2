@@ -105,7 +105,7 @@ def _epoch(model: GRUWinner, loader: DataLoader, device: torch.device,
 
 
 def fit_gru(prepared: PreparedSequences, config: GRUConfig, device: torch.device,
-            *, smoke: bool = False) -> tuple[GRUWinner, dict]:
+            *, smoke: bool = False, verbose: bool = False) -> tuple[GRUWinner, dict]:
     """Select a checkpoint ONLY by validation BCE. Test is never iterated."""
     if len(prepared.datasets["train"]) == 0 or len(prepared.datasets["val"]) == 0:
         raise ValueError("Train and validation both need sequence windows")
@@ -122,13 +122,17 @@ def fit_gru(prepared: PreparedSequences, config: GRUConfig, device: torch.device
     best_epoch = 0
     stale = 0
     history = []
-    for epoch in range(1, min(2, config.max_epochs) + 1 if smoke else config.max_epochs + 1):
+    epoch_limit = min(2, config.max_epochs) if smoke else config.max_epochs
+    for epoch in range(1, epoch_limit + 1):
         train_loss = _epoch(model, loaders["train"], device, optimizer,
                             config.grad_clip, max_batches=2 if smoke else None)
         val_loss = _epoch(model, loaders["val"], device, None,
                           config.grad_clip, max_batches=2 if smoke else None)
         history.append({"epoch": epoch, "train_log_loss": train_loss,
                         "validation_log_loss": val_loss})
+        if verbose:
+            print(f"[S4] epoch={epoch}/{epoch_limit} train_BCE={train_loss:.6f} "
+                  f"val_BCE={val_loss:.6f}", flush=True)
         if val_loss < best_loss - config.min_delta:
             best_loss = val_loss
             best_epoch = epoch
