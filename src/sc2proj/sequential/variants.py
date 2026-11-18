@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from dataclasses import replace
 
 from .data import IndexedSequences
 
@@ -65,3 +66,21 @@ def verify_combatfix_parity(reference: IndexedSequences, candidate: IndexedSeque
         "v3_1_sha256": V31_SHA256,
         "v3_2_sha256": V32_SHA256,
     }
+
+
+def combatfix_common64_view(reference: IndexedSequences, combatfix: IndexedSequences) -> IndexedSequences:
+    """Ephemeral, read-only S7 view of corrected combatfix values with v3.1 feature names.
+
+    The caller must first verify full S1 index parity. The source SHA remains
+    v3.2 because the corrected NUMERIC VALUES originate from the combatfix ZIP.
+    """
+    names = tuple(reference.features)
+    if len(names) != 64 or len(combatfix.features) != 73:
+        raise ValueError("S7 expects 64 reference and 73 combatfix features")
+    if not set(names).issubset(combatfix.features) or len(set(combatfix.features) - set(names)) != 9:
+        raise ValueError("S7 requires exactly nine extra combatfix predictors")
+    metadata = dict(combatfix.manifest)
+    metadata["features"] = list(names)
+    metadata["feature_count"] = len(names)
+    metadata["feature_view"] = "v3_2_common64"
+    return replace(combatfix, features=names, manifest=metadata)
