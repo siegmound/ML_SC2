@@ -61,13 +61,19 @@ def expand_train_checkpoint_examples(index, partitions, anchors: pd.DataFrame,
         "replay_id", sort=False, observed=True
     )["index"].min()
     sizes = index.ordered_rows.groupby("replay_id", sort=False, observed=True).size()
+    pool_by_replay = {
+        str(replay): frame.sort_values(
+            ["stop_row", "time_sec"], kind="stable"
+        ).reset_index(drop=True)
+        for replay, frame in pool.groupby("replay_id", sort=False, observed=True)
+    }
     extras = []
     selected_counts = []
     for replay, original in per_replay:
         key = str(replay)
-        candidates = pool.loc[pool.replay_id == key].sort_values(
-            ["stop_row", "time_sec"], kind="stable"
-        ).reset_index(drop=True)
+        candidates = pool_by_replay.get(key)
+        if candidates is None:
+            raise ValueError(f"Missing training replay windows: {key}")
         if candidates.empty:
             raise ValueError(f"Missing training replay windows: {key}")
         anchored = candidates.loc[candidates.time_sec.isin(original.time_sec)]
@@ -116,7 +122,7 @@ def expand_train_checkpoint_examples(index, partitions, anchors: pd.DataFrame,
             or len(expanded) != len(anchors) + len(extras)):
         raise ValueError("Expanded training cohort corrupted")
     for replay, group in expanded.groupby("replay_id", sort=False, observed=True):
-        orig = anchors.loc[anchors.replay_id == replay, list(FIELDS)]
+        orig = per_replay.get_group(replay).loc[:, list(FIELDS)]
         current = group.loc[group.progress_percent != -1, list(FIELDS)]
         if (len(orig) != len(current)
                 or not orig.sort_values("time_sec").reset_index(drop=True).equals(
