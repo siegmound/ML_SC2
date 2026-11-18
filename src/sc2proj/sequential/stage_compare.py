@@ -14,7 +14,7 @@ S8_KEYS = (*CHECKPOINT_KEYS, "progress_percent", "p1_wins")
 
 
 def align_validation_model(stage: pd.DataFrame, predictions: pd.DataFrame,
-                           model_name: str, *, require_exact: bool = False) -> pd.DataFrame:
+                           model_name: str, *, require_exact: bool = False,\n                           enforce_half_threshold: bool = True) -> pd.DataFrame:
     """Return S8 checkpoints plus aligned model probabilities; fail closed."""
     needed = set(CHECKPOINT_KEYS) | {"y_true", "y_prob", "y_pred"}
     if not set(S8_KEYS).issubset(stage.columns) or not needed.issubset(predictions.columns):
