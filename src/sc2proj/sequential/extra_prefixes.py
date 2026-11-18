@@ -114,9 +114,15 @@ def expand_train_checkpoint_examples(index, partitions, anchors: pd.DataFrame,
                 "observed_fraction": float(seen / total),
             })
     anchor_copy = anchors.loc[:, list(FIELDS)].copy()
-    expanded = pd.concat(
-        [anchor_copy, pd.DataFrame(extras, columns=FIELDS)], ignore_index=True,
-    ).sort_values(["replay_id", "time_sec"], kind="stable").reset_index(drop=True)
+    if extras:
+        expanded = pd.concat(
+            [anchor_copy, pd.DataFrame(extras, columns=FIELDS)], ignore_index=True,
+        )
+    else:
+        expanded = anchor_copy.copy()
+    expanded = expanded.sort_values(
+        ["replay_id", "time_sec"], kind="stable"
+    ).reset_index(drop=True)
     if (expanded.duplicated(["replay_id", "time_sec"]).any()
             or set(expanded.replay_id) != anchor_replays
             or len(expanded) != len(anchors) + len(extras)):
