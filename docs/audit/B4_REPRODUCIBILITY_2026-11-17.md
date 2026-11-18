@@ -159,7 +159,7 @@ For full CPU synthetic/integration tests, install all dependencies
 - [x] Pass local 30/30 synthetic/code regressions.
 - [x] Confirm an actual GitHub Actions metadata job has succeeded.
 - [x] Perform a clean GitHub clone from an independent host.
-- [ ] Download the complete v3.2 LFS object and verify its payload and ZIP.
+- [x] Download the complete v3.2 LFS object and verify its payload and ZIP.
 - [ ] Complete full-data CI run (including all code tests) and archive logs.
 - [ ] Generate a validated full scientific dependency lock / CUDA environment.
 - [ ] Re-run the full B2 scientific experiments and demonstrate reproducibility.
@@ -250,3 +250,33 @@ scientific reproducibility gate.
 
 This update does **not** clear B5 `BLOCKED_PENDING_EVIDENCE`, assert
 full B2 training reproduction, or authorize a formal release.
+
+## Verified full LFS dataset payloads — FAIR clean checkout, 2026-11-18
+
+The user located Git LFS **3.8.1** at
+`$HOME/HPC-POMDP/.tools/git-lfs/bin/git-lfs`, activated it in PATH,
+ran `git lfs install --local` inside the separate clean checkout, then
+successfully fetched **both** tracked ZIP objects with `git lfs pull`
+(2/2 objects, ~563 MB).
+
+**Observed actual execution** of
+`python scripts/70_verify_freeze.py --mode payload`:
+`PASS: B0 protected Git blobs and LFS payload integrity`.
+The script checks each file's exact byte count and SHA-256, verifies a
+readable ZIP archive and checks ordered feature headers against the saved
+full XGBoost feature schema, in addition to the 31 original Git objects.
+
+| Dataset | Expected and observed bytes | Observed SHA-256 | Feature count | ZIP header |
+|---|---:|---|---:|---|
+| v3.1 fixed | 268,539,879 | `65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517` | 64 | PASS |
+| v3.2 combatfix | 294,197,452 | `87ce36435e4a0fc87b8d9421291d3b1fb04d67b5187ede6a2a3b25d0dce1942e` | 73 | PASS |
+
+**This closes the previous v3.2 incomplete local ZIP uncertainty** for
+the new FAIR Git LFS checkout. Earlier notes about a truncated separate
+upload are retained as historical context and no longer describe the
+newly verified LFS artifact. Neither frozen dataset was modified.
+
+Remaining B4: independent scientific Python/CUDA dependency inventory
+and tested lock, full integration CI (the previous optional full LFS job
+was skipped), and full-scale B2 reproducibility. This is **not** a
+replay-by-replay B3 parser/feature-lineage proof. B5 remains blocked.
