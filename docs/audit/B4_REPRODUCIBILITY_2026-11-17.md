@@ -157,7 +157,7 @@ For full CPU synthetic/integration tests, install all dependencies
 - [x] Align minimum Python runtime to 3.11 and pin light CI dependency.
 - [x] Support saved checkpoints for new RF and Deep training runs.
 - [x] Pass local 30/30 synthetic/code regressions.
-- [ ] Confirm an actual GitHub Actions metadata job has succeeded.
+- [x] Confirm an actual GitHub Actions metadata job has succeeded.
 - [ ] Perform a clean GitHub clone from an independent host.
 - [ ] Download the complete v3.2 LFS object and verify its payload and ZIP.
 - [ ] Complete full-data CI run (including all code tests) and archive logs.
@@ -191,3 +191,29 @@ reproducibility sign-off is OPEN until the unchecked gates are satisfied.**
 
 **B4 status: source-level engineering complete; independent
 clone/CI/full-data reproducibility NOT YET CERTIFIED.**
+
+
+## Post-audit CI evidence update — 2026-11-18
+
+GitHub PR #5 (`audit/sc2-corrections-2026-11-17` → `main`), at head
+`397dc3c12a7ae006168a46037881e902cde1c92d`, triggered workflow run
+`44393744998` (`B4 reproducibility checks`).
+
+**Verified via GitHub Actions API:**
+- `Frozen artifacts, schemas and source checks` (job `135117997597`): **completed / success**.
+- All steps in that lightweight job succeeded, including checkout, Python 3.11,
+  pinned metadata verifier dependency, baseline Git blobs and LFS pointers,
+  repository/summary/feature-lineage checks, Python syntax, stdlib-only
+  regression tests and audit-report preservation.
+- `Opt-in full LFS verification and CPU integration tests` (job
+  `135118000460`): **completed / skipped**.
+- Workflow result: **completed / success**. This establishes the narrow CI
+  metadata check, **not** full-data payload, scientific environment, or
+  training reproducibility.
+
+Reference: https://github.com/siegmound/ML_SC2/actions/runs/44393744998
+
+The separate B4 clean-clone, v3.2 payload verification, full integration suite,
+dependency/CUDA lock and B2 full-scale experiment conditions remain **OPEN**.
+The B5 release manifest stays `BLOCKED_PENDING_EVIDENCE`. This evidence
+update does not approve scientific release or a merge into `main`.
