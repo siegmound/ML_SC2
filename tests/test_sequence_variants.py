@@ -80,7 +80,7 @@ class CombatfixContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "time_sec mismatch"):
             verify_combatfix_parity(a, b, require_full=False)
         b.windows.loc[0, "time_sec"] = 120
-        b.windows = b.windows.iloc[:-1]
+        b = replace(b, windows=b.windows.iloc[:-1].copy())
         with self.assertRaisesRegex(ValueError, "unequal number"):
             verify_combatfix_parity(a, b, require_full=False)
 
@@ -96,7 +96,7 @@ class CombatfixContractTests(unittest.TestCase):
 
     def test_rejects_wrong_added_features(self):
         a, b = toy_indexes()
-        b.features = tuple(f"g{i}" for i in range(73))
+        b = replace(b, features=tuple(f"g{i}" for i in range(73)))
         with self.assertRaisesRegex(ValueError, "preserve all 64"):
             verify_combatfix_parity(a, b, require_full=False)
 
