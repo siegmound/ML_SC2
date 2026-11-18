@@ -22,7 +22,7 @@ from sc2proj.sequential.progress import (
     select_exact_checkpoints,
 )
 from sc2proj.sequential.variants import (
-    combatfix_common64_view, verify_combatfix_parity,
+    V31_SHA256, combatfix_common64_view, verify_combatfix_parity,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,7 +55,8 @@ def main() -> None:
             ap.error("Output must be a fresh subdirectory of results/sequential")
 
     ref = load_index(args.reference_index_dir)
-    if (int(ref.manifest["window_length"]) != 9 or
+    if (ref.manifest.get("source_zip_sha256") != V31_SHA256 or
+            int(ref.manifest["window_length"]) != 9 or
             int(ref.manifest["stride"]) != 1 or len(ref.features) != 64 or
             ref.manifest.get("subset_max_replays") is not None):
         ap.error("S8 requires complete frozen 9-snapshot v3.1 S1 index")
