@@ -611,3 +611,57 @@ scientific evidence remain outside the scope of these B4 source/lock checks.
 The full-data GitHub Actions run `44420825024` previously succeeded
 on the isolated pre-sequential correction branch; this lock evidence
 does not authorize a paper/PPTX release or a merge to `main`.
+
+
+## Successful fresh offline hashed-wheel reproduction on FAIR — 2026-11-19
+
+The user supplied terminal output showing the **third isolated environment**
+`$HOME/.venvs/ml-sc2-b4-offline` recreated from the exact local 55-wheel
+cache with **no package index** and **enforced per-wheel SHA-256 hashes**.
+This is distinct from both the original `~/.venvs/ml-sc2` and the
+earlier independent `~/.venvs/ml-sc2-b4-repro`.
+
+Evidence, based on the actual executed FAIR commands:
+
+| Check | Result |
+|---|---|
+| Hashed lock file digest check | PASS, `426447a0041887b1c2390cc63ae421280003bf17e3aee0feee041b7eb49d5e57` |
+| `pip install --no-index --find-links ... --require-hashes -r ...` | `OFFLINE_INSTALL_EXIT=0` |
+| `pip check` | `No broken requirements found.` |
+| Full tabular regression tests, `PYTHONPATH="$PWD/src" python -m unittest discover -s tests -p 'test_*.py' -q` | `OFFLINE_TEST_EXIT=0` |
+| CUDA runtime | PyTorch `2.15.0+cu132`, CUDA `13.2`, GPU NVIDIA GeForce RTX 5090 |
+| Actual CUDA GPU operation | `B4_OFFLINE_CUDA_PASS` |
+| Driver, kernel and installed package inventory | Commands completed writing `b4_driver_inventory.txt`, `b4_kernel_inventory.txt`, `b4_offline_pip_freeze.txt` to FAIR evidence directory |
+
+The preceding clean independently installed environment had already
+passed the corrected **36-test suite (35 passed, one skipped)**; this
+third offline test suite's **zero exit code** independently establishes
+success, but its full test footer was redirected and not pasted into
+the transcript (do not attribute a new exact count absent that footer).
+
+The read-only GitHub Actions `full-data` run
+`44420825024` was independently verified **SUCCESS** in both metadata
+and opt-in full-LFS/CPU jobs.
+
+**B4 technical reproduction outcome: PASS for FAIR Linux x86_64 /
+Python 3.12 / RTX 5090**, independently from the original environment,
+with a pinned, hashed 55-wheel dependency set and actual offline
+installation. The local `mpyq==0.2.5` wheel was produced from an
+independently hashed sdist, not a publisher-distributed binary.
+
+**Final evidence custody boundary:** the full hashed requirements
+file, wheel manifest, and driver/kernel inventories are at present
+retained in the user's FAIR `b4_environment_evidence` directory.
+Only their checksums and the supplied terminal results are in GitHub
+audit documentation. To make `b4_full_scientific_environment_locked`
+an auditable **repository** release condition, commit a sanitized copy of
+the compact hashed lock and wheel manifest plus platform/driver summary
+on the audit branch and inspect their contents; do **not** commit
+multi-GB CUDA wheel binaries, raw private machine identifiers, or
+editable credentials. Until that custody step, the manifest flag is
+left `false` to avoid implying that a third party can independently
+retrieve the exact pinned wheel digests from GitHub alone.
+
+Full B2 reruns and B3 original raw replay-to-feature numeric provenance
+remain scientifically distinct and OPEN. Historical metrics and
+protected archives were not modified.
