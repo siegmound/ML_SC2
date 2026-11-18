@@ -89,6 +89,8 @@ def select_exact_checkpoints(index, partitions, checkpoints: tuple[int, ...] = C
         raise ValueError("Every selected replay needs all checkpoints")
     result = result.sort_values(["replay_id", "progress_percent"], kind="stable").reset_index(drop=True)
     coverage = {
+        "partition": partition,
+        "partition_replays_total": count_all,
         "validation_replays_total": count_all,
         "balanced_replays": count_all - dropped,
         "replays_excluded": dropped,
