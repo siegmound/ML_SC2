@@ -21,7 +21,7 @@ def align_validation_model(stage: pd.DataFrame, predictions: pd.DataFrame,
         raise ValueError(f"{model_name}: checkpoint or prediction columns missing")
     if stage.empty or predictions.empty:
         raise ValueError(f"{model_name}: empty validation source")
-    stage = stage.loc[:, list(S8_KEYS)].copy()
+    stage = stage.copy()  # retain frozen S8 GRU columns for strict provenance parity
     pred = predictions.loc[:, [*CHECKPOINT_KEYS, "y_true", "y_prob", "y_pred"]].copy()
     stage["replay_id"] = stage["replay_id"].astype(str)
     pred["replay_id"] = pred["replay_id"].astype(str)
