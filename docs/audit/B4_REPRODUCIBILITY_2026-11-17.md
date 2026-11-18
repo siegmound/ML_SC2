@@ -524,3 +524,46 @@ and reproducible installation provenance, host GPU-driver/CUDA details,
 and a successful GitHub Actions **full-data** run; B2's original
 full-scale four-way/deep experiments are separately unresolved.
 The official B5 release status remains `BLOCKED_PENDING_EVIDENCE`.
+
+
+## Full-data GitHub CI PASS and mpyq source-only wheel exception — 2026-11-19
+
+GitHub Actions workflow run
+`44420825024` on `audit/sc2-corrections-2026-11-17`,
+https://github.com/siegmound/ML_SC2/actions/runs/44420825024,
+has now **completed / success**. Both jobs succeeded:
+
+- Metadata source/consistency job `135212988748`: SUCCESS.
+- Full-data Git LFS + CPU integration job `135212988437`: SUCCESS.
+  GitHub Actions reported success for all substantive steps:
+  Python 3.11 install, dependency installation, both full LFS downloads,
+  SHA-256 payload and feature-header verification, schema/replay census,
+  complete synthetic integration tests, matched-fit retrospective checks,
+  and runtime evidence artifact upload.
+
+This closes the former **skipped opt-in full-data CI** blocker; it does
+not create or retroactively validate new held-out scientific experiments.
+
+The user separately attempted wheel provenance capture on FAIR from a
+55-exact-pin candidate. The command
+`pip download --only-binary=:all: --no-deps` **failed** on
+`mpyq==0.2.5` because PyPI provides only
+`mpyq-0.2.5.tar.gz` as source distribution (released 2014-01-05),
+not a compatible prebuilt wheel; therefore no wheels were written
+and no hashed lock manifest was produced by that attempt.
+This is **not** a CUDA, model, installation or checksum failure.
+
+Corrective evidence procedure: download wheel distributions for the
+other 54 pins; independently retrieve and SHA-256 hash the original
+`mpyq` source distribution; build its local wheel from that exact
+source and record the resulting SHA-256 and build metadata. Then
+write the 55-entry platform-specific hashed requirements file and
+perform a `--no-index --require-hashes` verification from a local
+wheelhouse. Do not rewrite the original candidate lock, silently
+replace the source version, or represent a locally built wheel
+as publisher-supplied.
+
+B5's scientific environment lock remains **OPEN** pending verified wheel
+provenance, final reproducibility evidence, and sign-off. The source
+replay provenance (B3), full-scale experiments (B2), and PDF/PPTX release
+gates remain independently OPEN.
