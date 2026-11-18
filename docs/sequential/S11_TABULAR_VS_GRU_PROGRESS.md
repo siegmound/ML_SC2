@@ -1,5 +1,25 @@
 # S11 — Do sequential models beat existing tabular methods at equal game progress?
 
+## FAIR results — 2026-11-18
+
+The user executed S11 on FAIR and obtained **S11_MATCHED_VALIDATION_MODELS_PASS** with exact validation endpoint matching for all seven arms and seeds. The saved S11 report is `results/sequential/s11_tabular_vs_gru_progress_v1/`. This evaluation is retrospective validation, not a new unbiased test.
+
+**Validation accuracy, unweighted means across overlapping seed splits:**
+
+| Model | 25% | 50% | 75% | 90% |
+|---|---:|---:|---:|---:|
+| RF archived | 0.562578 | 0.621947 | 0.658753 | 0.688629 |
+| XGB archived | 0.566406 | 0.619423 | 0.659070 | 0.688562 |
+| MLP archived | 0.567338 | 0.620457 | 0.660711 | 0.686866 |
+| GRU S8 last9, trained on all windows | **0.577096** | **0.622655** | 0.672514 | 0.694307 |
+| GRU S9 last9, trained on 4 checkpoints | 0.565784 | 0.609598 | 0.667929 | 0.694239 |
+| GRU S9 prefix, trained on 4 checkpoints | 0.563198 | 0.615039 | **0.673241** | **0.696206** |
+| Constant P1 train replay win prior | 0.513407 | 0.513407 | 0.513407 | 0.513407 |
+
+All three seeds passed checkpoint matching: seed42 2012 replays, seed43 2076, seed44 2040. Best sequential model minus best archived tabular at each stage is approximately **+0.98, +0.07, +1.25, +0.76 percentage points**, respectively. Model-by-stage selection of the maximum is descriptive and post hoc; it is *not* a deployable selected policy. Report conditional paired accuracy CIs from `paired_deltas_vs_s8_gru.csv` before any significance claims. Do not state that one architecture has an architecture-only causal advantage: the training sets, budgets, historical feature profiles and stopping criteria are different.
+
+**Test-suite issue and fix:** the full test suite ran 106 tests with 1 historic skip and exactly 1 failing S11 unit-test assertion. The software's fail-closed cohort check correctly rejected incomplete input, but the test expected the word `checkpoint` while the exception says `S8 cohort must contain exactly the same replay IDs at every stage`. The test expectation was corrected in a separate GitHub commit, changing no production implementation, predictions, models or frozen artifacts. A new FAIR test-suite run is still required to confirm 106 tests OK, 1 skipped. The frozen B0 pointer audit and publication table check both passed.
+
 ## Motivation
 
 S8–S10 established retrospective progress curves for fixed-nine-window and observed-prefix GRUs. Accuracy increases with game progress for both, but S9-prefix accuracy gains over S9-last9 were small and inconsistent. At 90% S9-prefix improved average Brier, log loss and ROC-AUC, but 10-bin ECE was not always lower.
