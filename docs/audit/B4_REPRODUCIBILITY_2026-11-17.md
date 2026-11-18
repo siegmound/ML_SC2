@@ -489,3 +489,38 @@ opt-in full-data GitHub Actions workflow. Observed pip installs used
 cached wheels and version pins; this establishes environment reconstruction
 on FAIR, **not bitwise-identical wheel provenance or cross-host portability**.
 No historical models were retrained or original results overwritten.
+
+
+## Verified independent full regression rerun after B5 test fix — 2026-11-19
+
+The user repeated verification on FAIR in the **new independent** Python
+3.12.3 venv `$HOME/.venvs/ml-sc2-b4-repro` after pulling correction-branch
+head `64047137b9ed9ec4deed6f0dfd706338c14a2a68`:
+
+- `python -m pip check`: **PASS** (`No broken requirements found.`).
+- `python -m unittest discover -s tests -p 'test_*.py' -q`:
+  **36 tests run; OK; skipped=1** (35 passing, zero failing).
+  Two new B5 default-deny release regression tests passed. The Pandas
+  `DataFrame.dropna(inplace=True)` deprecation warnings are nonfatal and
+  should be handled as maintenance rather than evidence of scientific
+  failure.
+- `python scripts/15_verify_reproducibility.py --strict`: no visible
+  failure; full JSON report was separately inspected in the prior FAIR
+  checkout audit.
+- `python scripts/72_verify_publication.py`: **PASS**, `paper_rows=4`,
+  `paper_b5_caveats=PASS`; this is source consistency only, **not**
+  generated PDF/PPTX visual certification.
+- `python scripts/72_verify_publication.py --release`: intentionally
+  returned **`FAIL: RELEASE BLOCKED: 8 unfinished gates`**; the new
+  tests therefore preserve default-deny publication gating.
+
+**Outcome:** isolated FAIR Python/CUDA environment reproduction and the
+corrected tabular test suite now **PASS**. All protected LFS/data checks
+were already independently verified. The former one failing test
+was a stale assertion about a completed B4 subgate, not a model failure.
+
+**Still open for full B4 release condition:** audited wheel-byte hashes
+and reproducible installation provenance, host GPU-driver/CUDA details,
+and a successful GitHub Actions **full-data** run; B2's original
+full-scale four-way/deep experiments are separately unresolved.
+The official B5 release status remains `BLOCKED_PENDING_EVIDENCE`.
