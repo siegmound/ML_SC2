@@ -119,3 +119,63 @@ python scripts/90_train_dynamic_prefixes.py \
 ```
 
 No claim for these seeds until the FAIR validation outputs are supplied. Aggregate per-seed/during-stage comparisons, inspect Prefix train/val BCE histories, ROC-AUC/Brier/log loss as well as accuracy, and preserve every single frozen result.
+
+
+## FAIR results — all three seeds, completed on 2026-11-18
+
+Seeds **43 and 44 both passed `S13_DYNAMIC_COHORT_PASS` and `S13_DYNAMIC_VALIDATION_PASS`** on CUDA using the same script and hyperparameters as seed42. Their original terminal logs were supplied to the project review; these are historical **validation** results, not new held-out test runs.
+
+| Seed | Train replay groups | Available cutoffs | Cutoffs per epoch | Validation replay groups | Last9 selected epoch | Prefix selected epoch |
+|---|---:|---:|---:|---:|---:|---:|
+| 42 | 8,283 | 132,528 | 33,132 | 2,012 | 5 | 2 |
+| 43 | 8,274 | 132,384 | 33,096 | 2,076 | 4 | 3 |
+| 44 | 8,262 | 132,192 | 33,048 | 2,040 | 4 | 2 |
+
+Both modes continue to show the same **number of optimizer steps per epoch** as S9 (given the same batch size). Prefix validation BCE reaches its selected best checkpoint in epoch 2 or 3 in all seeds, then degrades as train BCE keeps dropping. Overfitting therefore persists, though the severe S12 seed42 Prefix validation collapse is substantially reduced.
+
+### S13 versus historical S9, unweighted seed means
+
+| Arm | Checkpoint | S9 accuracy | S13 accuracy | Accuracy delta (percentage points) | Mean delta log loss |
+|---|---:|---:|---:|---:|---:|
+| Last9 | 25% | 0.565784 | 0.560287 | −0.550 | −0.001138 |
+| Last9 | 50% | 0.609598 | 0.620101 | +1.050 | −0.004706 |
+| Last9 | 75% | 0.667929 | 0.671261 | +0.333 | −0.002978 |
+| Last9 | 90% | 0.694239 | 0.695222 | +0.098 | −0.002921 |
+| Prefix | 25% | 0.563198 | 0.557302 | −0.590 | +0.000627 |
+| Prefix | 50% | 0.615039 | 0.615563 | +0.052 | −0.001739 |
+| Prefix | 75% | 0.673241 | 0.672300 | −0.094 | +0.001782 |
+| Prefix | 90% | **0.696206** | **0.705715** | **+0.951** | **+0.003013** |
+
+At the 90% stage, Prefix S13 minus S9 accuracy is positive in each split:
+
+| Seed | S9 Prefix | S13 Prefix | Accuracy delta (pp) | Within-seed paired replay-bootstrap 95% CI (pp) | Log loss delta |
+|---|---:|---:|---:|---|---:|
+| 42 | 0.704274 | 0.721670 | +1.740 | [+0.297, +3.032] | +0.005890 |
+| 43 | 0.692678 | 0.700867 | +0.819 | [−0.530, +2.168] | −0.000695 |
+| 44 | 0.691667 | 0.694608 | +0.294 | [−1.129, +1.814] | +0.003843 |
+
+**Interpretation:** Directionally consistent late accuracy improvement is encouraging but only seed42's unadjusted CI excludes zero. Prefix S13 mean 90% log loss worsens, so it cannot be described as a probability-quality improvement. Prefix early-stage 25% accuracy fell in all three seeds. Last9 improves 50% accuracy in all seeds and its average log loss is lower at all four stages, but not all per-seed intervals exclude zero. These are seeds of the *same* replay corpus, not independent experimental replications; the means and sign counts do not provide population confidence intervals.
+
+### Independent read-only aggregation on FAIR
+
+An additional standalone script `scripts/91_aggregate_dynamic_prefixes.py` audits the three saved S9/S13 `summary.json` and validation prediction CSV files, requiring exact replay/time/winner-label/checkpoint identity. It recomputes 5 metrics in each of 3 × 2 × 4 model/checkpoint cells, verifies stored deltas, paired bootstrap point estimates, config parity, source hash and four train examples per replay per epoch. It **does not load test, fit a model, tune thresholds, or pool seed bootstrap samples**.
+
+After pulling the committed script and tests and passing the expanded unit suite:
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2
+source "$HOME/.venvs/ml-sc2/bin/activate"
+git pull --ff-only
+
+python -m py_compile scripts/91_aggregate_dynamic_prefixes.py
+python -m unittest discover -s tests -p 'test_*.py' -q
+python scripts/70_verify_freeze.py --mode pointer
+python scripts/58_verify_final_table.py --check
+
+python scripts/91_aggregate_dynamic_prefixes.py \
+  --output-dir results/sequential/s13_dynamic_cutoffs_multiseed_v1
+```
+
+Expected only if the FAIR local files pass independent audit: `S13_MULTISEED_VALIDATION_PASS`. New output files: `metrics_by_seed_progress.csv`, `mean_progress_metrics.csv`, `summary.json`. Output directory must be fresh. Do not rerun S9/S13 training.
+
+**Research decision:** S13 is a credible exploratory training-sampling result, **not** proof that Prefix decisively improves accuracy or calibrates probabilities at 90%. Before any new model selection, present S9/S11/S12/S13 as validation-based observations, report the high test/reuse caveat, and consider a prospective, independently held-out evaluation only under a new rigorously specified protocol.
