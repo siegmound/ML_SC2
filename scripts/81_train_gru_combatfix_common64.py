@@ -10,35 +10,16 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import replace
 from pathlib import Path
 
 import torch
 
 from sc2proj.sequential.data import load_index, load_replay_partitions, prepare_sequential_data
 from sc2proj.sequential.gru import GRUConfig, fit_gru, validation_predictions
-from sc2proj.sequential.variants import verify_combatfix_parity
+from sc2proj.sequential.variants import verify_combatfix_parity, combatfix_common64_view
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results/sequential"
-
-
-def make_common64_view(reference, combatfix):
-    """In-memory feature view; keep combatfix row offsets and its source hash.
-
-    The full 73-feature S1 index is validated first. Do not write a synthetic
-    index or misrepresent it as the original 64-feature v3.1 ZIP.
-    """
-    names = tuple(reference.features)
-    if len(names) != 64 or len(combatfix.features) != 73:
-        raise ValueError("S7 expects 64 reference and 73 combatfix features")
-    if not set(names).issubset(combatfix.features) or len(set(combatfix.features) - set(names)) != 9:
-        raise ValueError("S7 requires exactly nine extra combatfix predictors")
-    metadata = dict(combatfix.manifest)
-    metadata["features"] = list(names)
-    metadata["feature_count"] = len(names)
-    metadata["feature_view"] = "v3_2_common64"
-    return replace(combatfix, features=names, manifest=metadata)
 
 
 def main() -> None:
@@ -73,7 +54,7 @@ def main() -> None:
     reference = load_index(args.reference_index_dir)
     combatfix = load_index(args.index_dir)
     parity = verify_combatfix_parity(reference, combatfix, require_full=True)
-    view = make_common64_view(reference, combatfix)
+    view = combatfix_common64_view(reference, combatfix)
     split_reference = load_replay_partitions(args.split_json, reference)
     split_combatfix = load_replay_partitions(args.split_json, combatfix)
     if split_reference.seed != split_combatfix.seed:
