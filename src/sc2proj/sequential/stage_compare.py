@@ -14,7 +14,8 @@ S8_KEYS = (*CHECKPOINT_KEYS, "progress_percent", "p1_wins")
 
 
 def align_validation_model(stage: pd.DataFrame, predictions: pd.DataFrame,
-                           model_name: str, *, require_exact: bool = False,\n                           enforce_half_threshold: bool = True) -> pd.DataFrame:
+                           model_name: str, *, require_exact: bool = False,
+                           enforce_half_threshold: bool = True) -> pd.DataFrame:
     """Return S8 checkpoints plus aligned model probabilities; fail closed."""
     needed = set(CHECKPOINT_KEYS) | {"y_true", "y_prob", "y_pred"}
     if not set(S8_KEYS).issubset(stage.columns) or not needed.issubset(predictions.columns):
@@ -47,7 +48,7 @@ def align_validation_model(stage: pd.DataFrame, predictions: pd.DataFrame,
     if not np.array_equal(joined.p1_wins.to_numpy(dtype=np.int8),
                           joined.y_true.to_numpy(dtype=np.int8)):
         raise ValueError(f"{model_name}: winner label mismatch")
-    if not np.array_equal(
+    if enforce_half_threshold and not np.array_equal(
         (joined.y_prob.to_numpy(dtype=np.float64) >= .5).astype(np.int8),
         joined.y_pred.to_numpy(dtype=np.int8),
     ):
