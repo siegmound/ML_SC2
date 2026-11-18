@@ -82,3 +82,15 @@ This evaluates the archived tabular predictions only where the 9-, 17-, and 33-s
 4. Save the FAIR observed environment and output logs, then approve S4 GRU implementation separately.
 
 S3 does not fit a new MLP baseline; it reuses the historical Deep MLP prediction archive. New train-only MLP reruns may be added in a later, separately declared experiment if needed.
+
+### Locally independently checked seed-42 reference (validation only)
+
+The S3 matching logic was also run against the frozen v3.1 snapshot ZIP and archived seed-42 prediction files, and its input Git blob identities were checked against the files on the feature branch (the historical delivery ZIP used CRLF; the committed files use LF). On the **112,312 shared validation endpoints**, expected retrospective Accuracy is approximately:
+
+| Model | Accuracy |
+|---|---:|
+| RF train-only | 0.628579 |
+| XGB train-only | 0.628722 |
+| Historical Deep MLP | 0.630574 |
+
+These values **must not** be compared directly with the published full-snapshot test accuracies: the endpoint population is different and these are validation-set scores, not a new held-out evaluation. They are checks for alignment on FAIR, not evidence to select a new model by itself.
