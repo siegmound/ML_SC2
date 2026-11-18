@@ -66,7 +66,12 @@ jobs:
 
   full-data:
     name: Opt-in full LFS verification and CPU integration tests
-    if: github.event_name == 'workflow_dispatch'
+    # The workflow is not yet on default 'main', where manual dispatch is
+    # registered. Allow a one-time explicit audit-branch push to run full CI.
+    # Subsequent ordinary pushes and pull requests keep the expensive job off.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[b4-full]'))
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
