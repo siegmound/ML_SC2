@@ -33,12 +33,14 @@ def model_metrics(labels: np.ndarray, probs: np.ndarray, preds: np.ndarray) -> d
     }
 
 
-def load_verified_gru(run_dir: str | Path, seed: int, index, matched: pd.DataFrame) -> pd.DataFrame:
+def load_verified_gru(run_dir: str | Path, seed: int, index, matched: pd.DataFrame,
+                      *, dataset_variant: str = "v3_1_fixed",
+                      expected_status: str = "S4_VALIDATION_PASS") -> pd.DataFrame:
     """GRU CSV must exactly equal all S1/S3 endpoints, never an arbitrary subset."""
     run_dir = Path(run_dir)
     summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
     required = {
-        "status": "S4_VALIDATION_PASS", "seed": seed, "smoke": False,
+        "status": expected_status, "seed": seed, "smoke": False,
         "window_length": 9, "feature_count": len(index.features),
         "source_zip_sha256": index.manifest["source_zip_sha256"],
         "test_evaluation_policy": "not_accessed_during_training",
@@ -49,7 +51,7 @@ def load_verified_gru(run_dir: str | Path, seed: int, index, matched: pd.DataFra
             raise ValueError(f"S4 summary {key} mismatch for seed {seed}")
     if int(index.manifest["window_length"]) != 9:
         raise ValueError("S5 only supports S4 9-snapshot experiment")
-    if summary.get("dataset") != "v3_1_fixed":
+    if summary.get("dataset") != dataset_variant:
         raise ValueError("S4 dataset variant mismatch")
     pred = pd.read_csv(run_dir / "validation_predictions.csv", dtype={"replay_id": "string"})
     if not set(REQUIRED_COLUMNS).issubset(pred.columns):
@@ -100,7 +102,7 @@ def paired_replay_bootstrap(matched: pd.DataFrame, baseline: str, *, reps: int =
     No row-wise bootstrap and no cross-seed pooling. Positive accuracy delta and
     negative log-loss delta favor GRU. These are conditional exploratory intervals.
     """
-    if baseline not in BASELINES or reps < 0:
+    if baseline not in (*BASELINES, "v31") or reps < 0:
         raise ValueError("Invalid baseline or negative bootstrap repetitions")
     y = matched["p1_wins"].to_numpy(dtype=np.int8)
     if len(y) == 0:
