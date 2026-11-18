@@ -409,3 +409,30 @@ the scientific runtime-lock condition remains **OPEN**.
 
 This inventory is **audit evidence**, not a change to the project's
 minima in `requirements.txt` or frozen scientific results.
+
+
+## FAIR editable-origin classification and sanitized pin candidate — 2026-11-18
+
+The user independently classified the single `pip freeze` editable
+entry using the installed Python metadata and the originating source:
+- Project distribution: `ml-sc2-remake`.
+- Validated Git remote: `github.com/siegmound/ML_SC2` (no third-party editable).
+- Candidate lock: `55` exact `name==version` entries; local file
+  `~/HPC-POMDP/ML-SC2/b4_environment_evidence/requirements_fair_candidate.txt`.
+- User-reported SHA-256 of that candidate text:
+  `9dc23f0ea5936a158e8a5e271494768a2ce2163ed351c0e430a5bcfa1882787e`.
+- No raw editable URL or possible credentials were included in this report.
+
+The candidate excludes the editable GitHub source so that a separate
+isolated environment can install the **checked-out tabular audit branch**
+using `pip install -e . --no-deps` (avoiding accidental substitution with
+the sequential branch). The SHA-256 certifies the text, *not* wheel-byte
+reproducibility or the source Git SHA of the editable installation.
+Original FAIR torch runtime was `2.15.0+cu132`; the freeze pin
+`torch==2.15.0` alone is insufficient to assert the CUDA wheel variant.
+
+**Open:** resolve and install in a new Python 3.12 venv, verify the actual
+wheel/CUDA variant and 34-test suite, capture provenance/hashes, and
+re-run the deterministic validations. Do not set the full scientific
+environment lock or B5 release conditions until independent reproduction
+evidence is supplied.
