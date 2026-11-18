@@ -1,6 +1,6 @@
 {
   "schema": "ml_sc2.b5.release_gates.v1",
-  "as_of": "2026-11-17",
+  "as_of": "2026-11-18",
   "branch": "audit/sc2-corrections-2026-11-17",
   "baseline_commit": "33660e2b4fc4bd75df0824bbb7fa7c2096d13831",
   "release_status": "BLOCKED_PENDING_EVIDENCE",
@@ -15,7 +15,7 @@
     "b2_full_scale_four_way_and_deep_completed": false,
     "b3_raw_replay_to_final_feature_and_exclusion_provenance_resolved": false,
     "b4_clean_clone_and_remote_ci_passed": false,
-    "b4_v3_2_full_lfs_payload_verified": false,
+    "b4_v3_2_full_lfs_payload_verified": true,
     "b4_full_scientific_environment_locked": false,
     "release_candidate_review_approved": false
   },
@@ -23,6 +23,7 @@
     "True conditions indicate source/engineering status only, not a release approval.",
     "Historical metrics and datasets remain frozen; do not silently substitute new scientific results.",
     "GitHub PDF/PPTX currently contain historical exports and must not be labelled B5-corrected.",
-    "No tag or merge to main until pending gates are verified and documented."
+    "No tag or merge to main until pending gates are verified and documented.",
+    "Full Git LFS v3.1 and v3.2 payloads verified by SHA-256, size, ZIP header and feature schema on FAIR clean checkout, 2026-11-18; B4 scientific reproducibility and release remain pending."
   ]
 }
