@@ -1,9 +1,11 @@
 name: B5 publication review (not a release)
 
 'on':
-  push:
+  # Publish review-only artifacts for the audit PR, never on main itself.
+  # Avoid duplicate expensive TeX builds from both push and PR events.
+  pull_request:
     branches:
-      - audit/sc2-corrections-2026-11-17
+      - main
     paths:
       - 'paper/**'
       - 'scripts/71_refresh_presentation.py'
