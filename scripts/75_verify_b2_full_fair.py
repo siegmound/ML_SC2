@@ -82,13 +82,15 @@ def scores(df, calibration: bool, *, probability_dtype=np.float64):
 
 
 def check_scores(actual, recorded, path, *, float32_csv_roundtrip=False):
-    """Recompute saved metrics, accounting only for XGB raw float32 CSV rounding.
+    """Recompute saved metrics with a bounded float32 CSV round-trip allowance.
 
-    Pandas' CSV representation is not guaranteed to round-trip every float32
-    booster probability bit-for-bit. At most 1e-6 absolute discrepancy is
-    permitted for probability-derived aggregate scores in that one case;
-    classification scores and all other runs retain the original 1e-8 gate.
-    This is a numerical serialization allowance, not a metric correction.
+    The XGBoost booster returns float32 probabilities. The raw predictions and
+    the isotonic calibrator derived from them may retain float32 arithmetic,
+    while Platt probabilities are float64. Pandas CSV serialization can round
+    those float32 values, and sklearn aggregate metrics can therefore differ
+    at ~1e-7 from the original run. Only probability-derived aggregate metrics
+    of XGB raw/isotonic use a 1e-6 absolute limit; class metrics, Platt, RF
+    and Deep retain the stricter 1e-8 limit. We never rewrite recorded scores.
     """
     for key, value in actual.items():
         require(key in recorded, f"Missing {key} in {path}")
@@ -193,14 +195,14 @@ def verify_one(root: Path, base: Path, model: str, seed: int, original: dict):
     for method in CALIBRATION_METHODS:
         frame = read_predictions(run / f"test_predictions_{method}.csv")
         check_test_partition(frame, original, summary["partition_rows"]["test"], run)
-        # XGBoost emits raw (uncalibrated) probabilities as float32. CSV
-        # loading otherwise promotes them to float64; sklearn log_loss/ECE
-        # can then differ from the originally saved float32-based metrics
-        # by a few 1e-8. Calibrated Platt/isotonic outputs use float64.
-        probability_dtype = np.float32 if model == "xgb" and method == "uncalibrated" else np.float64
+        # XGBoost's uncalibrated predictions are float32; IsotonicRegression
+        # also preserves float32 in this pipeline, unlike Platt regression.
+        # Preserve each output's numerical precision when auditing metrics.
+        float32_output = model == "xgb" and method in ("uncalibrated", "isotonic")
+        probability_dtype = np.float32 if float32_output else np.float64
         check_scores(scores(frame, True, probability_dtype=probability_dtype),
-                     summary["scores"][method], run,
-                     float32_csv_roundtrip=(model == "xgb" and method == "uncalibrated"))
+                     summary["scores"][method], f"{run}/{method}",
+                     float32_csv_roundtrip=float32_output)
         if baseline is not None:
             compare_rows(baseline, frame, run)
         else:
