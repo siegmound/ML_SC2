@@ -292,3 +292,32 @@ for commands and explicit limits. A real FAIR sampled raw-to-frozen
 run has **not yet** been observed in this stage. No B3 release flag
 can be enabled from source code preparation or the sampled check
 alone; full raw source selection and v3.2 combatfix formulas remain open.
+
+## Actual raw-to-feature parity: 3/3 replay FAIL; tech root cause proven
+
+The FAIR reconstructed-source test on seeded 3 matched replay IDs
+(117 aligned snapshots, 64 features) returned 7,488 feature comparisons
+and 1,632 numeric discrepancies despite all replay/time keys, label
+values, and schema names matching. Per-feature investigation found
+**46/64 fields exact** and **18 affected fields**, all in the
+technology, combat, counter and derived temporal families.
+
+Independent examination of the exact archived `sc2_constants.py`
+(51 known UNIT_STATS entries) found zero keys `tech_level` and zero
+keys `upg_cat`; the archived parser defaults absent `tech_level` to
+zero. Frozen v3.1, however, contains 101 nonzero p1 technology rows,
+95 nonzero p2 technology rows and 63 nonzero tech-difference rows
+in the same 117-snapshot sample. The exact corresponding mismatch
+counts are 101 + 95 + 63 = **259/1,632 (15.9%)**, fully explained
+by the historical source-copy metadata deficiency, not tolerance.
+
+The remaining **1,373** combat/counter and temporal mismatches are
+**not yet attributed**. Missing `upg_cat` is a possible upstream
+upgrade-scoring factor, not a proven numeric explanation. Do not
+silently 'fix' the archived constants by inventing tech levels or
+upgrading model metrics. See [the updated B3 feature-level investigation]
+(B3_RAW_TO_FROZEN_PARITY_2026-11-19.md) and read-only
+`scripts/80_audit_b3_source_constants.py`.
+
+**Historical raw-to-final parity remains NOT CERTIFIED and B3/B5 release
+gates remain blocked.**
