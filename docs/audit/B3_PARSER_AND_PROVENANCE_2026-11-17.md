@@ -221,3 +221,34 @@ nine v3.2-specific feature formulas have not been recovered.
 
 The B3 raw provenance release gate remains **OPEN**, and no frozen
 dataset or historical metrics were changed.
+
+## New B3 original source inventory stage — 2026-11-19
+
+The authoritative source reference already tracked in `data/raw/` is
+SC2ReSet Zenodo record `14963356` / DOI
+`10.5281/zenodo.14963356`. The upstream replaypack catalogue contains
+**71 named archive entries**, but the catalogue is not proof those
+packages were downloaded or used in the original frozen build.
+
+The user-provided historical freeze archives were reexamined and exact
+SHA-256 source identities documented in
+[B3_RAW_SOURCE_INVENTORY_2026-11-19.md](B3_RAW_SOURCE_INVENTORY_2026-11-19.md).
+No original `.SC2Replay` members were found directly in the uploaded
+top-level ZIP directories. The original builder uses a flat `replays/`
+directory and does not record individually actionable exclusion reasons.
+
+New `scripts/77_inventory_b3_raw_sources.py` performs a **read-only**
+central-directory inventory of replaypacks or loose `.SC2Replay` files,
+checks the 71-pack catalogue, independently enumerates frozen replay
+IDs, identifies duplicate source basenames and unreconciled identities,
+and **never invents failure reasons**. Its synthetic integration tests
+(`tests/test_b3_raw_source_inventory.py`) passed **3/3** in the public
+GitHub B4 metadata CI on commit `848388ca`, run
+`44600118254`. No real raw pack scan was asserted by this CI check.
+
+B3 historical raw-to-feature/exclusion provenance is **STILL OPEN**.
+Next evidence depends on access to actual original replaypack ZIPs (on
+FAIR, the original workstation, or reacquired from the pinned Zenodo
+source). Until then, 816 remains a documented arithmetic difference,
+not an individually explained set of parser exclusions. The B5 release
+gate remains false.
