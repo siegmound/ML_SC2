@@ -83,7 +83,7 @@ class CounterResidualProfileTests(unittest.TestCase):
             data, source = self.make_evidence(folder)
             original = data.read_text()
             self.assertRaisesRegex(
-                ValueError, "Missing source inventory",
+                ValueError, "Required input file absent",
                 self.tool.profile, data, Path(folder) / "unavailable.csv",
                 expected_count=2,
             )
