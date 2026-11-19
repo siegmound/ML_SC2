@@ -321,3 +321,24 @@ upgrading model metrics. See [the updated B3 feature-level investigation]
 
 **Historical raw-to-final parity remains NOT CERTIFIED and B3/B5 release
 gates remain blocked.**
+
+### Script-81 primitive forensics observed / script-82 direction test prepared
+
+The same three FAIR raw replays were instrumented using exact archived
+source copies, producing 117 matched snapshots and 234 player-inventory
+observations. Primitive comparisons had 552 mismatches / 702 values:
+158 combat (p1/p2), 198 counter (p1/p2), 196 player technology.
+The 196 player tech mismatches and 63 tech_diff mismatches are covered
+by the proven historical constants incompatibility.
+
+The remaining two primitive families are being tested in a controlled
+source-semantics experiment: `scripts/82_test_b3_counter_orientation.py`
+reuses the script-81 CSV evidence to compare as-archived vs reversed
+counter-table direction, without modifying replay bytes or frozen CSV.
+Results from the real FAIR experiment are **not yet available**;
+neither direction may be identified as the actual original executable.
+Some combat contexts may be excluded where the existing compressed
+inventory omits relevant non-army enemy units. See
+[B3_RAW_TO_FROZEN_PARITY_2026-11-19.md](B3_RAW_TO_FROZEN_PARITY_2026-11-19.md).
+
+**B3 raw source provenance remains OPEN / not certified.**
