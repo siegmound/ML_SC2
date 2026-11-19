@@ -65,6 +65,24 @@ class B3UnmatchedDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result["header_error_type"], "RuntimeError")
         self.assertIsNone(result["duration_seconds"])
 
+    def test_file_magic_distinguishes_macos_metadata_from_mpq_replay(self):
+        tool = script()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            apple = root / "metadata.SC2Replay"
+            # Observed AppleDouble macOS metadata magic, not a replay header.
+            apple.write_bytes(bytes.fromhex("00051607") + b"\x00" * 190)
+            mpq = root / "valid_container.SC2Replay"
+            mpq.write_bytes(b"MPQ\x1b" + b"fake test payload")
+            unknown = root / "unknown.SC2Replay"
+            unknown.write_bytes(b"not a replay")
+            self.assertEqual(tool.file_signature(apple),
+                             "APPLEDOUBLE_MACOS_METADATA_NOT_REPLAY")
+            self.assertEqual(tool.file_signature(mpq),
+                             "MPQ_CONTAINER_CANDIDATE")
+            self.assertEqual(tool.file_signature(unknown),
+                             "UNKNOWN_CONTAINER_SIGNATURE")
+
     def test_rejects_duplicate_candidate_ids_and_path_traversal(self):
         tool = script()
         with tempfile.TemporaryDirectory() as directory:
