@@ -369,3 +369,34 @@ See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
 summary, commands and limitations.
 
 **B3 remains OPEN and release remains BLOCKED_PENDING_EVIDENCE.**
+
+### Actual B3 residual sign/Queen follow-up
+
+FAIR `83_profile_b3_counter_residuals.py` observed 144/234
+nonmatching reversed-counter values, all nonzero/same sign;
+122/144 frozen values are below the reversed reconstruction,
+22 above. Mean signed difference is −0.0112855893 and
+mean absolute difference is 0.0125096312. Ratio medians for
+the three replays are different (0.907614, 0.972308,
+0.979077), so a global scaling is unsupported.
+
+Three highest-contrast Queen-only source observations have the
+same frozen/reversed ratio 0.876470588. With the archived
+Queen power=8 and counter weight=0.85, this implies a
+**conditional effective weight 0.745**, *provided that* the
+original frozen generator used the opponent unit fractions captured
+by the reconstructed replay snapshots. The actual original
+counter coefficient is not attested by this equality.
+
+New `84_decompose_b3_single_type_counter.py` checks those
+opponent fractions explicitly for every recorded one-unit-type
+army without replay parsing or numerical formula fitting,
+groups conditional weights by unit and opponent composition,
+and rejects previously altered source evidence. Its four
+synthetic regression tests passed in B4 metadata CI run
+`44625740137`; a real FAIR script-84 execution remains pending.
+
+See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
+(B3_RAW_TO_FROZEN_PARITY_2026-11-19.md). The 816 historical
+upstream count difference and full replay-to-feature provenance
+are still unresolved; **B3 remains OPEN**.
