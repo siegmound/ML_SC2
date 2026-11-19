@@ -207,5 +207,46 @@ class B2FullFAIRTests(unittest.TestCase):
                                   float32_csv_roundtrip=False)
 
 
+    def test_deep_float32_metric_csv_roundtrip_stays_strict(self):
+        """Deep torch sigmoid probabilities are float32 at metric computation."""
+        from io import StringIO
+
+        deep = deep_module()
+        spec = importlib.util.spec_from_file_location(
+            "b2_deep_float32_verifier", ROOT / "scripts/75_verify_b2_full_fair.py"
+        )
+        assert spec and spec.loader
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+
+        rng = np.random.default_rng(17)
+        labels = np.tile([0, 1], 60)
+        probabilities = rng.uniform(0.05, 0.95, size=len(labels)).astype(np.float32)
+        original_metrics = deep.metrics_from_probs(labels, probabilities)
+        source = pd.DataFrame({
+            "replay_id": [f"D{i}" for i in range(len(labels))],
+            "time_sec": [135] * len(labels),
+            "y_true": labels,
+            "y_prob": probabilities,
+            "y_pred": (probabilities >= 0.5).astype(int),
+        })
+        buffer = StringIO()
+        source.to_csv(buffer, index=False)
+        buffer.seek(0)
+        restored = pd.read_csv(buffer, dtype={"replay_id": str})
+        np.testing.assert_array_equal(
+            restored["y_prob"].to_numpy(dtype=np.float32), probabilities
+        )
+        recomputed = verifier.scores(restored, False, probability_dtype=np.float32)
+        verifier.check_scores(recomputed, original_metrics, Path("deep/validation"))
+
+        # Deep stays at the original 1e-8 gate, unlike the bounded XGB
+        # calibration round-trip exception; a 1e-6 metric change must fail.
+        corrupted = dict(original_metrics)
+        corrupted["log_loss"] += 1e-6
+        with self.assertRaisesRegex(ValueError, "Metric log_loss mismatch"):
+            verifier.check_scores(recomputed, corrupted, Path("deep/validation"))
+
+
 if __name__ == "__main__":
     unittest.main()
