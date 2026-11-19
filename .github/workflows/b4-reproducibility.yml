@@ -46,6 +46,9 @@ jobs:
           python -m compileall -q src scripts tests
           python scripts/17_internal_audit.py
 
+      - name: Validate FAIR B2 full-scale runner shell syntax
+        run: bash -n scripts/74_run_b2_full_fair.sh
+
       - name: Run stdlib-only regression tests
         run: |
           python -m unittest discover -s tests -p "test_block16_publication.py" -v
