@@ -34,7 +34,8 @@ class B2FullFAIRTests(unittest.TestCase):
             split = root / "split.json"
             split.write_text(json.dumps({"seed": 42}), encoding="utf-8")
             args = types.SimpleNamespace(
-                split_json=str(split), dataset_name="toy", random_state=42,
+                dataset_zip=str(root / "unused.zip"), split_json=str(split),
+                dataset_name="toy", random_state=42,
                 output_root=str(root / "deep"), device="cuda",
             )
             output = root / "deep/toy/seed_42"
