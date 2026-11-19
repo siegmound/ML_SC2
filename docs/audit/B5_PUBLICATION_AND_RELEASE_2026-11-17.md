@@ -183,3 +183,18 @@ GitHub comparison after B5 source, CI, tests and publication-document edits
 review-generation machinery are complete, but **release remains blocked**.
 Do not merge or tag this working branch as the scientifically certified
 final state until the remaining B2, B3, B4 and visual-export gates pass.
+
+## 2026-11-19 B2 progress (supersedes B2 execution-pending statements)
+
+The full FAIR B2 rerun has now **passed 9/9** and a seven-variant
+three-seed descriptive summary has been generated. New scientific
+interpretation and the source transcript limitations are recorded in
+[B2_SCIENTIFIC_RESULTS_2026-11-19.md](B2_SCIENTIFIC_RESULTS_2026-11-19.md).
+The dedicated `b2_full_scale_four_way_and_deep_completed` gate was
+updated to **true** after those observations, without modifying the
+historical frozen results or canonical PDF/PPTX.
+
+B3 raw replay-to-final provenance and the explicit release-candidate
+approval remain false. B5 publication text/figures must separately be
+reconciled with the retrospective B2 table before any candidate can
+be released. `release_status` remains `BLOCKED_PENDING_EVIDENCE`.
