@@ -60,9 +60,9 @@ class CombatCounterForensicsTests(unittest.TestCase):
         self.assertEqual(summary["mismatches"], 3)
         changed = [r for r in residuals if r["mismatch"]]
         self.assertEqual(len(changed), 3)
-        self.assertEqual(
+        self.assertAlmostEqual(
             [x for x in changed if x["feature"] == "p1_combat"][0]
-            ["signed_frozen_minus_reconstructed"], 0.15000000000000002
+            ["signed_frozen_minus_reconstructed"], 0.15,
         )
         self.assertEqual(
             next(row for row in summary["by_primitive"] if row["feature"] == "p1_tech_level")
