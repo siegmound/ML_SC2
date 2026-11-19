@@ -135,6 +135,40 @@ present on FAIR, preserve this stage as **WAITING_FOR_RAW_SOURCES**:
 locate the original workstation download or acquire the relevant
 SC2ReSet packs from the DOI without silently changing dataset version.
 
+## 3C. Newly located tracked real replay subset (important)
+
+The repository itself already contains `data/raw/replay_subsets/`: a GitHub
+directory inspection on 2026-11-19 listed **300 actual `.SC2Replay` files**
+plus `placeholder.txt` (total visible replay payload sizes **57,690,402
+bytes**, approximately 57.7 MB; this is raw source file size metadata, not
+a cryptographic validation). This corrects any impression that the project
+checkout has *no* raw replay files. The separately uploaded freeze and
+processed ZIPs lacked direct `.SC2Replay` members, but the tracked subset
+is usable for immediate source-identity and clean-room parser experiments.
+
+**Immediate next command on FAIR (works without fetching the 71 packs):**
+
+```bash
+"$SC2_PYTHON" scripts/77_inventory_b3_raw_sources.py \
+  --raw-root data/raw/replay_subsets \
+  --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+  --output-dir results/b3_source_inventory_subset_20261119
+
+cat results/b3_source_inventory_subset_20261119/summary.json
+```
+
+The reported `catalogued_packs_not_observed` will include all 71 packs
+because this deliberately scans a 300-file *loose replay subset*, **not**
+the full tournament ZIP source. That is expected and does not mean the
+packs were excluded during historical dataset generation. Likewise, a
+partial 300-file subset cannot reconcile the 24,057 upstream count or the
+816 numerical difference. Its value is establishing which subset IDs are
+present in the frozen dataset and preparing raw event/feature comparisons.
+
+The recorded exact source provenance of the 300-file subset is not yet
+attested; do not equate it automatically with the original full 71-pack
+build or mark B3 closed.
+
 ## 4. What must follow a successful inventory
 
 1. **Identity reconciliation:** verify actual pack files, unique
