@@ -342,3 +342,30 @@ inventory omits relevant non-army enemy units. See
 [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md](B3_RAW_TO_FROZEN_PARITY_2026-11-19.md).
 
 **B3 raw source provenance remains OPEN / not certified.**
+
+### Actual counter-orientation experiment: important asymmetry
+
+On FAIR, script 82 used the same 3 raw replays/117 snapshots and the
+existing script-81 evidence. **4/4 tests PASS**, and both hypotheses
+were compared on 234 complete counter and 234 combat observations.
+Reversing UNIT_COUNTERS lookup reduces counter absolute-error mean from
+0.243607 to **0.012510 (~94.9%)** and counter mismatches from
+198 to **144**; the other 144/234 counter values still fail 1e-6
+tolerance, so this is not recovered numerical parity.
+
+On combat, reversal slightly reduces MAE 0.049582 -> 0.047726 but
+**increases** mismatch count from 158 to 198. Applying the same
+direction change to both primitive families is not supported.
+These results show a strong counter score convention mismatch, not
+which actual original generator created the frozen dataset.
+
+New `scripts/83_profile_b3_counter_residuals.py` profiles the sign,
+zero/nonzero support, relative scaling, replay and side of the
+144 remaining reversed-counter discrepancies, from the already
+recorded CSVs (without another replay parse). Original replay
+membership provenance and execution history remain unverified.
+See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
+(B3_RAW_TO_FROZEN_PARITY_2026-11-19.md) for the actual FAIR
+summary, commands and limitations.
+
+**B3 remains OPEN and release remains BLOCKED_PENDING_EVIDENCE.**
