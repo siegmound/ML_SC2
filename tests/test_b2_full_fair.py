@@ -112,6 +112,17 @@ class B2FullFAIRTests(unittest.TestCase):
             xgb_verified = subprocess.run(xgb_cmd, text=True, capture_output=True)
             self.assertEqual(xgb_verified.returncode, 0,
                              xgb_verified.stdout + xgb_verified.stderr)
+            # A plausible-looking but altered in-range probability must still
+            # fail the 1e-6 float32 CSV metric allowance.
+            xgb_pred = (out / "strict_calibration/real_v3_1_fixed"
+                        / "xgb/seed_43/test_predictions_uncalibrated.csv")
+            xgb_frame = pd.read_csv(xgb_pred)
+            xgb_frame.loc[0, "y_prob"] = 0.99 if xgb_frame.loc[0, "y_prob"] < 0.5 else 0.01
+            xgb_frame.loc[0, "y_pred"] = int(xgb_frame.loc[0, "y_prob"] >= 0.5)
+            xgb_frame.to_csv(xgb_pred, index=False)
+            rejected = subprocess.run(xgb_cmd, text=True, capture_output=True)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("Metric", rejected.stderr + rejected.stdout)
 
 
     def test_xgb_float32_metric_csv_roundtrip(self):
@@ -148,12 +159,23 @@ class B2FullFAIRTests(unittest.TestCase):
         )
         original_metrics = strict.metrics(labels, probabilities)
         reproduced = verifier.scores(restored, True, probability_dtype=np.float32)
-        verifier.check_scores(reproduced, original_metrics, Path("float32_csv"))
+        verifier.check_scores(reproduced, original_metrics, Path("float32_csv"),
+                              float32_csv_roundtrip=True)
 
+        # Native float32 CSV serialization may shift aggregate metrics by a
+        # few 1e-7, but the verifier must not accept genuine 1e-4 tampering.
+        near = dict(original_metrics)
+        near["log_loss"] += 5e-7
+        verifier.check_scores(reproduced, near, Path("float32_csv"),
+                              float32_csv_roundtrip=True)
         corrupted = dict(original_metrics)
         corrupted["log_loss"] += 1e-4
         with self.assertRaisesRegex(ValueError, "Metric log_loss mismatch"):
-            verifier.check_scores(reproduced, corrupted, Path("float32_csv"))
+            verifier.check_scores(reproduced, corrupted, Path("float32_csv"),
+                                  float32_csv_roundtrip=True)
+        with self.assertRaisesRegex(ValueError, "Metric log_loss mismatch"):
+            verifier.check_scores(reproduced, near, Path("float32_csv"),
+                                  float32_csv_roundtrip=False)
 
 
 if __name__ == "__main__":
