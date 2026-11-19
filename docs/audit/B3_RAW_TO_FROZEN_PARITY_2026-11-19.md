@@ -139,3 +139,45 @@ be justified if reproducibility is established.
   recovered and reproduced from actual replay events.
 - B3 release flag stays false and B5 stays blocked. Existing B2
   completed evidence and all frozen assets remain immutable.
+
+
+## Actual FAIR seed-42 sample-3 result: FAILED NUMERIC PARITY
+
+An operator executed the pinned-source historical replay reconstruction on
+FAIR with the source-only bundle SHA-256
+`4d8888ddace6c209453f8bfd149c16be1e8b69e5e5565d153bafd68df3f60680`
+and frozen v3.1 SHA-256
+`65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`.
+
+The four B3 auditor tests passed; the subsequent real sample did NOT
+reproduce the numeric features. The interpreter was Python 3.12.3,
+NumPy 2.5.5, pandas 3.1.1, sc2reader 1.9.0.
+
+| Replay ID prefix | Frozen rows | Reconstructed rows | Matched timestamps | Label differences | Feature comparisons | Value mismatches |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `00bb7e14` | 53 | 53 | 53 | 0 | 3,392 | 786 |
+| `0a390370` | 36 | 36 | 36 | 0 | 2,304 | 506 |
+| `0b196edc` | 28 | 28 | 28 | 0 | 1,792 | 340 |
+| **TOTAL** | **117** | **117** | **117** | **0** | **7,488** | **1,632** |
+
+All three historical outputs had the frozen 64-feature schema, with
+zero extra or missing columns. All 117 replay/time keys and winner labels
+were reproduced; 5,856/7,488 numerical feature comparisons were within
+`rtol=1e-6, atol=1e-6`, but **no full replay passed**.
+
+This is a **real negative replication result**, not an error to suppress
+by selecting another tolerance, re-fitting models or regenerating frozen
+data. In particular, previous 65.7-million internal algebraic
+comparisons can remain correct while primitive replay-event features
+or historical execution differ.
+
+**Forensic blocker:** the operator has not yet supplied the existing
+`per_feature.csv` and `mismatch_examples.csv`, so the affected
+feature families and numerical signs/magnitudes are still unknown.
+Inspect these two files before considering a source or environment
+change. Do not assert that sc2reader 1.9.0 is incompatible without
+feature-level and controlled environment evidence.
+
+The original exact executed parser/bridge version and full historical
+replay corpus remain unproven. B3 stays **OPEN / numerical parity FAIL**
+and the B5 raw lineage release condition stays false.
