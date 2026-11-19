@@ -81,3 +81,28 @@ canonical PDF or original PPTX was modified by this investigation.
 
 **B3 release gate remains false** until all raw replay provenance,
 downstream exclusions and historical raw-to-final parity are resolved.
+
+
+## 4. Additional partial frozen v3.2 algebraic consistency
+
+The user-supplied `starcraft_full_dataset_v3_2_combatfix.zip` was also
+checked in a **separate read-only 15,000-row / 393-replay sample**. Six
+identities involving the extra v3.2 fields matched with
+`math.isclose(rel_tol=1e-6, abs_tol=1e-6)`:
+
+- `diff_raw_army_power = p1_raw_army_power - p2_raw_army_power`;
+- `raw_power_momentum_15` equals the 15-second delta in
+  `diff_raw_army_power`;
+- `counter_advantage_momentum_15` equals the 15-second delta in
+  `counter_advantage_diff`;
+- `diff_raw_army_power_60s` and `diff_raw_army_power_120s`
+  equal the respective temporal differences;
+- `diff_raw_army_power_vol_120` equals the population standard
+  deviation within a known nine-point 120-second history window.
+
+**81,364 comparisons; zero mismatches.** Comparisons requiring prior
+snapshots were only performed when that earlier retained observation
+existed. This is algebraic self-consistency, **not** a reconstruction of
+raw unit power, matchup/counter definitions or v3.2 source-version
+lineage. The nine v3.2 additional *upstream formulas* are not
+considered recovered, and B3 remains OPEN.
