@@ -154,10 +154,10 @@ def compare_replay(replay_id: str, frozen: pd.DataFrame, generated: pd.DataFrame
         "missing_historical_features": "",
         "extra_historical_features": "",
     }
-    require(not frozen.duplicated(["time_sec"]).any(), f"Frozen duplicate time keys: {replay_id}")
-    require(not generated.duplicated(["time_sec"]).any(), f"Generated duplicate time keys: {replay_id}")
     require("time_sec" in generated and "p1_wins" in generated,
             f"Missing historical replay/time/winner columns: {replay_id}")
+    require(not frozen.duplicated(["time_sec"]).any(), f"Frozen duplicate time keys: {replay_id}")
+    require(not generated.duplicated(["time_sec"]).any(), f"Generated duplicate time keys: {replay_id}")
     actual_cols = set(generated.columns)
     expected_cols = set(frozen.columns)
     missing = sorted((expected_cols - actual_cols) - {"replay_id"})
@@ -283,6 +283,12 @@ def main() -> None:
         "historical_source_copy_sha256": source_manifest,
         "historical_source_zip_sha256": sha256(args.historical_source_zip),
         "frozen_v31_sha256": dataset_sha,
+        "runtime": {
+            "python": sys.version,
+            "numpy": np.__version__,
+            "pandas": pd.__version__,
+            "sc2reader": __import__("importlib.metadata", fromlist=["version"]).version("sc2reader"),
+        },
         "sample_seed": args.seed, "sample_size": len(selected),
         "sampled_replay_ids": [x[0] for x in selected],
         "sampled_raw_file_sha256": sources,
