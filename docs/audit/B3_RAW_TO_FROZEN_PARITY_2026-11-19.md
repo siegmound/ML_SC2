@@ -336,3 +336,84 @@ results to all 291 overlapping replays until these primitive causes
 are isolated, and do not substitute guessed source constants.
 
 **B3 lineage and raw-to-frozen parity remain open/failed.**
+
+## Actual FAIR script-81 source-instrumentation result — 2026-11-19
+
+The operator successfully ran `81_forensic_b3_combat_counter.py`
+against the same three SHA-256-verified raw replay files and the pinned
+historical parser, bridge, constants and counter table. All **3/3**
+synthetic test cases passed locally, followed by **117 aligned**
+snapshots and **234 per-player raw inventory/upgrade observations**.
+
+| Primitive | Miscompares / 117 | Mean absolute error | Max absolute error |
+| --- | ---: | ---: | ---: |
+| `p1_combat` | 62 | 0.045210 | 0.529215 |
+| `p2_combat` | 96 | 0.053954 | 0.294057 |
+| `counter_advantage_p1` | 99 | 0.238630 | 0.825000 |
+| `counter_advantage_p2` | 99 | 0.248585 | 0.790000 |
+| `p1_tech_level` | 101 | 1.290598 | 3.000000 |
+| `p2_tech_level` | 95 | 1.418803 | 3.000000 |
+
+These six primitive columns have **552 mismatches in 702 primitive
+feature comparisons**; 196 are individual p1/p2 tech, 158 combat
+and 198 counter. The additional `tech_diff` mismatch (63) is included
+in the separate original 1,632-feature total, not these six columns.
+The global 1,632-feature mismatch total is not changed or added to
+the 552 primitive statistic: these are overlapping scopes.
+
+The original archive has 51 `UNIT_STATS` records but no `tech_level`
+or `upg_cat` fields. The former already explains the technology mismatch;
+the latter may explain some upgrade-related combat discrepancies but
+no combat/counter primary root cause has yet been certified.
+
+### Controlled direction-of-counter-relation experiment
+
+Source-level inspection found that `sc2_counters.py` lists counters
+**effective against** a keyed unit (e.g. Marine maps to Baneling and
+Colossus), while the archived `_calc_counter_score` uses the same list
+as if the keyed unit counters the listed enemy units. This semantic
+disagreement is a concrete hypothesis, not evidence of what executed
+when the frozen dataset was built.
+
+New `scripts/82_test_b3_counter_orientation.py` uses **only the
+existing script-81 evidence**, with no replay re-parse. It reads the
+exact SHA-pinned historical `UNIT_STATS`, `UNIT_TECH_MULTIPLIERS`,
+and `UNIT_COUNTERS`; reconstructs the archived counters/combat first;
+then tests an explicit reversal of counter-table lookup for both
+numeric features, keeping all other definitions and inputs fixed.
+
+For strict attribution: the script-81 compressed inventory records
+only known army units. The archived combat penalty may also depend on
+non-army/unknown opponent unit types (e.g. Overseer) not captured in
+that CSV. If archived combat cannot be independently reconstructed
+from the captured evidence for a row, that row is **excluded** from
+the semantic combat-direction comparison and separately counted.
+Archived *counter* must reproduce exactly or the run fails closed.
+
+The experiment reports both hypotheses' comparison counts, mismatch
+rates and absolute errors, plus the number of observed upgrade-level
+snapshots. It **cannot identify an attested original execution** or
+retroactively select a generator by test fit. The combined metadata
+CI checked the four new unit tests, **4/4 PASS** on GitHub run
+`44620605003` (commit `df8518a2`).
+
+**Run on FAIR using the files already created by script 81:**
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_counter_orientation.py' -v
+
+"$SC2_PYTHON" scripts/82_test_b3_counter_orientation.py \
+  --historical-source-zip sc2_b3_historical_v31_sources.zip \
+  --forensic-dir results/b3_combat_counter_forensics_sample3_20261119 \
+  --output-dir results/b3_counter_orientation_hypothesis_20261119
+
+cat results/b3_counter_orientation_hypothesis_20261119/summary.json
+```
+
+Do not rerun the original 3 replay comparisons or change any original
+snapshot values just to explore this semantic hypothesis. B3 and B5
+release gates remain open until source-lineage proof is obtained.
