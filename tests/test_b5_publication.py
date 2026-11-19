@@ -119,6 +119,17 @@ class PublicationChecks(unittest.TestCase):
             self.assertEqual(len(charts), 2)
             self.assertTrue(all(not plot.has_data_labels
                                 for chart in charts for plot in chart.plots))
+            # Labels can survive at the chart *series* XML level even
+            # when the plot-level has_data_labels flag is False.
+            from pptx.oxml.ns import qn
+            for page in (8, 11, 12, 13, 15):
+                for shape in rebuilt.slides[page - 1].shapes:
+                    if not shape.has_chart:
+                        continue
+                    vals = [float(v) for s in shape.chart.series for v in s.values]
+                    if vals and all(0.0 <= v < 1.0 for v in vals):
+                        self.assertTrue(all(s._ser.find(qn("c:dLbls")) is None
+                                            for s in shape.chart.series))
             # All rate/probability chart labels in General format were
             # rounded to 0 or 1 by the historical deck renderer.
             for page in (8, 11, 12, 13, 15):
