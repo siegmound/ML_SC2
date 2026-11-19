@@ -98,7 +98,6 @@ def build(root: Path, output_dir: Path) -> dict:
         },
         "unverified": [
             "Full B2 model reruns", "B3 replay-to-feature parity and exclusions",
-            "B4 full LFS and remote clean-clone verification",
             "B5 expert visual review and release gate approval",
         ],
     }
