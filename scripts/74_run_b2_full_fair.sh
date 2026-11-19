@@ -59,10 +59,9 @@ for seed in 42 43 44; do
 done
 
 # Prevent accidental redirection into any committed historical result path.
-case "$out_base/" in
-  results/b2_fullscale_audit_*/*) ;;
-  *) echo "B2_OUT_BASE must be a new results/b2_fullscale_audit_* directory" >&2; exit 2 ;;
-esac
+[[ "$out_base" =~ ^results/b2_fullscale_audit_[A-Za-z0-9_-]+$ ]] || {
+  echo "B2_OUT_BASE must be a single new results/b2_fullscale_audit_NAME directory" >&2; exit 2;
+}
 if [[ "$mode" == "--execute" || "$mode" == "--preflight" ]]; then
   [[ -d results/rf_calibration/real_v3_1_fixed &&
      -d results/xgb_calibration/real_v3_1_fixed ]] || {
@@ -96,8 +95,10 @@ verify_run() {
     --repo-root "$root" --output-base "$out_base" --seed "$seed" --model "$model"
 }
 if [[ "$mode" == "--verify" ]]; then
-  "$py" scripts/75_verify_b2_full_fair.py --repo-root "$root" --output-base "$out_base" \
-    ${seed_filter:+--seed "$seed_filter"} ${model_filter:+--model "$model_filter"}
+  verify_args=(--repo-root "$root" --output-base "$out_base")
+  [[ -z "$seed_filter" ]] || verify_args+=(--seed "$seed_filter")
+  [[ -z "$model_filter" ]] || verify_args+=(--model "$model_filter")
+  "$py" scripts/75_verify_b2_full_fair.py "${verify_args[@]}"
   exit 0
 fi
 
