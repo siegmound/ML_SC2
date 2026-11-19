@@ -102,6 +102,23 @@ class PublicationChecks(unittest.TestCase):
             result = check.verify_deck(target, check.parse_table(ROOT))
             self.assertEqual(result["slide_metrics"], "PASS")
             self.assertEqual(result["status"], "REVIEW_ONLY_NOT_FROZEN")
+            # Layout-risk regression: review-only shortened titles must not
+            # revert to the multi-line historical header overflow.
+            from pptx import Presentation
+            rebuilt = Presentation(str(target))
+            for page, expected in (
+                (8, "RF profile: why no_counter wins"),
+                (11, "Classification: RF and XGB nearly tied"),
+                (15, "Calibration: RF improves; XGB starts strong"),
+            ):
+                texts = [shape.text for shape in rebuilt.slides[page - 1].shapes
+                         if shape.has_text_frame]
+                self.assertIn(expected, texts)
+            charts = [shape.chart for shape in rebuilt.slides[12].shapes
+                      if shape.has_chart]
+            self.assertEqual(len(charts), 2)
+            self.assertTrue(all(not plot.has_data_labels
+                                for chart in charts for plot in chart.plots))
 
 
 if __name__ == "__main__":
