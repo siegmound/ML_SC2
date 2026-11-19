@@ -54,6 +54,7 @@ jobs:
           python -m unittest discover -s tests -p "test_block16_publication.py" -v
           python -m unittest discover -s tests -p "test_b3_feature_lineage.py" -v
           python -m unittest discover -s tests -p "test_b3_replay_lineage.py" -v
+          python -m unittest discover -s tests -p "test_b3_raw_source_inventory.py" -v
           python -m unittest discover -s tests -p "test_b4_freeze.py" -v
 
       - name: Preserve audit reports
