@@ -27,12 +27,12 @@ class B3RawInventoryTests(unittest.TestCase):
         frozen = base / "frozen.zip"
         with zipfile.ZipFile(frozen, "w") as zf:
             zf.writestr("frozen.csv",
-                        "replay_id,time_sec,p1_wins\\n"
-                        "r1.SC2Replay,135,1\\n"
-                        "r3.SC2Replay,135,0\\n")
+                        "replay_id,time_sec,p1_wins\n"
+                        "r1.SC2Replay,135,1\n"
+                        "r3.SC2Replay,135,0\n")
         catalogue = base / "catalogue.csv"
         catalogue.write_text(
-            "replaypack_filename\\npackA.zip\\npackB.zip\\n",
+            "replaypack_filename\npackA.zip\npackB.zip\n",
             encoding="utf-8",
         )
         return raw, frozen, catalogue
