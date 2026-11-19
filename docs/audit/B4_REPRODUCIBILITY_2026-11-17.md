@@ -665,3 +665,66 @@ retrieve the exact pinned wheel digests from GitHub alone.
 Full B2 reruns and B3 original raw replay-to-feature numeric provenance
 remain scientifically distinct and OPEN. Historical metrics and
 protected archives were not modified.
+
+
+## B4 engineering environment lock signed off — 2026-11-19
+
+**Disposition: B4 reproducibility/FAIR scientific environment lock SATISFIED
+within its defined engineering scope.** Exact upstream archive lineage and
+fresh full-scale scientific model runs are not asserted by this gate.
+
+The user committed the complete **sanitized, compact metadata** of the
+verified offline environment as `2d5c905` to the separate correction
+branch `audit/sc2-corrections-2026-11-17`; the branch's remote head was
+verified as matching the pushed commit. The four paths are:
+
+- `docs/audit/environment/requirements_fair_hashed.txt`
+  (55 pinned CPython 3.12/Linux wheel-specific SHA-256s;
+  externally reported lock-file SHA-256
+  `426447a0041887b1c2390cc63ae421280003bf17e3aee0feee041b7eb49d5e57`).
+- `docs/audit/environment/b4_wheel_manifest.json` (55 packages with
+  wheel names, sizes, SHA-256).
+- `docs/audit/environment/mpyq_sdist.sha256`
+  (`mpyq-0.2.5.tar.gz` SHA-256
+  `30aaf5962be569f3f2b53978060cd047434ee4f5a215925dd6ff0fef04ec0007`).
+- `docs/audit/environment/b4_runtime_platform.txt` (Linux x86_64,
+  Python 3.12.3, PyTorch 2.15.0+cu132, CUDA 13.2,
+  NVIDIA driver 590.48.01, two RTX 5090 devices reported).
+
+**Independent GitHub verification after upload:**
+- All four files were present on the audit branch. Comparison from
+  `4b1791d` showed **one commit / exactly four added files**.
+- The 55 parsed `name==version --hash=sha256:...` entries were compared
+  one by one against 55 manifest entries: full name, pin and SHA match;
+  no duplicate package names; wheel filenames and positive byte sizes
+  present.
+- `mpyq` wheel SHA-256
+  `66bbb6e3362c5c31c45c021d64e9a41527f8e6ead2f203222453edfbc60ef995`
+  matched the manifest; its sdist hash also matched the prior FAIR evidence.
+- Source/manifest contents did not expose an editable Git URL or
+  credentials.
+
+**Previously executed and observed checks:**
+- Fresh installation `pip install --no-index --require-hashes` from
+  55 locally archived wheels: `OFFLINE_INSTALL_EXIT=0`.
+- `pip check`: PASS; tests: `OFFLINE_TEST_EXIT=0`;
+  real RTX 5090 CUDA tensor operation `B4_OFFLINE_CUDA_PASS`.
+- Separate independent venv suite: 36 tests, 35 PASS, one SKIP.
+- GitHub Actions full-data run `44420825024`: both metadata and complete
+  LFS/CPU integration jobs SUCCESS.
+- Frozen v3.1/v3.2 payload SHA-256, sizes and feature schema: PASS.
+
+Wheel binaries remain in private FAIR storage; the repo carries metadata
+and hashes rather than multi-gigabyte CUDA wheels. This is a
+**platform-specific environment reproduction certificate**, not a
+cross-platform binary reproducibility guarantee or an assertion of
+numerical parity of all historical model training runs.
+
+The B5 manifest may now mark
+`b4_full_scientific_environment_locked=true` because its
+*environment/engineering* conditions are met. Continue to keep
+`b2_full_scale_four_way_and_deep_completed=false`,
+`b3_raw_replay_to_final_feature_and_exclusion_provenance_resolved=false`,
+and all incomplete paper/deck human-review gates false. No merge to
+`main`, release approval or scientific reclassification follows from
+B4 signoff.
