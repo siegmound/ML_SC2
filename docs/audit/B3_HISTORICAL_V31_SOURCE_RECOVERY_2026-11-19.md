@@ -106,3 +106,25 @@ existed. This is algebraic self-consistency, **not** a reconstruction of
 raw unit power, matchup/counter definitions or v3.2 source-version
 lineage. The nine v3.2 additional *upstream formulas* are not
 considered recovered, and B3 remains OPEN.
+
+## 5. Full frozen-dataset arithmetic follow-up (2026-11-19)
+
+The original 15,000-row sample has now been extended to the **entire**
+frozen v3.1/v3.2 processed CSVs, using matching B4 SHA-256 payloads and a
+separate read-only chunked auditor. See
+[B3_FROZEN_ALGEBRA_FULL_SCAN_2026-11-19.md](B3_FROZEN_ALGEBRA_FULL_SCAN_2026-11-19.md).
+
+- v3.1: 892,047 rows, 23,241 replay IDs, 30,411,087 checks of 37
+  recomputable feature identities, zero mismatches.
+- v3.2: 892,047 rows, 23,241 replay IDs, 35,253,735 checks of 43
+  recomputable feature identities, zero mismatches.
+- The two frozen versions' `replay_id,time_sec,p1_wins` triples agree
+  exactly, row-by-row, for all 892,047 snapshots.
+- In total: **65,664,822 derived-feature comparisons, zero mismatches**.
+
+These checks substantially strengthen internal consistency evidence for the
+frozen processed tables. They still do not independently reconstruct original
+raw replay event quantities, the unverified 816 source exclusions, historical
+executable provenance or v3.2 raw combat feature formulas.
+
+**B3 remains OPEN; the scientific raw-to-final provenance gate is false.**
