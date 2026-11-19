@@ -77,3 +77,26 @@ four-way tuning/calibration design; feature profiles also differ.
 - [ ] Complete B5 paper/PPTX reconciliation and release candidate review.
 
 **Do not mark the full project release approved from the 9/9 PASS alone.**
+
+## Numerical review completed — operator transcript, 2026-11-19
+
+The operator successfully ran `scripts/76_summarize_b2_full_fair.py`
+on the same FAIR checkout. Its fresh nine-run verification returned
+**9/9 PASS** and the new summary regression suite returned **2/2 PASS**.
+It emitted seven model/variant mean ± sample-SD rows and 21 per-seed
+variant rows.
+
+The actual summary table, numerical comparison, historical cross-check and
+scientific limitations are now recorded in
+[B2_SCIENTIFIC_RESULTS_2026-11-19.md](B2_SCIENTIFIC_RESULTS_2026-11-19.md).
+
+**Revised checklist (supersedes only the prior pending numerical-review items):**
+- [x] Inspect all seven three-seed aggregate rows and calibrator outcomes.
+- [x] Prepare a separate B2 scientific table and publication guidance.
+- [x] Mark the factual nine-run B2 completion gate in B5 release manifest.
+- [ ] Archive the FAIR-generated small numerical CSV/manifest inputs and
+      complete the independently gated B5 corrected paper/deck release review.
+- [ ] Resolve B3 original raw replay lineage and exclusions.
+
+The source result JSON and per-snapshot prediction CSVs were not copied
+here. The B2 claims are retrospective and do not authorize a release tag.
