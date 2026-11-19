@@ -39,7 +39,9 @@ do not push large generated training files. If making further local commits:
 
 ```bash
 export PATH="$HOME/HPC-POMDP/.tools/git-lfs/bin:$PATH"
-export SC2_PYTHON="$HOME/.venvs/ml-sc2-b4-offline/bin/python"
+# FAIR working environment verified in the 2026-11-19 run:
+source "$HOME/.venvs/ml-sc2/bin/activate"
+export SC2_PYTHON="$(command -v python)"
 export PYTHONPATH="$PWD/src"
 export B2_THREADS=8
 export B2_GPU=0
@@ -110,3 +112,23 @@ replace historical results/figures before the comparison and paper audit.
 B2 remains `OPEN` until the **real** FAIR runs finish and their evidence is
 reviewed. The independent B3 raw replay provenance and release approval
 remain open even after a successful B2.
+
+## Actual execution outcome (operator transcript, 2026-11-19)
+
+The pre-execution NOT YET RUN label above is historical. All nine runs
+completed on FAIR and `--verify` returned **9/9 PASS**. The actual
+interpreter was `$HOME/.venvs/ml-sc2/bin/python` (Python 3.12.3,
+PyTorch 2.15.0+cu132, XGBoost 3.4.1); the earlier
+`ml-sc2-b4-offline` example path did not exist on that workstation.
+
+The saved numeric metrics are in the FAIR result namespace, not embedded
+in the terminal transcript. For final descriptive comparison and input
+SHA-256 manifests, run:
+
+```bash
+"$SC2_PYTHON" -m unittest discover -s tests -p 'test_b2_summary.py' -v
+"$SC2_PYTHON" scripts/76_summarize_b2_full_fair.py
+```
+
+See [full-size FAIR verification handoff](B2_FULLSCALE_FAIR_VERIFICATION_2026-11-19.md).
+The release remains blocked on numeric review, B3 provenance and B5 approval.
