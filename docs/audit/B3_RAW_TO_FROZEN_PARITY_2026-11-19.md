@@ -486,3 +486,86 @@ head -n 16 results/b3_counter_residual_profile_20261119/top_counter_residuals.cs
 stage. Do not choose new weights or an alternative generator solely
 by minimizing errors on the already inspected original test replays.
 B3 and B5 release approval remain explicitly blocked.
+
+## Actual FAIR script-83 residual-support profile — 2026-11-19
+
+The operator ran the source-evidence-only residual profiler after the
+script-82 reverse-counter experiment. The source JSON has 468 total
+hypothesis rows (234 per player snapshot for combat and 234 for
+counter), no retraining or new formula selection, and reports:
+
+| Finding | Actual result |
+| --- | ---: |
+| Counter mismatches after reversing the relation | **144 / 234** |
+| Counter absolute-error mean | 0.0125096312 |
+| Mean signed frozen-minus-reversed residual | **−0.0112855893** |
+| Frozen value less than reversed for mismatches | **122 / 144** |
+| Frozen value greater than reversed for mismatches | 22 / 144 |
+| Mismatches with both values nonzero and same sign | **144 / 144** |
+| Median ratio frozen / reversed (mismatch rows only) | 0.97104593 |
+| Counter mismatches for p1 | 96 / 117 |
+| Counter mismatches for p2 | 48 / 117 |
+
+By replay, the medians of frozen/reversed for **mismatch rows** are
+0.907614 (`00bb7e14…`), 0.972308 (`0a390370…`) and
+0.979077 (`0b196edc…`). A single uniform multiplier cannot be
+assumed across different armies or replays.
+
+The largest displayed residuals recur in Zerg Queen-heavy contexts.
+Examples from the actual snapshot CSV:
+
+| Replay / time / player | Known own army | Frozen counter | Reverse counter | Frozen/reverse |
+| --- | --- | ---: | ---: | ---: |
+| `00bb7e14…`, 210s, p1 | Queen × 2 | 0.3725 | 0.4250 | **0.876470588** |
+| `00bb7e14…`, 300s, p1 | Queen × 3 | 0.55875 | 0.63750 | **0.876470588** |
+| `00bb7e14…`, 360s, p1 | Queen × 4 | 0.6385714 | 0.7285714 | **0.876470588** |
+
+The archived historical constants have `Queen.power=8`, so script
+82's archived unit weight is `0.75 + 0.25*(8/20) = 0.85`.
+If the captured *enemy* unit composition and countered fraction are
+also the same as the original frozen build, these Queen-only records
+have an implied frozen weight of
+`0.85*(0.3725/0.425) = 0.745`.
+
+**This effective weight is conditional, not a proven historical
+coefficient**. A difference in enemy inventory/fractions could also
+produce the same counter ratio. Merely observing Queen on one side
+does not establish that the original generator assigned it a
+different power or counter coefficient.
+
+### Next controlled test: single-unit-type numerator/denominator decomposition
+
+New `scripts/84_decompose_b3_single_type_counter.py` uses script 81's
+captured army inventories on *both* sides and script 82's saved
+reversed-counter values. It independently recomputes the fraction of
+countered opponent unit counts for **each single-unit-type army**.
+Only where the reversed prediction is algebraically reproduced,
+it emits the frozen effective unit weight (frozen / recorded
+opponent countered fraction) and groups it by own unit, observed
+enemy compositions and replay. Multi-type or zero-fraction armies
+are explicitly counted but not assigned imaginary weights.
+
+The test is purely descriptive, not an optimization of historical
+weights and not a source repair. It cannot prove equal original
+unit inventories in the frozen build or recover the true historical
+executable. All previous artifacts stay immutable.
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_single_type_counter_decomposition.py' -v
+
+"$SC2_PYTHON" scripts/84_decompose_b3_single_type_counter.py \
+  --historical-source-zip sc2_b3_historical_v31_sources.zip \
+  --orientation-dir results/b3_counter_orientation_hypothesis_20261119 \
+  --forensic-dir results/b3_combat_counter_forensics_sample3_20261119 \
+  --output-dir results/b3_single_type_counter_decomposition_20261119
+
+cat results/b3_single_type_counter_decomposition_20261119/summary.json
+```
+
+**B3 remains open and B5 is not approved**. Do not adjust the frozen
+dataset, unit powers, or parser source because a hypothesis reduces
+discrepancies on previously inspected replays.
