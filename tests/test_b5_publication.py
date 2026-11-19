@@ -119,6 +119,20 @@ class PublicationChecks(unittest.TestCase):
             self.assertEqual(len(charts), 2)
             self.assertTrue(all(not plot.has_data_labels
                                 for chart in charts for plot in chart.plots))
+            # All rate/probability chart labels in General format were
+            # rounded to 0 or 1 by the historical deck renderer.
+            for page in (8, 11, 12, 13, 15):
+                for shape in rebuilt.slides[page - 1].shapes:
+                    if not shape.has_chart:
+                        continue
+                    values = [float(v) for s in shape.chart.series for v in s.values]
+                    if values and all(0.0 <= v < 1.0 for v in values):
+                        self.assertTrue(all(not p.has_data_labels
+                                            for p in shape.chart.plots))
+            text = "\n".join(s.text for sl in rebuilt.slides
+                             for s in sl.shapes if s.has_text_frame)
+            self.assertIn("no_counter remained strong in the full benchmark", text)
+            self.assertIn("Calibration adds little; use uncalibrated XGB", text)
 
 
 if __name__ == "__main__":
