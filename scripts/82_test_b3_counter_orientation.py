@@ -243,8 +243,14 @@ def evaluate(inventories: dict, evidence: dict, definitions: dict) -> tuple[dict
                 else:
                     direct = counter_score(army, enemy_army, stats, counters, reverse=False)
                     reversed_score = counter_score(army, enemy_army, stats, counters, reverse=True)
-                require(math.isclose(direct, archived, rel_tol=TOL, abs_tol=TOL),
-                        f"Recomputed archived {feature} differs from script-81 reconstruction: {replay}@{time}")
+                archived_match = math.isclose(direct, archived, rel_tol=TOL, abs_tol=TOL)
+                # The captured script-81 army metadata excludes non-army/unknown
+                # opponent types. Historical combat penalty loops ALL raw opponent
+                # types, e.g. Overseer, so some combat rows cannot be reconstructed
+                # from this compressed evidence. Exclude, never score such rows.
+                if kind == "counter_advantage":
+                    require(archived_match,
+                            f"Recomputed archived {feature} differs from script-81 reconstruction: {replay}@{time}")
                 upgraded = any(
                     any(level in u for level in ("Level1", "Level2", "Level3"))
                     and "Shields" not in u for u in owned["upgrades"]
@@ -256,6 +262,7 @@ def evaluate(inventories: dict, evidence: dict, definitions: dict) -> tuple[dict
                     "counter_relation_reversed": reversed_score,
                     "archive_abs_error": abs(frozen - direct),
                     "reversed_abs_error": abs(frozen - reversed_score),
+                    "archived_formula_reproduced_from_captured_inventory": archived_match,
                     "generic_level_upgrade_observed": upgraded,
                     "army_unit_count": sum(army.values()),
                     "army_types": len(army),
@@ -263,16 +270,19 @@ def evaluate(inventories: dict, evidence: dict, definitions: dict) -> tuple[dict
     report = {}
     for kind in ("combat", "counter_advantage"):
         subset = [x for x in rows if x["kind"] == kind]
-        truth = [x["frozen"] for x in subset]
-        archived = [x["as_archived"] for x in subset]
-        reversed_values = [x["counter_relation_reversed"] for x in subset]
+        eligible = [x for x in subset
+                    if x["archived_formula_reproduced_from_captured_inventory"]]
+        truth = [x["frozen"] for x in eligible]
+        archived = [x["as_archived"] for x in eligible]
+        reversed_values = [x["counter_relation_reversed"] for x in eligible]
         report[kind] = {
-            "as_archived": metrics(truth, archived),
-            "counter_relation_reversed": metrics(truth, reversed_values),
-            "generic_level_upgrade_observed": sum(x["generic_level_upgrade_observed"] for x in subset),
+            "as_archived": metrics(truth, archived) if eligible else None,
+            "counter_relation_reversed": metrics(truth, reversed_values) if eligible else None,
+            "excluded_due_to_incomplete_captured_inventory_context": len(subset)-len(eligible),
+            "generic_level_upgrade_observed": sum(x["generic_level_upgrade_observed"] for x in eligible),
             "mismatch_with_no_generic_level_upgrade": sum(
                 not math.isclose(x["frozen"], x["as_archived"], rel_tol=TOL, abs_tol=TOL)
-                and not x["generic_level_upgrade_observed"] for x in subset
+                and not x["generic_level_upgrade_observed"] for x in eligible
             ),
         }
     return report, rows
@@ -324,7 +334,8 @@ def main() -> None:
         "replayed_raw_files": original_manifest["selected_raw_sha256"],
         "snapshot_count": len(inventories),
         "player_snapshot_count": len(inventories) * 2,
-        "archived_formula_reproduces_saved_script81_predictions": True,
+        "archived_counter_formula_reproduces_saved_script81_predictions": True,
+        "combat_scored_only_where_captured_inventories_recreate_archived_combat": True,
         "by_primitive_family": comparison,
         "historical_original_generator_attested": False,
         "counter_formula_proven_from_original_build": False,
