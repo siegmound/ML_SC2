@@ -591,10 +591,16 @@ The dataset source narrative identifies 71 replaypacks and 24,057 raw replays.
 The independently audited frozen \texttt{v3\_1\_fixed} archive contains
 892,047 snapshot rows from 23,241 unique replay identifiers. The difference
 of 816 source replays remains unattributed at the individual replay level.
-The clean-room snapshot builder currently emits 38 predictive fields; archived
+The current clean-room snapshot builder emits 38 predictive fields; archived
 full-model configurations require 64 fields for \texttt{v3\_1\_fixed} and
-73 fields for \texttt{v3\_2\_combatfix}. Schema comparison does not prove
-numerical feature parity or reconstruct the missing transformations.
+73 fields for \texttt{v3\_2\_combatfix}. A recovered historical
+\texttt{sc2\_parser\_v3\_counter120.py} source defines all 64
+\texttt{v3\_1\_fixed} predictor names, and a 15,000-row numerical
+sample passed 511,034 algebraic checks against its formulas. This is
+additional historical transformation evidence, not raw replay-to-final
+numeric parity, nor an explanation of the 816 missing raw replay IDs.
+The nine added \texttt{v3\_2\_combatfix} formulas also require
+independent historical source and parity verification.
 
 \textbf{Interpretation of benchmark evidence.}
 The final RF comparison historically used train plus validation for fitting,
@@ -610,12 +616,13 @@ statistical significance claim about a global winner is warranted.
 The B0 inventory preserves the historical metrics and split files. B1
 repairs the archived final table using population standard deviations;
 B2 changes fit/calibration protocol code; B3 guards winner labels and
-tracks missing lineage; B4 adds Git object and LFS verification plus
-lightweight and optional full-data CI. Local synthetic regression tests
-do not establish successful GitHub Actions execution or complete remote
-Git LFS payload availability. Consequently this document is an
-\emph{audited retrospective report}, not a fully independently
-reproduced final release. See the dated audit reports under
+tracks historical raw-replay lineage gaps. B4 clean-checkout checks,
+complete frozen Git LFS verification, opt-in full-data GitHub CI,
+and independent FAIR Python/CUDA reconstruction from a SHA-256 hashed
+55-wheel lock have passed. These engineering checks do not substitute
+for B2 full-scale model reruns or B3 original replay-to-feature parity.
+Consequently this document remains an \emph{audited retrospective
+report}, not a fully independently reproduced final release. See the dated audit reports under
 \texttt{docs/audit/} in the project repository.
 
 \section{Conclusions}
@@ -649,8 +656,8 @@ The project provides a substantial retrospective tabular benchmark, but full rep
     \item the original RF and XGB runners used different fitting budgets;
     \item the historical Deep candidate search inspected candidate test predictions;
     \item tuning and calibration reused the same validation data in historical XGB calibration;
-    \item the clean-room parser currently emits 38 predictors, while the frozen v3.1/v3.2 model schemas use 64/73, and the 816 replay exclusions are not individually attributable;
-    \item B4 Git LFS payload, clean-clone and full scientific dependency/environment verification are still open.
+    \item the clean-room parser emits 38 predictors, while the frozen v3.1/v3.2 model schemas use 64/73; a recovered historical parser source and a limited v3.1 algebraic audit improve feature provenance, but raw replay parity and the 816 individual exclusions remain unverified;
+    \item B2 full-scale revised experiments and B3 raw replay-to-feature provenance remain open; B4 engineering environment, LFS and CI verification have passed.
 \end{itemize}
 
 These limitations suggest future extensions toward sequence models, latent-state estimation, and policy-support systems rather than only static outcome prediction.
