@@ -263,3 +263,73 @@ proof of the historical parser's original decision.
 **B3 gate remains false** pending full pack inventory, original
 exclusion/build provenance, and independent original replay feature
 parity on actual raw events. B2 and B5 evidence remain untouched.
+
+## 6. Targeted nine-file forensic evidence — 2026-11-19
+
+The operator ran `scripts/78_diagnose_b3_unmatched_replays.py` on FAIR,
+using `results/b3_source_inventory_subset_20261119/unresolved_ids.csv`.
+Its read-only output identified nine actual filename entries absent from
+the frozen replay ID set:
+
+| Source replay basename | Size (bytes) | Header probe | Observed seconds | Source-file interpretation |
+| --- | ---: | --- | ---: | --- |
+| `0a0ec4b3fa8452e19b2637a9b07c39a3.SC2Replay` | 817817 | OK | 2314 | Above historical maximum 1800 |
+| `0a2ebebc63e5088c3d3cd2b0216176ae.SC2Replay` | 44604 | OK | 68 | Below historical minimum 180 |
+| `0a3361da63940ec291dcf988eb829b33.SC2Replay` | 194 | MPQError | — | AppleDouble macOS metadata |
+| `0b06bad6e8fe775800082a25f02478a7.SC2Replay` | 492797 | OK | 2230 | Above historical maximum 1800 |
+| `0b8daa2d9894adbeb5f8a205462f7de0.SC2Replay` | 194 | MPQError | — | AppleDouble macOS metadata |
+| `0b8f47a4e223073b16915c57c8561381.SC2Replay` | 194 | MPQError | — | AppleDouble macOS metadata |
+| `0c30ac2afe2f5c8c472130357878c0ab.SC2Replay` | 78924 | OK | 159 | Below historical minimum 180 |
+| `0c7b80b6290a83812468e39394ca0706.SC2Replay` | 194 | MPQError | — | AppleDouble macOS metadata |
+| `0cbebbd446416cb16e22edf8f43dead4.SC2Replay` | 194 | MPQError | — | AppleDouble macOS metadata |
+
+**New independent source check:** all five 194-byte entries were fetched
+from GitHub in base64 mode. Their decoded leading bytes match the
+AppleDouble macOS metadata magic `00 05 16 07`; they also share
+the visible `Mac OS X` Finder metadata header. Their Git blobs are
+binary data, **not Git LFS pointer text**; `.gitattributes` in this
+branch tracks only `data/processed/*.csv` and `data/processed/*.zip`
+using LFS, not `data/raw/replay_subsets/*.SC2Replay`.
+
+AppleDouble metadata is not a StarCraft II MPQ replay; thus those
+five filename entries must not be counted as five valid replay games.
+The four actual replay headers had durations outside the builder's
+historical 180–1800-second inclusion range. These observations give
+**directly evidenced technical explanations for all nine unmatched
+filename entries in this particular 300-entry subset**.
+
+This does **not** prove that the original full 24,057 source list
+included these same nine files, that the reported gap of 816 consisted
+of the same causes, or that the original historical executor logged
+the same per-file decisions. The full source-selection inventory,
+per-file historical failure audit, replay event primitive parity,
+and v3.2 extra upstream combat formulas remain **OPEN**.
+
+### Replay-magic diagnostic update
+
+The updated `78_diagnose_b3_unmatched_replays.py` now stores
+`file_signature` and `signature_counts`, classifying AppleDouble
+metadata separately from MPQ-container candidates and unknown
+file signatures. Four dedicated unit tests cover header-duration
+boundaries, candidate identity, path safety and AppleDouble/MPQ magic.
+
+It refuses to overwrite existing outputs. On FAIR, generate a **new**
+versioned directory:
+
+```bash
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_unmatched_diagnostics.py' -v
+
+"$SC2_PYTHON" scripts/78_diagnose_b3_unmatched_replays.py \
+  --raw-root data/raw/replay_subsets \
+  --inventory-dir results/b3_source_inventory_subset_20261119 \
+  --output-dir results/b3_unmatched_diagnostics_magic_20261119
+```
+
+The prior `results/b3_unmatched_diagnostics_20261119/` evidence stays
+unchanged. The updated output must show 5 AppleDouble entries, 4 MPQ
+candidates and duration counts 2 below / 2 above / 5 unknown if FAIR's
+raw files match the GitHub blobs. The original B3 raw provenance release
+gate stays false.
