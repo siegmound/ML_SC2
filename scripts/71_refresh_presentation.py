@@ -152,10 +152,14 @@ def build(source: Path, output: Path) -> dict:
         # common PowerPoint/LibreOffice renderers. Shorten REVIEW titles only.
         (8, "RF profile study: why no_counter became the final RF choice",
             "RF profile: why no_counter wins"),
+        (8, "• The no_counter profile then survived the transition from staged subsets to the final full benchmark.",
+            "• no_counter remained strong in the full benchmark."),
         (11, "Classification-oriented comparison: RF and XGB are nearly tied",
             "Classification: RF and XGB nearly tied"),
         (15, "Calibration results: RF improves, XGB is already strong",
             "Calibration: RF improves; XGB starts strong"),
+        (15, "• Post-hoc calibration does not provide meaningful gains, so uncalibrated XGB remains the best probability-oriented choice.",
+            "• Calibration adds little; use uncalibrated XGB for probabilities."),
         (3, "The final dataset is built from replay archives through a deterministic replay-to-snapshot pipeline.",
             "Historical replay-to-table workflow; exact final feature formulas remain unverified."),
         (4, "All final claims are based on replay-aware multi-seed evaluation.",
@@ -210,15 +214,20 @@ def build(source: Path, output: Path) -> dict:
     )
     for page, before, after in changes:
         replace_text(prs.slides[page - 1], before, after)
-    # Historical slide 13's two charts display every bar as '1', because
-    # their chart data labels are formatted to zero decimal places despite
-    # the plotted values being ~0.61 and ~0.66. Hide these misleading
-    # numeric labels in the review deck; keep source data and axes intact.
-    for shape in prs.slides[12].shapes:
-        if shape.has_chart:
-            for plot in shape.chart.plots:
-                if plot.has_data_labels:
-                    plot.has_data_labels = False
+    # Some historical chart data labels use General integer rounding and
+    # misleadingly print "1" or "0" for underlying rates around 0.6/0.01.
+    # Hide only sub-unit numeric chart labels, retaining original data,
+    # legends, axis ticks and charts. Count-valued charts keep their labels.
+    for slide in prs.slides:
+        for shape in slide.shapes:
+            if not shape.has_chart:
+                continue
+            values = [float(value) for series in shape.chart.series
+                      for value in series.values if value is not None]
+            if values and all(0.0 <= value < 1.0 for value in values):
+                for plot in shape.chart.plots:
+                    if plot.has_data_labels:
+                        plot.has_data_labels = False
     add_audit_slide(prs)
     output.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(output))
