@@ -90,10 +90,25 @@ class CounterOrientationTests(unittest.TestCase):
         self.assertEqual(result["combat"]["counter_relation_reversed"]["mismatches"], 0)
         self.assertEqual(result["counter_advantage"]["as_archived"]["mismatches"], 2)
         self.assertEqual(result["counter_advantage"]["counter_relation_reversed"]["mismatches"], 0)
+        # Counter reconstruction is complete for known armies and must
+        # always reproduce the archived formula in script-81's record.
         faulty = dict(evidence)
-        faulty[("r.SC2Replay", 135, "p1_combat")] = (0.04, 999)
+        faulty[("r.SC2Replay", 135, "counter_advantage_p1")] = (0.0, 999)
         with self.assertRaisesRegex(ValueError, "differs from script-81"):
             self.a.evaluate({("r.SC2Replay", 135): players}, faulty, definitions)
+        # Historical combat penalty can also see non-army enemies which
+        # the compressed inventory CSV omits. Rather than claim evidence
+        # for such a row, conservatively exclude it from combat metrics.
+        incomplete = dict(evidence)
+        incomplete[("r.SC2Replay", 135, "p1_combat")] = (0.04, 999)
+        findings, raw = self.a.evaluate(
+            {("r.SC2Replay", 135): players}, incomplete, definitions
+        )
+        self.assertEqual(
+            findings["combat"]["excluded_due_to_incomplete_captured_inventory_context"], 1
+        )
+        self.assertEqual(findings["combat"]["as_archived"]["comparisons"], 1)
+        self.assertEqual(findings["counter_advantage"]["as_archived"]["comparisons"], 2)
 
     def test_parse_inventories_and_reject_duplicate_player(self):
         with tempfile.TemporaryDirectory() as directory:
