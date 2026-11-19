@@ -33,6 +33,13 @@ def replace_text(slide, before: str, after: str) -> None:
             before[2:],
             after[2:] if after.startswith("• ") else after,
         ))
+    # The canonical GitHub deck has one punctuation variant compared with
+    # the separately supplied historical PPTX. Keep the alias explicit.
+    if before.startswith("• Therefore the right role for the deep result"):
+        variants.append((
+            before[2:].replace("Therefore the right role", "Therefore, the right role", 1),
+            after[2:] if after.startswith("• ") else after,
+        ))
 
     for old, new in variants:
         matches = []
