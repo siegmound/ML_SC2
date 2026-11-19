@@ -75,8 +75,22 @@ for seed in 42 43 44; do
       continue
     fi
     if [[ -e "$run_dir" ]]; then
-      if [[ -s "$run_dir/metrics_summary.json" && -s "$run_dir/split_manifest.json" ]] && \
-         { [[ "$model" != "deep" ]] || [[ -s "$run_dir/validation_search_results.csv" ]]; }; then
+      if [[ "$model" == "deep" ]]; then
+        complete=0
+        [[ -s "$run_dir/metrics_summary.json" &&
+           -s "$run_dir/validation_search_results.csv" &&
+           -s "$run_dir/artifacts_manifest.json" &&
+           -s "$run_dir/test_predictions.csv" &&
+           -s "$run_dir/selected_model_state.pt" ]] && complete=1
+      else
+        complete=0
+        [[ -s "$run_dir/metrics_summary.json" &&
+           -s "$run_dir/split_manifest.json" &&
+           -s "$run_dir/test_predictions_uncalibrated.csv" &&
+           -s "$run_dir/test_predictions_platt.csv" &&
+           -s "$run_dir/test_predictions_isotonic.csv" ]] && complete=1
+      fi
+      if [[ "$complete" == 1 ]]; then
         echo "Existing summary present; SKIP (do not replace historical/new outputs): $run_dir"
         continue
       fi
