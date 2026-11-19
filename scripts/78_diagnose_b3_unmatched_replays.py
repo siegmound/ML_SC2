@@ -65,6 +65,22 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def file_signature(path: Path) -> str:
+    """Identify file container by magic, never by the .SC2Replay suffix.
+
+    AppleDouble magic 0x00051607 identifies macOS metadata, not an SC2
+    replay payload. MPQ magic indicates a plausible replay container, not
+    proof that its data are parseable or historically included.
+    """
+    with path.open("rb") as stream:
+        magic = stream.read(4)
+    if magic == bytes.fromhex("00051607"):
+        return "APPLEDOUBLE_MACOS_METADATA_NOT_REPLAY"
+    if magic in (b"MPQ\x1a", b"MPQ\x1b"):
+        return "MPQ_CONTAINER_CANDIDATE"
+    return "UNKNOWN_CONTAINER_SIGNATURE"
+
+
 def duration_seconds(replay) -> float | None:
     value = getattr(replay, "length", None)
     if value is None:
@@ -121,6 +137,7 @@ def diagnostic(raw_root: Path, unresolved_csv: Path,
         row = {
             "replay_id": name, "raw_relpath": path.relative_to(raw_root).as_posix(),
             "raw_size_bytes": path.stat().st_size, "raw_sha256": file_sha256(path),
+            "file_signature": file_signature(path),
             "source_membership": CANDIDATE_STATUS,
             **probe_header(path, load_replay),
             "current_bridge_status": "NOT_RUN",
@@ -143,6 +160,7 @@ def diagnostic(raw_root: Path, unresolved_csv: Path,
                 })
         rows.append(row)
     duration_counts = dict(sorted(Counter(r["duration_category"] for r in rows).items()))
+    signature_counts = dict(sorted(Counter(r["file_signature"] for r in rows).items()))
     return {
         "schema": "ml_sc2.b3.unmatched_replay_header_diagnostics.v1",
         "n_raw_present_frozen_absent": len(selected),
@@ -150,6 +168,11 @@ def diagnostic(raw_root: Path, unresolved_csv: Path,
         "historical_executable_parity_verified": False,
         "historical_duration_band_sec": [MIN_DURATION, MAX_DURATION],
         "duration_counts": duration_counts,
+        "signature_counts": signature_counts,
+        "appledouble_not_replay_ids": [
+            r["replay_id"] for r in rows
+            if r["file_signature"] == "APPLEDOUBLE_MACOS_METADATA_NOT_REPLAY"
+        ],
         "header_errors": sum(r["header_load_status"] == "ERROR" for r in rows),
         "current_bridge_was_run": run_current_bridge,
         "current_bridge_is_historical": False,
@@ -192,7 +215,7 @@ def main() -> None:
     )
     print(json.dumps(report, indent=2, ensure_ascii=False))
     for row in rows:
-        print(row["replay_id"], row["header_load_status"],
+        print(row["replay_id"], row["file_signature"], row["header_load_status"],
               row["duration_seconds"], row["duration_category"],
               row["current_bridge_status"], row["current_bridge_reason"])
 
