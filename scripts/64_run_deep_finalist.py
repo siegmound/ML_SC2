@@ -368,9 +368,13 @@ def run():
     set_seed(seed)
 
     out_dir = Path(args.output_root) / args.dataset_name / f'seed_{seed}'
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    device = torch.device('cuda' if args.device == 'cuda' and torch.cuda.is_available() else 'cpu')
+    # Fail closed: interrupted/previous experiments must never be silently
+    # overwritten, and a requested GPU run must not fall back to CPU.
+    if out_dir.exists():
+        raise FileExistsError(f'Output already exists (refusing overwrite): {out_dir}')
+    if args.device == 'cuda' and not torch.cuda.is_available():
+        raise RuntimeError('CUDA requested but unavailable; refusing silent CPU fallback')
+    device = torch.device(args.device)
 
     print(f'Loading dataset from {dataset_zip} ...')
     df = load_zip_csv(dataset_zip)
@@ -380,11 +384,27 @@ def run():
     train_groups = set(split['train_groups'])
     val_groups = set(split['val_groups'])
     test_groups = set(split['test_groups'])
+    original_counts = [len(split[f'{part}_groups']) for part in ('train', 'val', 'test')]
+    if not all((train_groups, val_groups, test_groups)) or any(
+        count != unique for count, unique in zip(
+            original_counts, map(len, (train_groups, val_groups, test_groups))
+        )
+    ):
+        raise ValueError('Empty or duplicate replay IDs in original split')
+    if train_groups & val_groups or train_groups & test_groups or val_groups & test_groups:
+        raise ValueError('Original train/validation/test replay IDs overlap')
+    if set(df[GROUP].astype(str).unique()) != (train_groups | val_groups | test_groups):
+        raise ValueError('Original replay split does not cover the filtered dataset')
 
     train_df = df[df[GROUP].isin(train_groups)].copy()
     val_df = df[df[GROUP].isin(val_groups)].copy()
     test_df = df[df[GROUP].isin(test_groups)].copy()
+    if any(part.empty or part[TARGET].nunique() != 2
+           for part in (train_df, val_df, test_df)):
+        raise ValueError('Empty or single-class replay partition')
     print(f'Split rows train={len(train_df)} val={len(val_df)} test={len(test_df)} device={device.type}')
+    # Only allocate the new output directory after validating all partitions.
+    out_dir.mkdir(parents=True, exist_ok=False)
 
     candidates = get_candidates()
     rows = []
