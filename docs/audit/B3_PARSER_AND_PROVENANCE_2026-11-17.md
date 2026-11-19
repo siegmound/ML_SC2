@@ -199,3 +199,25 @@ dataset reconstruction and source exclusion audit are not yet certifiable.**
 
 **B3 STATUS: engineering changes verified; historical raw-to-dataset parity
 and exclusion provenance unresolved and explicitly not certified.**
+
+
+## 2026-11-19 addendum — Historical parser source recovered
+
+**This new evidence supersedes only the earlier statement that all 35
+non-clean-room v3.1 transformation definitions were unavailable.** The
+historical source supplied in two independently matching project
+freeze archives, `sc2_parser_v3_counter120.py`, defines the exact
+**64 v3.1 predictor names and ordered 67-column final header**. Its
+SHA-256 and sampled numeric validation are recorded in
+[the source-recovery report](B3_HISTORICAL_V31_SOURCE_RECOVERY_2026-11-19.md).
+
+A streaming check of 15,000 frozen v3.1 snapshots from 393 replay IDs
+performed **511,034 independent algebraic comparisons, zero mismatches**
+(when the necessary prior snapshot was available). This is meaningful
+positive evidence for historical feature formulas, **not a raw replay
+extraction reproduction**. The clean-room parser still emits only 38
+fields, 816 upstream replays remain without exclusion reasons, and the
+nine v3.2-specific feature formulas have not been recovered.
+
+The B3 raw provenance release gate remains **OPEN**, and no frozen
+dataset or historical metrics were changed.
