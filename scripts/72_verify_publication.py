@@ -46,17 +46,26 @@ def verify_paper(root: Path, mapping: dict) -> dict:
     source = (root / TEX).read_text(encoding="utf-8")
     if r"\section{Audit Status and Reproducibility Boundaries}" not in source:
         raise ValueError("B5 audit boundary section missing from canonical paper")
+    # Require current, evidence-backed audit caveats rather than obsolete
+    # statements from before B4's independent full-data CI/environment PASS.
     tokens = (
         "38 predictive fields", "64 fields", "73 fields",
-        "816 source replays", "train plus validation",
+        "816 missing raw replay IDs", "train plus validation",
         "previously inspected test partitions",
         "full-data reruns are pending",
-        "remote Git LFS payload availability",
+        "opt-in full-data GitHub CI", "SHA-256 hashed",
+        "not raw replay-to-final",
     )
     normalized = re.sub(r"\s+", " ", source)
     missing = [value for value in tokens if value not in normalized]
     if missing:
         raise ValueError(f"Methodological caveats missing from paper: {missing}")
+    stale_b4 = (
+        "B4 Git LFS payload, clean-clone and full scientific dependency/environment verification are still open.",
+        "do not establish successful GitHub Actions execution",
+    )
+    if any(phrase in normalized for phrase in stale_b4):
+        raise ValueError("Stale pre-B4 verification limitations remain")
     if "Final project paper v6.2" in source or "pdfauthor={OpenAI}" in source:
         raise ValueError("Outdated LaTeX metadata remains")
     if "0.6128 $\\pm$ 0.0069" in source:
