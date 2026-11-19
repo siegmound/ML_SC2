@@ -160,8 +160,14 @@ def verify_one(root: Path, base: Path, model: str, seed: int, original: dict):
         require(set(val.replay_id.unique()) == original["val"],
                 f"{run}: validation replay set mismatch")
         check_test_partition(test, original, summary["n_rows_test"], run)
-        check_scores(scores(val, False), summary["validation_metrics"], run)
-        check_scores(scores(test, False), summary["test_metrics"], run)
+        # Deep predictions come from torch.sigmoid(...).numpy(): float32.
+        # Restore that precision before reproducing the original sklearn
+        # metrics instead of silently promoting CSV values to float64.
+        # Keep the strict 1e-8 metric tolerance for Deep.
+        check_scores(scores(val, False, probability_dtype=np.float32),
+                     summary["validation_metrics"], f"{run}/validation")
+        check_scores(scores(test, False, probability_dtype=np.float32),
+                     summary["test_metrics"], f"{run}/test")
         return run, test
 
     run = base / "strict_calibration/real_v3_1_fixed" / model / f"seed_{seed}"
