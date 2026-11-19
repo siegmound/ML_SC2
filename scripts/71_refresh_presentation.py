@@ -12,6 +12,7 @@ from pathlib import Path
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
+from pptx.oxml.ns import qn
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.util import Inches, Pt
@@ -228,6 +229,13 @@ def build(source: Path, output: Path) -> dict:
                 for plot in shape.chart.plots:
                     if plot.has_data_labels:
                         plot.has_data_labels = False
+                # The original PPTX also stores per-series dLbls. Turning
+                # off the plot-wide flag alone leaves the misleading '1'
+                # labels visible in LibreOffice and other renderers.
+                for series in shape.chart.series:
+                    labels = series._ser.find(qn("c:dLbls"))
+                    if labels is not None:
+                        series._ser.remove(labels)
     add_audit_slide(prs)
     output.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(output))
