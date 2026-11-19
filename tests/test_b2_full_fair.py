@@ -130,12 +130,28 @@ class B2FullFAIRTests(unittest.TestCase):
             isotonic_path = (out / "strict_calibration/real_v3_1_fixed"
                              / "xgb/seed_43/test_predictions_isotonic.csv")
             iso_frame = pd.read_csv(isotonic_path)
+            iso_original = iso_frame.copy(deep=True)
             iso_frame.loc[0, "y_prob"] = 0.99 if iso_frame.loc[0, "y_prob"] < 0.5 else 0.01
             iso_frame.loc[0, "y_pred"] = int(iso_frame.loc[0, "y_prob"] >= 0.5)
             iso_frame.to_csv(isotonic_path, index=False)
             iso_rejected = subprocess.run(xgb_cmd, text=True, capture_output=True)
             self.assertNotEqual(iso_rejected.returncode, 0)
             self.assertIn("Metric", iso_rejected.stderr + iso_rejected.stdout)
+            iso_original.to_csv(isotonic_path, index=False)
+
+            # Platt output has the same XGB-derived round-trip allowance.
+            # Deliberately altered in-range predictions must be rejected.
+            platt_path = (out / "strict_calibration/real_v3_1_fixed"
+                          / "xgb/seed_43/test_predictions_platt.csv")
+            platt_frame = pd.read_csv(platt_path)
+            platt_frame.loc[0, "y_prob"] = (
+                0.99 if platt_frame.loc[0, "y_prob"] < 0.5 else 0.01
+            )
+            platt_frame.loc[0, "y_pred"] = int(platt_frame.loc[0, "y_prob"] >= 0.5)
+            platt_frame.to_csv(platt_path, index=False)
+            platt_rejected = subprocess.run(xgb_cmd, text=True, capture_output=True)
+            self.assertNotEqual(platt_rejected.returncode, 0)
+            self.assertIn("Metric", platt_rejected.stderr + platt_rejected.stdout)
 
 
     def test_xgb_float32_metric_csv_roundtrip(self):
