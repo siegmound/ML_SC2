@@ -148,6 +148,14 @@ def build(source: Path, output: Path) -> dict:
     if len(prs.slides) != 18:
         raise ValueError(f"Expected 18-slide historical deck, found {len(prs.slides)}")
     changes = (
+        # The historical titles overflow their one-line navy header in
+        # common PowerPoint/LibreOffice renderers. Shorten REVIEW titles only.
+        (8, "RF profile study: why no_counter became the final RF choice",
+            "RF profile: why no_counter wins"),
+        (11, "Classification-oriented comparison: RF and XGB are nearly tied",
+            "Classification: RF and XGB nearly tied"),
+        (15, "Calibration results: RF improves, XGB is already strong",
+            "Calibration: RF improves; XGB starts strong"),
         (3, "The final dataset is built from replay archives through a deterministic replay-to-snapshot pipeline.",
             "Historical replay-to-table workflow; exact final feature formulas remain unverified."),
         (4, "All final claims are based on replay-aware multi-seed evaluation.",
@@ -202,6 +210,15 @@ def build(source: Path, output: Path) -> dict:
     )
     for page, before, after in changes:
         replace_text(prs.slides[page - 1], before, after)
+    # Historical slide 13's two charts display every bar as '1', because
+    # their chart data labels are formatted to zero decimal places despite
+    # the plotted values being ~0.61 and ~0.66. Hide these misleading
+    # numeric labels in the review deck; keep source data and axes intact.
+    for shape in prs.slides[12].shapes:
+        if shape.has_chart:
+            for plot in shape.chart.plots:
+                if plot.has_data_labels:
+                    plot.has_data_labels = False
     add_audit_slide(prs)
     output.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(output))
