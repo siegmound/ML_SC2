@@ -123,6 +123,17 @@ class B2FullFAIRTests(unittest.TestCase):
             rejected = subprocess.run(xgb_cmd, text=True, capture_output=True)
             self.assertNotEqual(rejected.returncode, 0)
             self.assertIn("Metric", rejected.stderr + rejected.stdout)
+            # Isotonic probabilities inherit the same float32 round-trip
+            # allowance. A realistic large modification still fails.
+            isotonic_path = (out / "strict_calibration/real_v3_1_fixed"
+                             / "xgb/seed_43/test_predictions_isotonic.csv")
+            iso_frame = pd.read_csv(isotonic_path)
+            iso_frame.loc[0, "y_prob"] = 0.99 if iso_frame.loc[0, "y_prob"] < 0.5 else 0.01
+            iso_frame.loc[0, "y_pred"] = int(iso_frame.loc[0, "y_prob"] >= 0.5)
+            iso_frame.to_csv(isotonic_path, index=False)
+            iso_rejected = subprocess.run(xgb_cmd, text=True, capture_output=True)
+            self.assertNotEqual(iso_rejected.returncode, 0)
+            self.assertIn("Metric", iso_rejected.stderr + iso_rejected.stdout)
 
 
     def test_xgb_float32_metric_csv_roundtrip(self):
