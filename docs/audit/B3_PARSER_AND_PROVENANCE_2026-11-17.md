@@ -267,3 +267,28 @@ corpus or 24,057 upstream replay count. Details and exact commands:
 [B3_RAW_SOURCE_INVENTORY_2026-11-19.md](B3_RAW_SOURCE_INVENTORY_2026-11-19.md).
 
 The B3 original-exclusion/feature-parity gate remains **false**.
+
+## Historical replay-to-feature parity stage prepared — 2026-11-19
+
+The 9 unmatched entries in the tracked 300-file source subset have
+now been diagnosed: 4 actual replay headers have durations outside
+the original historical builder's 180–1,800-second filter, and 5
+are AppleDouble macOS metadata (not MPQ replay payloads). This
+is a technical explanation for the **sample**, not reconciliation
+of the upstream 24,057-file source selection or original execution.
+
+The next scientific test is **not another derived CSV identity**.
+`scripts/79_compare_b3_historical_raw_parity.py` runs an
+exact SHA-256-pinned historical v3.1 parser/bridge source copy on
+seeded, inventoried raw replay bytes that are present in the frozen
+dataset. It streams the original frozen v3.1 data and compares exact
+replay/time/label identity and all matching feature values. It reports
+per-replay, per-feature and numeric mismatch evidence. The extracted
+historical four-file source bundle is supplied separately, not claimed
+to be attested original generator execution.
+
+Follow [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md](B3_RAW_TO_FROZEN_PARITY_2026-11-19.md)
+for commands and explicit limits. A real FAIR sampled raw-to-frozen
+run has **not yet** been observed in this stage. No B3 release flag
+can be enabled from source code preparation or the sampled check
+alone; full raw source selection and v3.2 combatfix formulas remain open.
