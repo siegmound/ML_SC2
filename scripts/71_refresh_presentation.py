@@ -21,29 +21,41 @@ DEFAULT_OUTPUT = "dist/b5/sc2_outcome_prediction_presentation_B5_REVIEW.pptx"
 
 
 def replace_text(slide, before: str, after: str) -> None:
-    matches = []
-    for shape in slide.shapes:
-        if not shape.has_text_frame or before not in shape.text:
+    """Replace one paragraph fragment without changing the slide's geometry.
+
+    Historical PPTX exports may encode bullets as paragraph formatting rather
+    than literal U+2022 text. Prefer exact text; only then try the same
+    fragment without a leading bullet marker. Never guess on ambiguity.
+    """
+    variants = [(before, after)]
+    if before.startswith("• "):
+        variants.append((
+            before[2:],
+            after[2:] if after.startswith("• ") else after,
+        ))
+
+    for old, new in variants:
+        matches = []
+        for shape in slide.shapes:
+            if not shape.has_text_frame:
+                continue
+            for paragraph in shape.text_frame.paragraphs:
+                combined = "".join(run.text for run in paragraph.runs)
+                if old in combined:
+                    matches.append((paragraph, combined))
+        if not matches:
             continue
-        matches.append(shape)
-    if len(matches) != 1:
-        raise ValueError(
-            f"Expected unique slide text {before!r}, found {len(matches)}"
-        )
-    shape = matches[0]
-    # Match and update within each paragraph, preserving the original fonts,
-    # colors, text-box geometry and paragraph layout.
-    for paragraph in shape.text_frame.paragraphs:
-        combined = "".join(run.text for run in paragraph.runs)
-        if before not in combined:
-            continue
-        first = paragraph.runs[0]
-        first.text = combined.replace(before, after)
+        if len(matches) != 1:
+            raise ValueError(
+                f"Expected unique slide text {before!r}, found {len(matches)}"
+            )
+        paragraph, combined = matches[0]
+        paragraph.runs[0].text = combined.replace(old, new)
         for run in paragraph.runs[1:]:
             run.text = ""
         return
-    # For the subtitle, all text is in the same shape and paragraph.
-    raise ValueError(f"Text spans paragraphs; no unsafe presentation reflow: {before!r}")
+
+    raise ValueError(f"Expected unique slide text {before!r}, found 0")
 
 
 def text(slide, x, y, w, h, value, size=15, color=(29, 41, 57),
