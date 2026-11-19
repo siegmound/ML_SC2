@@ -96,6 +96,65 @@ class B2FullFAIRTests(unittest.TestCase):
             self.assertNotEqual(invalid.returncode, 0)
             self.assertIn("Invalid probabilities", invalid.stderr + invalid.stdout)
 
+            # XGB originally reports log_loss from float32 raw booster outputs;
+            # the CSV reader normally promotes them to float64.
+            xgb = subprocess.run([
+                sys.executable, str(ROOT / "scripts/67_run_strict_calibration.py"),
+                "--dataset-zip", str(archive), "--split-json", str(split),
+                "--dataset-name", "real_v3_1_fixed", "--model", "xgb",
+                "--device", "cpu",
+                "--output-root", str(out / "strict_calibration"),
+                "--num-boost-round", "25", "--early-stopping-rounds", "5",
+                "--n-jobs", "1",
+            ], text=True, capture_output=True)
+            self.assertEqual(xgb.returncode, 0, xgb.stdout + xgb.stderr)
+            xgb_cmd = cmd[:-1] + ["xgb"]
+            xgb_verified = subprocess.run(xgb_cmd, text=True, capture_output=True)
+            self.assertEqual(xgb_verified.returncode, 0,
+                             xgb_verified.stdout + xgb_verified.stderr)
+
+
+    def test_xgb_float32_metric_csv_roundtrip(self):
+        """XGB raw probabilities must be audited in their native float32 precision."""
+        from io import StringIO
+
+        def module(filename, module_name):
+            spec = importlib.util.spec_from_file_location(module_name, ROOT / "scripts" / filename)
+            assert spec and spec.loader
+            value = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(value)
+            return value
+
+        strict = module("67_run_strict_calibration.py", "b2_strict_for_precision_test")
+        verifier = module("75_verify_b2_full_fair.py", "b2_verify_for_precision_test")
+
+        labels = np.array([0, 1, 0, 1, 1, 0, 1, 0], dtype=np.int64)
+        probabilities = np.array([
+            0.10123456, 0.74234569, 0.22654322, 0.54876542,
+            0.63898766, 0.43345678, 0.88877654, 0.31987655,
+        ], dtype=np.float32)
+        frame = pd.DataFrame({
+            "replay_id": [f"X{i}" for i in range(len(labels))],
+            "time_sec": [120] * len(labels),
+            "y_true": labels, "y_prob": probabilities,
+            "y_pred": (probabilities >= 0.5).astype(int),
+        })
+        csv_buffer = StringIO()
+        frame.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
+        restored = pd.read_csv(csv_buffer, dtype={"replay_id": str})
+        np.testing.assert_array_equal(
+            restored["y_prob"].to_numpy(dtype=np.float32), probabilities
+        )
+        original_metrics = strict.metrics(labels, probabilities)
+        reproduced = verifier.scores(restored, True, probability_dtype=np.float32)
+        verifier.check_scores(reproduced, original_metrics, Path("float32_csv"))
+
+        corrupted = dict(original_metrics)
+        corrupted["log_loss"] += 1e-4
+        with self.assertRaisesRegex(ValueError, "Metric log_loss mismatch"):
+            verifier.check_scores(reproduced, corrupted, Path("float32_csv"))
+
 
 if __name__ == "__main__":
     unittest.main()
