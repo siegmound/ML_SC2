@@ -69,6 +69,19 @@ jobs:
             latexmk texlive-latex-recommended texlive-latex-extra \
             texlive-pictures texlive-science texlive-fonts-recommended lmodern
 
+      - name: Audit canonical historical slide text (read only)
+        run: |
+          python - <<'PY'
+          from pptx import Presentation
+          deck = Presentation('paper/sc2_outcome_prediction_presentation.pptx')
+          print('CANONICAL_SLIDES:', len(deck.slides))
+          for page in (3, 4, 10, 11, 13, 14, 15, 17, 18):
+              print(f'=== SLIDE {page} ===')
+              for number, shape in enumerate(deck.slides[page - 1].shapes):
+                  if shape.has_text_frame and shape.text.strip():
+                      print(f'SHAPE {number}: {shape.text!r}')
+          PY
+
       - name: Build audited review PDF and PPTX
         run: python scripts/73_build_b5_artifacts.py --output-dir dist/b5
 
