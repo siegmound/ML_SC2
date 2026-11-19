@@ -417,3 +417,72 @@ cat results/b3_counter_orientation_hypothesis_20261119/summary.json
 Do not rerun the original 3 replay comparisons or change any original
 snapshot values just to explore this semantic hypothesis. B3 and B5
 release gates remain open until source-lineage proof is obtained.
+
+## Actual FAIR script-82 counter-orientation results — 2026-11-19
+
+The operator reran the four controlled-hypothesis unit tests (**4/4 PASS**)
+and evaluated script 82 on the unchanged three 2026-11-19 replay
+identities, 117 snapshots and 234 player-snapshot comparisons.
+The as-archived counter formula exactly reproduced the independent
+script-81 reconstructed predictions. No combat observations were
+excluded for incomplete recorded inventory context in this particular
+sample.
+
+| Family | Hypothesis | Comparisons | Mismatches | Mean abs. error | Maximum abs. error |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Counter | As archived | 234 | 198 | 0.243607 | 0.825000 |
+| Counter | Table orientation reversed | 234 | **144** | **0.012510** | **0.090000** |
+| Combat | As archived | 234 | **158** | 0.049582 | 0.529215 |
+| Combat | Table orientation reversed | 234 | 198 | **0.047726** | **0.390615** |
+
+The counter reversal decreases mean absolute error by approximately
+**94.9%** and reduces non-matching counter values by **54/234**.
+However, **144/234 (61.5%) still differ** beyond 1e-6 tolerances;
+the reversed relation is a strong semantic clue rather than numerical
+parity, an original-source revision identification, or release proof.
+
+For combat, reversal reduces average absolute error by only ~3.7%,
+while **increasing** mismatch count from 158 to 198. This contradicts
+applying one blanket counter-direction change to both algorithms.
+The sample includes **34** player-snapshot cases with a generic
+level-named upgrade and **124** archived-combat mismatches with no
+such upgrade event. Therefore *missing generic upgrades alone cannot
+explain every combat discrepancy*; this does not establish the root
+cause of any particular non-upgrade mismatch.
+
+The previous 1,632 feature-level mismatches and the 259 proven
+technology incompatibilities remain the primary original failed
+raw-to-frozen parity evidence. The script-82 direction experiment
+does not retroactively change them or certify a different model.
+
+### Next diagnostic: residual support and sign (no further fitting)
+
+`scripts/83_profile_b3_counter_residuals.py` inspects only script-82's
+already saved per-player snapshot output and the existing script-81
+inventory and source hashes. It groups the **144** remaining counter
+mismatches by signed frozen-minus-reversed residual, replay, player,
+zero/nonzero predictions and normalized frozen/reversed ratio, then
+records the 35 largest discrepancies with the observed army type
+composition and upgrades. Combat rows with insufficient captured
+evidence stay excluded from numerical comparisons.
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_counter_residual_profile.py' -v
+
+"$SC2_PYTHON" scripts/83_profile_b3_counter_residuals.py \
+  --orientation-dir results/b3_counter_orientation_hypothesis_20261119 \
+  --forensic-dir results/b3_combat_counter_forensics_sample3_20261119 \
+  --output-dir results/b3_counter_residual_profile_20261119
+
+cat results/b3_counter_residual_profile_20261119/summary.json
+head -n 16 results/b3_counter_residual_profile_20261119/top_counter_residuals.csv
+```
+
+**No replay reprocessing or model retraining is required** for this
+stage. Do not choose new weights or an alternative generator solely
+by minimizing errors on the already inspected original test replays.
+B3 and B5 release approval remain explicitly blocked.
