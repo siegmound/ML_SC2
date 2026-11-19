@@ -252,3 +252,18 @@ FAIR, the original workstation, or reacquired from the pinned Zenodo
 source). Until then, 816 remains a documented arithmetic difference,
 not an individually explained set of parser exclusions. The B5 release
 gate remains false.
+
+
+### Real raw subset available in the tracked repository
+
+After the source-inventory tool was added, an inspection of the tracked
+`data/raw/replay_subsets/` directory identified **300 real
+`.SC2Replay` files** (plus a placeholder) already available to the
+FAIR checkout. The first targeted B3 run should inventory those files
+against the frozen 23,241 replay IDs with:
+`scripts/77_inventory_b3_raw_sources.py --raw-root data/raw/replay_subsets`.
+This is a **partial subset** rather than proof of the original 71-pack
+corpus or 24,057 upstream replay count. Details and exact commands:
+[B3_RAW_SOURCE_INVENTORY_2026-11-19.md](B3_RAW_SOURCE_INVENTORY_2026-11-19.md).
+
+The B3 original-exclusion/feature-parity gate remains **false**.
