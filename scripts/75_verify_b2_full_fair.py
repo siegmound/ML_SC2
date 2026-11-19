@@ -51,9 +51,9 @@ def read_predictions(path: Path):
     return df
 
 
-def scores(df, calibration: bool):
+def scores(df, calibration: bool, *, probability_dtype=np.float64):
     y = df["y_true"].to_numpy(dtype=int)
-    p = df["y_prob"].to_numpy(dtype=float)
+    p = df["y_prob"].to_numpy(dtype=probability_dtype)
     pred = (p >= 0.5).astype(int)
     result = {
         "accuracy": float(accuracy_score(y, pred)),
@@ -181,7 +181,13 @@ def verify_one(root: Path, base: Path, model: str, seed: int, original: dict):
     for method in CALIBRATION_METHODS:
         frame = read_predictions(run / f"test_predictions_{method}.csv")
         check_test_partition(frame, original, summary["partition_rows"]["test"], run)
-        check_scores(scores(frame, True), summary["scores"][method], run)
+        # XGBoost emits raw (uncalibrated) probabilities as float32. CSV
+        # loading otherwise promotes them to float64; sklearn log_loss/ECE
+        # can then differ from the originally saved float32-based metrics
+        # by a few 1e-8. Calibrated Platt/isotonic outputs use float64.
+        probability_dtype = np.float32 if model == "xgb" and method == "uncalibrated" else np.float64
+        check_scores(scores(frame, True, probability_dtype=probability_dtype),
+                     summary["scores"][method], run)
         if baseline is not None:
             compare_rows(baseline, frame, run)
         else:
