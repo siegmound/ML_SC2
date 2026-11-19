@@ -19,6 +19,13 @@ The dataset bytes match the independent B4 Git LFS freeze:
 - v3.1: 268,539,879 bytes, SHA-256 `65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`.
 - v3.2: 294,197,452 bytes, SHA-256 `87ce36435e4a0fc87b8d9421291d3b1fb04d67b5187ede6a2a3b25d0dce1942e`.
 
+A separate read-only, chunkwise comparison also checked the tuple
+`(replay_id, time_sec, p1_wins)` in **all 892,047 aligned rows** of the two
+frozen CSVs. **Zero differences** were observed. Thus v3.1/v3.2 have identical
+recorded snapshot identities, timestamps and winner labels in the same row
+order; this does not establish equality of their additional feature values
+or the correctness of original replay extraction.
+
 Separate delivered audit artifacts:
 - `sc2_b3_verify_frozen_algebra_vectorized.py` (SHA-256 `3089d2112dad42ec05a070720ff705e1ba73d8ab04733c72931adecb3cf7a73f`)
 - `sc2_b3_full_algebra_2026-11-19.json` (SHA-256 `04298f64aae693eace30762f45242f0ab13af600a7a4ae40cbccf6212f0d67d3`).
