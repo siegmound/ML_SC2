@@ -196,3 +196,70 @@ observations, but **does not close B3**. The manifest
 `b3_raw_replay_to_final_feature_and_exclusion_provenance_resolved`
 must remain `false`. B2 numeric evidence and B4 frozen payloads are
 unaffected; B5 release remains `BLOCKED_PENDING_EVIDENCE`.
+
+## 5. Actual FAIR 300-replay scan — operator transcript, 2026-11-19
+
+After pulling the scanner, the operator's FAIR execution returned **3/3
+inventory tests PASS** and the following concrete partial raw identity
+reconciliation:
+
+| Quantity | Observed |
+| --- | ---: |
+| Actual loose `.SC2Replay` source entries | 300 |
+| Unique source replay basenames | 300 |
+| Source basenames also in frozen v3.1 | **291** |
+| Source basenames absent from frozen v3.1 | **9** |
+| Frozen replay IDs absent from this 300-file subset | 22,950 |
+| Source basename collisions | 0 |
+| Catalogued tournament ZIPs present in this subset folder | 0 / 71 |
+| Raw parser exclusion causes proven | **0** |
+
+Frozen v3.1 still contains 892,047 snapshots and 23,241 replay IDs.
+The actual frozen source dataset payload hash was
+`65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`
+and the 71-pack inventory source hash was
+`1974748ebd0dd14683d9bfeeafbc376ed4a8faafe4ed426eb0c0bda42a24561a`.
+
+The **291/300 (97%)** overlap is factual for *this subset only* and
+must **not** be extrapolated to the original upstream 24,057-replay
+population. The 22,950 frozen IDs missing from the small scanned subset
+are expected and not dataset defects; the 0/71 ZIP packs reflect that
+we supplied loose extracted replays rather than tournament ZIP files.
+
+**The nine IDs missing from frozen data are individually identifiable**
+in `results/b3_source_inventory_subset_20261119/unresolved_ids.csv`.
+They are not yet proven historical filter exclusions.
+
+### Next targeted diagnostic: inspect the nine, not all 300
+
+New `scripts/78_diagnose_b3_unmatched_replays.py` reads only the
+`SOURCE_PRESENT_FROZEN_ABSENT_REASON_UNKNOWN` IDs, requires exactly one
+loose source file per basename, hashes the full raw replay bytes and
+loads **only the sc2reader level-0 replay header** to report durations
+against the historical builder's 180–1,800-second range. No archived
+dataset or existing output is modified. A header-duration indication
+is **not** automatically an attested historical exclusion reason.
+
+```bash
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+source ~/.venvs/ml-sc2/bin/activate
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_unmatched_diagnostics.py' -v
+"$SC2_PYTHON" scripts/78_diagnose_b3_unmatched_replays.py \
+  --raw-root data/raw/replay_subsets \
+  --inventory-dir results/b3_source_inventory_subset_20261119 \
+  --output-dir results/b3_unmatched_diagnostics_20261119
+cat results/b3_unmatched_diagnostics_20261119/summary.json
+```
+
+The tool emits `unmatched_replay_headers.csv` with nine replay IDs,
+file hashes and exact header-level duration categories. A separate
+opt-in `--current-bridge` can inspect corrected clean-room parsing
+only after header review; even those modern failure codes are not
+proof of the historical parser's original decision.
+
+**B3 gate remains false** pending full pack inventory, original
+exclusion/build provenance, and independent original replay feature
+parity on actual raw events. B2 and B5 evidence remain untouched.
