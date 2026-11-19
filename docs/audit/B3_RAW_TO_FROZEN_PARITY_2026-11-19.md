@@ -181,3 +181,97 @@ feature-level and controlled environment evidence.
 The original exact executed parser/bridge version and full historical
 replay corpus remain unproven. B3 stays **OPEN / numerical parity FAIL**
 and the B5 raw lineage release condition stays false.
+
+
+## Feature-level diagnosis: concrete historical-source contradiction
+
+The operator aggregated all 7,488 matched-row feature comparisons from
+`per_feature.csv`. **46 of the 64 feature columns have zero mismatches**
+across all 117 snapshots. The other **18** columns account for every
+one of the 1,632 numeric mismatches.
+
+| Family | Fields with mismatches | Mismatches |
+| --- | ---: | ---: |
+| Primary technology (`p1_tech_level`, `p2_tech_level`, `tech_diff`) | 3 | **259** |
+| Primary combat (`p1_combat`, `p2_combat`, `diff_combat_score`) | 3 | 257 |
+| Primary counter advantage (p1, p2, diff) | 3 | 297 |
+| Derived combat momentum, deltas, windows and volatility | 6 | 534 |
+| Derived counter windows and volatility | 3 | 285 |
+| **Total** | **18** | **1,632** |
+
+### Proven root cause for the 259 technology mismatches
+
+The historical `sc2_parser_v3_counter120.py` computes each player's
+tech level as the maximum of
+`self.UNIT_STATS[u].get('tech_level', 0)` for owned known units.
+The exact archived `sc2_constants.py` (SHA-256
+`1e568db34d1cbf8ec8ad4f6a7d8fbc8889c90d939c3289b077a74cd5232bb7d0`)
+contains **no `tech_level` key in any `UNIT_STATS` entry**. Therefore
+the recovered source bundle must reconstruct all player tech levels as
+zero and `tech_diff = 0`. This follows from source logic, irrespective
+of `sc2reader` version or numerical tolerance.
+
+The *actual* frozen v3.1 CSV ZIP
+(SHA-256 `65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`)
+was independently inspected for the same three exact replay IDs.
+Nonzero frozen technology counts are:
+
+| Field | Frozen nonzero rows (among 117) | Comparison mismatches |
+| --- | ---: | ---: |
+| `p1_tech_level` | **101** | **101** |
+| `p2_tech_level` | **95** | **95** |
+| `tech_diff` | **63** | **63** |
+
+Values of `p1_tech_level` and `p2_tech_level` in the frozen rows
+include levels **1, 2 and 3**; in the archived-source reconstruction
+they are necessarily all **0**. Every mismatch in this three-field
+family is therefore **fully explained by the missing `tech_level`
+definitions** (259/1,632 = 15.9%).
+
+This is **positive evidence that the archived four-file source combination
+cannot be the complete version of the generator that produced frozen v3.1**.
+It is *not* evidence that the frozen data itself is wrong, and it cannot
+identify the exact original constants revision by itself.
+
+### Remaining 1,373 mismatches — not yet root-caused
+
+The mismatch count for the combat/counter families is **1,373**
+(257+297 primary; 534+285 dependent). The recorded examples include
+large deviations (e.g. `combat_momentum_15` frozen 0.755973 versus
+reconstructed 0.610000 at 705 s), not only micro-scale rounding.
+
+The archived `UNIT_STATS` also lacks the `upg_cat` metadata that
+the parser reads for generic weapon/armor upgrade multipliers, so the
+saved source combination may omit some upgrade effects. Other plausible
+but **unproved** explanations include different `power` values,
+`UNIT_COUNTERS` versions or exact per-unit inventories. Matching
+worker, income, scouting, unit-type-count, entropy and supply features
+makes wholesale time alignment errors less likely but **does not prove**
+identical unit-by-unit inventories.
+
+Do **not** repair `UNIT_STATS` with guessed levels/categories and
+label the adjusted build historically faithful. Recover a verified
+earlier constants/counter revision or compare isolated raw inventories,
+upgrade names and counter contributions to frozen values. The feature
+formula algebra test does not substitute for this provenance.
+
+### Reproducible static evidence extractor
+
+`scripts/80_audit_b3_source_constants.py` compares an AST-extracted
+historical `UNIT_STATS` against the frozen tech values for the exact
+replay IDs in `per_replay.csv`, and groups observed per-feature
+mismatch totals. It checks historical/frozen input SHA-256, writes
+only a new isolated report and refuses overwrite.
+
+```bash
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+"$SC2_PYTHON" -m unittest discover -s tests -p 'test_b3_source_constants.py' -v
+"$SC2_PYTHON" scripts/80_audit_b3_source_constants.py \
+  --historical-source-zip sc2_b3_historical_v31_sources.zip \
+  --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+  --parity-dir results/b3_raw_to_v31_parity_sample3_20261119 \
+  --output-dir results/b3_source_constant_incompatibility_20261119
+```
+
+A successful audit of this incompatibility is **not** a PASS of
+replay-to-feature parity. The B3 gate and overall release remain blocked.
