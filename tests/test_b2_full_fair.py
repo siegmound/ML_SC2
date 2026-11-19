@@ -43,10 +43,10 @@ class B2FullFAIRTests(unittest.TestCase):
                 with self.assertRaisesRegex(FileExistsError, "refusing overwrite"):
                     deep.run()
             output.rmdir()
-            with patch.object(deep, "parse_args", return_value=args), \\
-                 patch.object(deep.torch.cuda, "is_available", return_value=False):
-                with self.assertRaisesRegex(RuntimeError, "CUDA requested"):
-                    deep.run()
+            with patch.object(deep, "parse_args", return_value=args):
+                with patch.object(deep.torch.cuda, "is_available", return_value=False):
+                    with self.assertRaisesRegex(RuntimeError, "CUDA requested"):
+                        deep.run()
 
     def test_verifier_rechecks_real_predictions_not_just_file_existence(self):
         rng = np.random.default_rng(123)
