@@ -275,3 +275,64 @@ git pull --ff-only origin audit/sc2-corrections-2026-11-17
 
 A successful audit of this incompatibility is **not** a PASS of
 replay-to-feature parity. The B3 gate and overall release remain blocked.
+
+## Controlled next step — primitive combat and counter forensics
+
+The original mismatch analysis is now established: 46/64 features
+match, 18 disagree. All 259 technology mismatches are fully explained
+by the absence of tech_level in the exact historical constants,
+whereas 1,373 combat/counter and downstream temporal mismatches remain
+without a demonstrated upstream cause.
+
+The historical parser's combat score depends on:
+- per-unit UNIT_STATS.power and known army inventory;
+- opponent unit membership in UNIT_COUNTERS for per-unit penalties;
+- completed upgrades filtered by UNIT_STATS.upg_cat (absent in the archive),
+  plus per-unit named UNIT_TECH_MULTIPLIERS.
+
+The archived counter score depends on the per-unit UNIT_STATS.power,
+known army composition, and the directional UNIT_COUNTERS table. These
+dependencies overlap with combat and are not independent evidence.
+Recorded worker/supply/entropy parity does NOT establish identical
+per-unit army composition, counter edges or upgrade sets.
+
+The new read-only scripts/81_forensic_b3_combat_counter.py reruns
+the **same three seed-42 replays** using the SHA-pinned historical
+source bundle, temporarily instruments only the in-memory historical
+_create_snapshot call, and captures per-player known army compositions,
+raw pre-counter/upgrade combat power, completed upgrade names, and
+signed frozen-minus-reconstructed residuals for six *primitive*
+features: p1/p2 combat, p1/p2 counter and p1/p2 tech.
+All original sources, replay data and frozen CSV archives stay unchanged.
+Output is written only into a new report directory.
+
+### FAIR run (one small three-replay experiment, no ML retraining)
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_combat_counter_forensics.py' -v
+
+"$SC2_PYTHON" scripts/81_forensic_b3_combat_counter.py \
+  --historical-source-zip sc2_b3_historical_v31_sources.zip \
+  --raw-root data/raw/replay_subsets \
+  --inventory-csv results/b3_source_inventory_subset_20261119/identity_reconciliation.csv \
+  --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+  --max-replays 3 --seed 42 \
+  --output-dir results/b3_combat_counter_forensics_sample3_20261119
+
+cat results/b3_combat_counter_forensics_sample3_20261119/summary.json
+```
+
+Inspect the output's per_snapshot_primitive_residual.csv and
+raw_player_inventories_and_upgrades.csv. Neither the existence
+of generic upgrades nor an apparent counter pattern certifies that
+missing metadata is the full historical cause. Do not extrapolate
+results to all 291 overlapping replays until these primitive causes
+are isolated, and do not substitute guessed source constants.
+
+**B3 lineage and raw-to-frozen parity remain open/failed.**
