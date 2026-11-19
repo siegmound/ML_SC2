@@ -81,14 +81,26 @@ def scores(df, calibration: bool, *, probability_dtype=np.float64):
     return result
 
 
-def check_scores(actual, recorded, path):
+def check_scores(actual, recorded, path, *, float32_csv_roundtrip=False):
+    """Recompute saved metrics, accounting only for XGB raw float32 CSV rounding.
+
+    Pandas' CSV representation is not guaranteed to round-trip every float32
+    booster probability bit-for-bit. At most 1e-6 absolute discrepancy is
+    permitted for probability-derived aggregate scores in that one case;
+    classification scores and all other runs retain the original 1e-8 gate.
+    This is a numerical serialization allowance, not a metric correction.
+    """
     for key, value in actual.items():
         require(key in recorded, f"Missing {key} in {path}")
         if isinstance(value, list):
             require(value == recorded[key], f"Confusion matrix mismatch in {path}")
         else:
-            require(math.isclose(value, float(recorded[key]), abs_tol=1e-8, rel_tol=1e-8),
-                    f"Metric {key} mismatch in {path}: {value} vs {recorded[key]}")
+            tolerance = (1e-6 if float32_csv_roundtrip and key in (
+                "roc_auc", "log_loss", "brier", "ece_15", "mce_15",
+            ) else 1e-8)
+            require(math.isclose(value, float(recorded[key]), abs_tol=tolerance, rel_tol=1e-8),
+                    f"Metric {key} mismatch in {path}: {value} vs {recorded[key]} "
+                    f"(absolute tolerance={tolerance})")
 
 
 def check_orig_split(root, seed):
@@ -187,7 +199,8 @@ def verify_one(root: Path, base: Path, model: str, seed: int, original: dict):
         # by a few 1e-8. Calibrated Platt/isotonic outputs use float64.
         probability_dtype = np.float32 if model == "xgb" and method == "uncalibrated" else np.float64
         check_scores(scores(frame, True, probability_dtype=probability_dtype),
-                     summary["scores"][method], run)
+                     summary["scores"][method], run,
+                     float32_csv_roundtrip=(model == "xgb" and method == "uncalibrated"))
         if baseline is not None:
             compare_rows(baseline, frame, run)
         else:
