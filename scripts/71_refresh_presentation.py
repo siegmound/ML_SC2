@@ -96,9 +96,9 @@ def add_audit_slide(presentation) -> None:
         ("B2 | Model evaluation",
          "RF fitted train+val historically; XGB fitted train with validation early stopping. Deep test peeking and calibration reuse are documented."),
         ("B3 | Replay provenance",
-         "892,047 rows / 23,241 replay IDs checked. 816 exclusions remain unattributed; the 38-feature clean-room parser is not the archived 64/73-feature pipeline."),
+         "892,047 rows / 23,241 replay IDs checked. The archived parser source covers all 64 v3.1 feature names; 816 source replay exclusions and full parity remain unverified."),
         ("B4 + B5 | Release gates",
-         "Local regression checks pass. Remote full LFS, full-scale reruns, complete environment lock and final CI verification are still required."),
+         "B4 full LFS, FAIR hashed-wheel CUDA environment and remote CI PASS. B2 full-scale reruns, B3 raw lineage and B5 final visual review remain open."),
     ]
     for index, (heading, description) in enumerate(cells):
         col = index % 2
