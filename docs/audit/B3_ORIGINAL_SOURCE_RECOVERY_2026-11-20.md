@@ -349,3 +349,36 @@ generation. If its records are unrelated to the ML data builder,
 do not include them as raw replay evidence. Next prioritize
 original Windows/local workstation/archive backups and
 a directory-only search of any designated FAIR scratch volumes.
+
+
+## 9. OCTO archive named sc2: unrelated code-execution evidence
+
+The FAIR operator listed 41 files (depth <=3) in the narrowly scoped
+`$HOME/HPC-POMDP/OCTO-Archivio/evidenze/research_records/2026-10/operator_runs/sc2_20261030_gUYOFXzZ`.
+They include CUDA/C++ sources `collector.cu`, `wrapper.cu`,
+`helper.cpp`, Python runners `direct_ell.py` and `runner.py`,
+per-run `gate-summary.json`, `invocation.json`, `runtime.json`,
+`science-gate.json`, `junit.xml`, and an approximately 205 KB
+`delivery.tar`, accompanied by `delivery.tar.sha256`.
+
+The **listed regular files do not contain any `.SC2Replay`**
+extensions, original SC2ReSet pack ZIPs, named tournament source inputs,
+or historical ML-SC2 exclusion manifests. The code/evidence naming
+is strongly indicative of HPC-POMDP/OCTO program execution,
+**not** a recovered StarCraft II replay corpus.
+The internal `delivery.tar` members were *not* shown; do not claim
+the archive was inspected or contains no SC2 files until its member
+index is explicitly read (no extraction needed).
+
+Read-only final check, if desired:
+
+```bash
+candidate="$HOME/HPC-POMDP/OCTO-Archivio/evidenze/research_records/2026-10/operator_runs/sc2_20261030_gUYOFXzZ"
+tar -tf "$candidate/delivery.tar" | head -n 80
+```
+
+If the TAR contains only OCTO artifacts, stop searching this directory.
+Do not misclassify the OCTO project use of the term "replay" as
+StarCraft II game data. The original 24,057 input file identities,
+per-file 816 exclusion reasons, and actual v3.1 counter/combat
+generator remain **unresolved**. The release gate does not change.
