@@ -174,3 +174,59 @@ combatfix raw-replay primitives.
 Do **not** merge/release, update B3 gate, retune models or edit
 frozen data based on this discovery stage. B5 remains
 `BLOCKED_PENDING_EVIDENCE`.
+
+## 6. FAIR incident: scan cap at 500,000 files (2026-11-20)
+
+A real FAIR scan was attempted with `--roots "$HOME/HPC-POMDP" "$HOME/Downloads"`.
+All three original regression tests passed, but the complete filesystem scan
+**aborted before any output was committed**, raising:
+
+```text
+ValueError: File scan cap reached; narrow --roots
+```
+
+This is a search-space/tooling limit, not evidence of corrupt replay files,
+incomplete snapshot data, or actual historical exclusions.
+
+The updated `scripts/86_discover_b3_generation_sources.py` now supports
+`--on-limit partial` (the CLI default), preserving already located evidence
+while recording `scan_complete=false`,
+`scan_status=PARTIAL_INCOMPLETE_LIMIT_REACHED`, `limit_reached`,
+`interrupted_at_path` and unstarted roots. Crucially,
+`catalogued_zenodo_packs_missing=null` in incomplete scans, so no false
+claim of exhaustive absence can be made. Direct Python calls preserve the
+original fail-closed `on_limit="error"` behavior.
+Common non-source dependencies/caches (including `site-packages` and
+`.cache`) are pruned. Two additional regressions verify partial output
+and no false missing-pack claims.
+
+**Run targeted first**, with a *new* output folder:
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+"$SC2_PYTHON" -m unittest discover -s tests -p 'test_b3_generation_source_discovery.py' -v
+
+"$SC2_PYTHON" scripts/86_discover_b3_generation_sources.py \
+  --roots "$HOME/HPC-POMDP/ML-SC2" "$HOME/Downloads" \
+  --pack-catalog data/raw/replaypack_inventory.csv \
+  --max-files 100000 \
+  --on-limit partial \
+  --output-dir results/b3_historical_build_discovery_targeted_20261120
+
+cat results/b3_historical_build_discovery_targeted_20261120/summary.json
+head -n 35 results/b3_historical_build_discovery_targeted_20261120/source_candidates.csv
+head -n 35 results/b3_historical_build_discovery_targeted_20261120/text_witnesses.csv
+```
+
+If this also reaches its limit, **do not treat absence of an original source
+as proved**. The partial report exposes exactly where inspection stopped.
+Further scans should use distinct roots and different report folders, e.g.
+`--roots "$HOME/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean/data/raw"`
+or historical project checkout directories found via
+`find "$HOME/HPC-POMDP" -maxdepth 4 -type d -name replays`,
+without blindly raising the cap over very large unrelated workspaces.
+
+Original 24,057 input file identity and 816-per-file exclusion provenance
+remain **UNVERIFIED**; B3 and release gates stay blocked.
