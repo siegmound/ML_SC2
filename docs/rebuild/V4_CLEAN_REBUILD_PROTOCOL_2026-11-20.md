@@ -125,3 +125,33 @@ choose the winner by looking at the test scores.
 
 Historical frozen datasets, B2 runs and original paper/presentation stay
 unchanged; historical B3 false and B5 BLOCKED_PENDING_EVIDENCE.
+
+
+## Step 4: verify saved test predictions and per-replay metrics
+
+Once a suite has finished, verify that each test prediction belongs
+to the saved held-out source replay/time key, has the correct game
+winner label, has a finite probability and reproduces every reported
+test metric. Compute additional **per-replay** metrics by averaging
+the model's snapshot probabilities within each test replay (each
+replay counts once). These measures should be reported alongside,
+rather than replaced by, ordinary per-snapshot accuracy.
+
+For the completed initial RF+XGB smoke suite:
+
+    "$SC2_PYTHON" scripts/92_v4_verify_results.py \
+      --dataset-dir results/v4_raw_smoke120_20261120 \
+      --suite-root results/v4_experiments_smoke42_20261120 \
+      --output-dir results/v4_verification_smoke42_20261120
+
+    cat results/v4_verification_smoke42_20261120/summary.csv
+
+The verifier fails closed if any planned model/seed output is absent,
+any prediction key or label differs from the raw v4 dataset, split
+groups overlap, output report and saved predictions disagree, or
+the source/profile SHA-256 changes. It creates a NEW output folder
+and cannot overwrite earlier evidence. It is not a model selection
+or hyperparameter tuning step.
+
+For the all-available-data nine-model-seed suite, use the matching
+dataset/suite paths and a NEW verification output directory.
