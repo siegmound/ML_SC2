@@ -15,6 +15,7 @@ import os
 import shlex
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,11 @@ from sc2proj.utils import load_dataframe_from_zip
 
 MODELS = ("rf", "xgb", "deep")
 SEEDS = (42, 43, 44)
+PROFILE_OPTIONS = ("core", "full")
+META_COLS = ("replay_id", "time_sec", "p1_wins")
+# Predeclared before seeing any rerun test metrics. The core profile
+# avoids qualitative/uncalibrated combat and counter score heuristics.
+HEURISTIC_TOKENS = ("combat", "counter")
 
 
 def digest(path):
@@ -80,6 +86,34 @@ def validate_and_plan_splits(df, seeds):
     return plans
 
 
+def feature_profile_columns(df, profile: str) -> list[str]:
+    if profile not in PROFILE_OPTIONS:
+        raise ValueError(f"Unknown feature profile {profile}")
+    features = [c for c in df.columns if c not in META_COLS]
+    if profile == "core":
+        features = [
+            c for c in features
+            if not any(token in c.lower() for token in HEURISTIC_TOKENS)
+        ]
+    if not features:
+        raise ValueError("Selected feature profile contains no features")
+    if len(features) != len(set(features)):
+        raise ValueError("Duplicate feature names")
+    return list(META_COLS) + features
+
+
+def deterministic_profile_zip(df, profile: str, destination: Path) -> str:
+    columns = feature_profile_columns(df, profile)
+    csv_payload = df[columns].to_csv(index=False).encode("utf-8")
+    zi = zipfile.ZipInfo("sc2_v4_clean.csv", date_time=(1980, 1, 1, 0, 0, 0))
+    zi.compress_type = zipfile.ZIP_DEFLATED
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(destination, "x") as z:
+        z.writestr(zi, csv_payload, compress_type=zipfile.ZIP_DEFLATED,
+                   compresslevel=6)
+    return digest(destination)
+
+
 def commands(dataset_zip: Path, splits: Path, output_root: Path, *,
              models, seeds, stage, device, n_jobs):
     commands_list = []
@@ -119,6 +153,8 @@ def main():
     p.add_argument("--dataset-dir", type=Path, required=True)
     p.add_argument("--output-root", type=Path, required=True)
     p.add_argument("--stage", choices=("smoke", "full"), default="smoke")
+    p.add_argument("--feature-profile", choices=PROFILE_OPTIONS, default="core",
+                   help="Core primary excludes combat/counter heuristics; full is exploratory")
     p.add_argument("--models", nargs="+", choices=MODELS, default=list(MODELS))
     p.add_argument("--seeds", nargs="+", type=int, choices=SEEDS, default=list(SEEDS))
     p.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
@@ -141,13 +177,16 @@ def main():
     df = load_dataframe_from_zip(zip_path)
     split_plans = validate_and_plan_splits(df, a.seeds)
     split_dir = out_root / "splits"
+    profile_zip = out_root / "profiles" / f"sc2_v4_{a.feature_profile}.zip"
+    planned_columns = feature_profile_columns(df, a.feature_profile)
     plan = commands(
-        zip_path, split_dir, out_root,
+        profile_zip, split_dir, out_root,
         models=a.models, seeds=a.seeds,
         stage=a.stage, device=a.device, n_jobs=a.n_jobs
     )
     print(f"v4 dataset: {zip_path}")
     print(f"v4 source SHA: {manifest['dataset_zip_sha256']}")
+    print(f"Feature profile: {a.feature_profile}; selected {len(planned_columns)-3} of {len(df.columns)-3} features")
     print(f"Independent replays: {manifest['included_replays']}, snapshots: {manifest['n_snapshots']}")
     for seed, model, run_dir, cmd in plan:
         print(f"{seed} | {model}: {shlex.join(cmd)}")
@@ -155,6 +194,7 @@ def main():
         print("PLAN ONLY: nothing written; use --execute for the new experiment suite.")
         return
     out_root.mkdir(parents=True, exist_ok=False)
+    profile_sha = deterministic_profile_zip(df, a.feature_profile, profile_zip)
     split_dir.mkdir(parents=True, exist_ok=False)
     for seed, split in split_plans.items():
         (split_dir / f"v4_clean_split_seed_{seed}.json").write_text(
@@ -165,6 +205,9 @@ def main():
         "original_frozen_training_data": False,
         "data_manifest_sha256": digest(data_dir / "manifest.json"),
         "data_zip_sha256": digest(zip_path),
+        "profile": a.feature_profile,
+        "profile_feature_columns": planned_columns[3:],
+        "profile_zip_sha256": profile_sha,
         "seeds": a.seeds, "models": a.models, "stage": a.stage,
         "test_selection_policy": "validation_selected_then_single_model_inference",
         "calibration_policy": "replay_disjoint_tune_calibration_test_for_RF_XGB",
