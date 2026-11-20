@@ -353,7 +353,7 @@ a directory-only search of any designated FAIR scratch volumes.
 
 ## 9. OCTO archive named sc2: unrelated code-execution evidence
 
-The FAIR operator listed 41 files (depth <=3) in the narrowly scoped
+The FAIR operator listed files (depth <=3) in the narrowly scoped
 `$HOME/HPC-POMDP/OCTO-Archivio/evidenze/research_records/2026-10/operator_runs/sc2_20261030_gUYOFXzZ`.
 They include CUDA/C++ sources `collector.cu`, `wrapper.cu`,
 `helper.cpp`, Python runners `direct_ell.py` and `runner.py`,
