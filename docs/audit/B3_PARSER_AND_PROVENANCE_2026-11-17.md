@@ -445,3 +445,30 @@ See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
 methodology and command sequence.
 
 **B3 stays OPEN and release stays BLOCKED_PENDING_EVIDENCE.**
+
+### Actual Git v1.2 raw-replay reconstruction: only tech parity
+
+The FAIR `85_compare_b3_git_v12_source_parity.py` test completed
+successfully as a program, with **4/4 unit tests PASS** and the
+same SHA-256-verified 3 replay raw files plus frozen v3.1 dataset
+as earlier script 79. All **117 replay/time snapshots**, winner
+labels and all 64 schema features are aligned.
+
+Compared with the source-only ZIP (1,632 numeric mismatches), the
+immutable Git v1.2 historical source revision
+`bd64a32b305cc7203d592c7fc9015a01f962d6f9`
+produced **1,373 numeric mismatches**. The exact 259-value
+reduction is restricted to **p1_tech_level (101), p2_tech_level
+(95), tech_diff (63)**; these three now match frozen values
+on all 117 snapshots. **Every other affected combat/counter
+feature mismatch count remains unchanged.** Full parity
+is therefore 0/3 replays for both historical combinations.
+
+Git commit `e325a95f250e613e47f74159fe3a30bf87ec6371`
+(2026-04-07) deleted the historical source paths, rather than
+committing a corrected successor there. An original executed
+v3.1 counter/combat code revision has still not been recovered.
+See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
+(B3_RAW_TO_FROZEN_PARITY_2026-11-19.md) for full counts.
+
+**B3 is OPEN and B5 remains BLOCKED_PENDING_EVIDENCE.**
