@@ -41,6 +41,18 @@ manifest. The subsequent `ml_sc2_remake_final_delivery.zip` contains
 an audit log from the historical frozen dataset build. Its source ZIP
 SHA-256 is `cbc0a1548c581f4c070ff748dbeb5891caa914e66db07ac94d2789b51c881e31`.
 
+### Nested archive recovery verification
+
+A further read-only extraction-index inspection examined **all 26
+embedded ZIPs** in the two historic freeze packages and the two
+remake delivery/block16 packages (4 + 4 + 9 + 9). All nested ZIP
+directories were readable. **None contains a `.SC2Replay` member**:
+they contain prediction, calibration, model and training-evidence
+artifacts, not original raw replay binaries. This closes the
+*uploaded-archive search* for raw replay payloads, **not** the
+possibility that the original replay input folder survives elsewhere
+on FAIR or another workstation.
+
 ## 2. Repository history actually recovered
 
 The genuine source branch `v1.2`, immutable Git commit
