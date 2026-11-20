@@ -295,3 +295,57 @@ not yet been exhaustively searched.
 
 The original count discrepancy \`24,057−23,241=816\` remains
 **unattributed**. The B3 and B5 gates remain closed.
+
+
+## 8. Actual SHA-256 mirror comparison and sibling-directory discovery — 2026-11-20
+
+The FAIR operator independently hashed each same-basename file in the
+two \`data/raw/replay_subsets/\` checkout directories:
+
+- First checkout: 300 \`.SC2Replay\`-extension files.
+- Audit checkout: 300 \`.SC2Replay\`-extension files.
+- Basenames common to both: **300/300**.
+- Basenames exclusive to either directory: **0/0**.
+- Same-name **SHA-256 content differences: 0/300**.
+
+Thus the earlier 600 filesystem paths are **two byte-identical
+mirrors of exactly 300 named source entries**, not 600 independent
+SC2 replay inputs. Their composition remains **295 MPQ-container
+candidates and 5 AppleDouble metadata files**. This direct mirror
+check is a real FAIR execution; it does not depend on a conjecture
+of repository history.
+
+A directory-name search of \`$HOME/HPC-POMDP\` up to depth 7,
+pruning Git/venv/cache/dependency directories, found the two
+already known SC2 replay subsets. Other path hits containing
+\`replay\` predominantly belong to **unrelated** Arcana world
+simulation and HPC-POMDP/OCTO replay/stress test workflows; their
+names do not identify StarCraft II game replay input files.
+One additional narrowly scoped historical evidence directory,
+\`$HOME/HPC-POMDP/OCTO-Archivio/evidenze/research_records/2026-10/operator_runs/sc2_20261030_gUYOFXzZ\`,
+contains the literal \`sc2\` identifier and warrants **metadata-only
+inspection**, but **is not yet demonstrated** to hold original
+SC2 game files, execution logs or source archives.
+
+The directory search is bounded by name and depth and so cannot
+establish that there are no raw SC2 replay binaries under
+different directory names, on /scratch or a different workstation.
+No complete 24,057-file source input manifest or original
+816-case exclusion record has been found. B3 is **still OPEN**.
+
+### Focused follow-up (FAIR; read-only)
+
+\`\`\`bash
+candidate="$HOME/HPC-POMDP/OCTO-Archivio/evidenze/research_records/2026-10/operator_runs/sc2_20261030_gUYOFXzZ"
+if test -d "$candidate"; then
+  find "$candidate" -maxdepth 3 -type f \
+    -printf '%p\t%s bytes\n' | head -n 60
+fi
+\`\`\`
+
+Review filename, purpose, timestamp and exact evidence before
+attributing this directory to the original ML-SC2 dataset
+generation. If its records are unrelated to the ML data builder,
+do not include them as raw replay evidence. Next prioritize
+original Windows/local workstation/archive backups and
+a directory-only search of any designated FAIR scratch volumes.
