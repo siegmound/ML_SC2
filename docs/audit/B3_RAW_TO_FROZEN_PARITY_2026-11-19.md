@@ -673,3 +673,81 @@ The 24,057 vs 23,241 upstream identity gap, full raw corpus
 reconstruction, original build attestation and v3.2 upstream
 feature provenance are still unresolved. **B3 is OPEN and
 B5 is BLOCKED_PENDING_EVIDENCE.**
+
+## Actual FAIR script-85 historical Git v1.2 paired reconstruction — 2026-11-20
+
+The FAIR operator completed the script-85 paired reconstruction using
+the exact immutable historical Git v1.2 revision
+`bd64a32b305cc7203d592c7fc9015a01f962d6f9`, with all four
+Git blob identities checked and SHA-256 recorded. The same three
+raw replay file hashes and frozen v3.1 SHA-256 as script 79 were
+verified in the script output. All four synthetic test cases passed.
+
+**The alternative v1.2 parser does not recover raw-to-frozen
+full feature parity (0/3 replay PASS)**, although it entirely
+eliminates the 259 missing-tech-metadata mismatches.
+
+| Evidence | Earlier source-only ZIP | Actual Git v1.2 |
+| --- | ---: | ---: |
+| Unique raw replay IDs | 3 | 3 |
+| Matched timestamp rows | 117/117 | 117/117 |
+| Feature comparisons | 7,488 | 7,488 |
+| Feature mismatches | **1,632** | **1,373** |
+| Columns with any mismatch | 18 | 15 |
+| p1 technology mismatches | 101 | **0** |
+| p2 technology mismatches | 95 | **0** |
+| tech_diff mismatches | 63 | **0** |
+| Combat primitive mismatches | 257 | **257** |
+| Counter primitive mismatches | 297 | **297** |
+| Combat-derived mismatches | 534 | **534** |
+| Counter-derived mismatches | 285 | **285** |
+| Label differences | 0 | 0 |
+| Timestamp mismatches | 0 | 0 |
+| Replay-level full parity | 0/3 | 0/3 |
+
+Per-replay mismatches: `00bb7e14…` **786 -> 655**;
+`0a390370…` **506 -> 427**; `0b196edc…` **340 -> 291**.
+The reduction is exactly **259 / 1,632 = 15.87%**, entirely
+accounted for by technology features. No other feature mismatch
+count changed. This is stronger evidence that the Git v1.2
+`tech_level` metadata has compatible semantics with the frozen
+sample but **not** that the whole v1.2 revision generated v3.1.
+
+The still-unexplained 1,373 counts partition into 554 primary
+combat/counter differences (158 p1/p2 combat + 198 p1/p2
+counter + 99 diff_combat_score + 99 counter_advantage_diff)
+plus 819 temporal or volatility derivative mismatches. These
+are overlapping causal categories: downstream derived errors
+cannot be interpreted as 819 independent upstream defects.
+
+### Git history clarification
+
+`scripts/sc2_constants.py`, `scripts/sc2_counters.py` and
+`scripts/sc2_parser_v3_counter120.py` were introduced or updated
+in the `v1.2` commit of **2026-03-21**. Git history also reports
+commit `e325a95f250e613e47f74159fe3a30bf87ec6371` dated
+**2026-04-07**, which **removed** the corresponding historical
+script paths rather than introducing a newer implementation at
+those paths. This explains why `git show`/file lookup at the later
+commit cannot retrieve them. The branch v1.2 still preserves
+their immutable original content.
+
+This does not rule out other scripts or branches, but repeated
+attempts to infer an exact original counter formula by minimizing
+errors on these already-inspected replays would constitute
+post-hoc generator selection, not historical provenance.
+
+### Decision
+
+- Preserve both earlier and Git v1.2 source copies and their SHA
+  manifests; neither may be silently overwritten or repaired.
+- Record **sampled v1.2 tech parity** as verified, and full
+  sampled raw-to-frozen parity as **FAILED**.
+- Seek original v3.1 dataset build manifests, per-replay exclusion
+  records and executed source/environment identifiers, or independently
+  reconstruct raw primitive quantities with evidence-driven formulas.
+- Do not launch further model training or claim a new untouched test
+  set. Do not change historical frozen CSVs or closed B2 evidence.
+
+**B3 raw-to-feature provenance remains OPEN, and B5 remains
+`BLOCKED_PENDING_EVIDENCE`.**
