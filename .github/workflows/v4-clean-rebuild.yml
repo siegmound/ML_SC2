@@ -1,0 +1,54 @@
+name: V4 independent clean-room replay rebuild
+
+'on':
+  push:
+    branches:
+      - rebuild/sc2-v4-clean-2026-11-20
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic:
+    name: Independent lifecycle, replay lineage and group split regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout (no frozen LFS payload)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Use Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install minimal v4 CPU verifier dependencies
+        run: |
+          python -m pip install 'numpy>=1.26,<3' 'pandas>=2.2,<3.2' 'scikit-learn>=1.5,<2' 'sc2reader>=1.8,<2'
+          python -m pip freeze > v4_test_environment_pip_freeze.txt
+
+      - name: Check clean-room scripts syntax
+        run: |
+          python -m compileall -q src/sc2proj/v4.py src/sc2proj/v4_dataset.py scripts/90_v4_build_dataset.py scripts/91_v4_run_suite.py tests/test_v4_clean_rebuild.py tests/test_v4_suite.py
+
+      - name: Run synthetic independent-source regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_v4_clean_rebuild.py' -v
+          python -m unittest discover -s tests -p 'test_v4_suite.py' -v
+
+      - name: Keep CI runtime record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v4-synthetic-runtime
+          if-no-files-found: ignore
+          path: v4_test_environment_pip_freeze.txt
