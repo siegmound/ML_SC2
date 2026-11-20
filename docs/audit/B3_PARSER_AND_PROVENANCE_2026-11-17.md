@@ -400,3 +400,48 @@ See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
 (B3_RAW_TO_FROZEN_PARITY_2026-11-19.md). The 816 historical
 upstream count difference and full replay-to-feature provenance
 are still unresolved; **B3 remains OPEN**.
+
+### Actual single-type weight decomposition and immutable v1.2 revision
+
+The real FAIR script-84 run inspected 234 counter player/snapshot
+observations. 200 involved multiple own army unit types; 6 had no
+recorded countered-opponent fraction; 28 allowed an isolated
+conditional effective weight. All 28 differed from the archived
+reverse-table prediction:
+
+- Queen: 13/13 observations, 7 opponent compositions, implied
+  weight exactly **0.745** rather than the archived **0.85**;
+- Adept: 3/3 observations, 2 compositions, implied **0.79** vs
+  archived **0.80**;
+- Stalker: 12 observations over 5 compositions, implied
+  **0.781–0.795** vs archived **0.8125**.
+
+These figures assume the reconstructed enemy inventories coincide
+with the original generator; the unit weights are conditional
+algebraic quantities, not attested historical parameters.
+Queen 0.745 falls below the archived counter weight formula's
+0.75 minimum for nonnegative unit power, so changing only its
+nonnegative power cannot reconcile the archived formula if
+opponent count fractions are fixed.
+
+**New historical source recovery:** Git branch `v1.2` at immutable
+commit `bd64a32b305cc7203d592c7fc9015a01f962d6f9`
+contains a different complete `scripts/sc2_constants.py` and
+parser/bridge/counter files. Unlike the incomplete freeze ZIP,
+the v1.2 constants provide `tech_level`, attack/armor upgrade
+categories and shield upgrade metadata. The v1.2 parser reads
+these fields; its counter score still uses a direct table lookup.
+
+`scripts/85_compare_b3_git_v12_source_parity.py` pins the exact
+v1.2 commit and four Git blob identities, and compares the same
+three byte-identical raw replay files against the same frozen v3.1
+data. This is a paired *real revision* comparison, not a manual
+formula repair, release candidate, or claim that v1.2 actually
+generated the frozen dataset. Four tests passed in CI run
+`44701782786`; the FAIR real replay run remains to be observed.
+
+See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
+(B3_RAW_TO_FROZEN_PARITY_2026-11-19.md) for the audit
+methodology and command sequence.
+
+**B3 stays OPEN and release stays BLOCKED_PENDING_EVIDENCE.**
