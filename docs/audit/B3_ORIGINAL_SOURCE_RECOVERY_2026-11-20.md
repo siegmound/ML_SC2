@@ -230,3 +230,68 @@ without blindly raising the cap over very large unrelated workspaces.
 
 Original 24,057 input file identity and 816-per-file exclusion provenance
 remain **UNVERIFIED**; B3 and release gates stay blocked.
+
+
+## 7. Actual targeted FAIR discovery result — 2026-11-20
+
+The operator pulled the fixed scanner and ran **5/5 source-recovery
+regression tests PASS**, followed by the actual constrained discovery:
+
+- Root requested: \`/home/jlpfritas/HPC-POMDP/ML-SC2\`;
+  second requested root \`/home/jlpfritas/Downloads\` did not exist.
+- \`scan_complete=true\`, \`scan_status=COMPLETE_ALL_REQUESTED_ROOTS\`,
+  \`n_visited_files=2,374\`. **This is complete for the one existing
+  requested directory tree only; it is NOT a FAIR-wide search.**
+- **600** loose \`.SC2Replay\` extension files in precisely two
+  source directories:
+  \`ML_SC2/data/raw/replay_subsets\` (300) and
+  \`ML_SC2_tabular_audit_clean/data/raw/replay_subsets\` (300).
+  Each directory has **295 MPQ-candidate headers and 5 AppleDouble
+  macOS metadata headers**. This strongly suggests two checkout
+  copies of the *same* 300-entry subset; byte identity between
+  the two directories is **not yet SHA-256 verified**.
+- **19 ZIPs** inspected, none matching the 71 catalogued original
+  Zenodo replaypack names, and **zero direct \`.SC2Replay\` ZIP
+  entries** in those inspected ZIPs.
+- **14** possible source/manifest text files, with paths present in
+  the two current worktrees: no newly discovered original executable
+  parser/counter script, original executed builder, or original
+  per-replay rejection log in the displayed candidates.
+- **260** text witness matches (including repeated citations of
+  24,057 / 23,241 / 892,047 in project audit documents and
+  manifests), but these are *documentary repetitions*, not 260
+  independent original build-log discoveries. A candidate would need
+  a distinct original log path, dated record or verified provenance
+  to count as newly found source evidence.
+
+**Interpretation:** The search under both current ML-SC2 checkouts
+did **not** find the historical 24,057-input raw corpus or 71
+original replaypack ZIPs, and did not recover an original per-file
+exclusion record. No *global* absence claim is justified; other
+HPC-POMDP sibling directories, scratch volumes, archives elsewhere
+on FAIR or the workstation that originally built the dataset have
+not yet been exhaustively searched.
+
+### Next non-destructive actions
+
+1. Independently hash the same-named raw files in the two 300-entry
+   \`data/raw/replay_subsets/\` directories to establish whether
+   there are exactly 300 distinct source bytes, rather than
+   assuming the 600 paths are different replay inputs.
+2. Use a *directory-only*, bounded-depth search outside the two
+   already-scanned clones to identify old \`replays/\`,
+   \`SC2ReSet/\`, \`starcraft*\` source directories and other
+   data mount points. Avoid full file traversal of HPC-POMDP
+   without directory pruning.
+3. Scan any newly identified likely source directory using
+   script 86 with a **distinct output directory**. If it
+   contains replaypack ZIPs, compare their central directory
+   per-file names with the preserved frozen v3.1 IDs before
+   asserting exclusion reasons.
+4. If no old local original source survives, preserve this
+   negative scoped-search evidence and retrieve upstream
+   replaypack metadata selectively; do not download 71 large
+   packs solely to force a total of 24,057.
+
+The original count discrepancy \`24,057−23,241=816\` remains
+**unattributed**. The B3 and B5 gates remain closed.
