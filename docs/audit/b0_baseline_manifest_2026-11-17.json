@@ -1,0 +1,100 @@
+{
+  "schema": "ml_sc2.b0.baseline.v1",
+  "recorded_on": "2026-11-17",
+  "repository": "siegmound/ML_SC2",
+  "baseline_branch": "main",
+  "baseline_commit": "33660e2b4fc4bd75df0824bbb7fa7c2096d13831",
+  "correction_branch": "audit/sc2-corrections-2026-11-17",
+  "hash_definition": "git_blob_sha1 is the SHA-1 Git blob object ID of the file content at baseline_commit. Dataset zip files are Git LFS pointer files: the SHA-256 hashes below identify LFS payloads.",
+  "datasets": {
+    "data/processed/starcraft_full_dataset_v3_1_fixed.zip": {
+      "lfs_sha256": "65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517",
+      "size_bytes": 268539879,
+      "rows": 892047,
+      "replays": 23241,
+      "features": 64
+    },
+    "data/processed/starcraft_full_dataset_v3_2_combatfix.zip": {
+      "lfs_sha256": "87ce36435e4a0fc87b8d9421291d3b1fb04d67b5187ede6a2a3b25d0dce1942e",
+      "size_bytes": 294197452,
+      "rows": 892047,
+      "replays": 23241,
+      "features": 73
+    }
+  },
+  "experimental_baseline": {
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "final_tabular": "tables/final_full_multiseed_summary.csv",
+    "final_deep": "tables/deep_final_summary.csv",
+    "final_calibration": "tables/rigorous_calibration_summary.csv",
+    "scope": "Recorded outputs only; no training or rerun has occurred in B0"
+  },
+  "tracked_artifact_git_blob_sha1": {
+    "README.md": "b92a793e4548a4048379cda09df9bfb77af5f674",
+    "paper/README_paper_repo.md": "1bc64022d349428d4baec8efb303ca0b2f56ff2c",
+    "paper/sc2_outcome_prediction_paper.tex": "fb4df0230c53c2969f77f9acf8ceb7a3a3bc47bf",
+    "paper/sc2_outcome_prediction_paper.pdf": "93799530ae5909e4fa6024609c8afc0b4c7e56a4",
+    "paper/sc2_outcome_prediction_presentation.pptx": "facbd43efe63b2052e11799afc95923f58671eee",
+    "tables/final_full_multiseed_summary.csv": "42df380f5f759c9e23e805b8f183b39cf35ca3f6",
+    "tables/deep_final_summary.csv": "ff2038562b42d0902a543c66d3af643dca7c7323",
+    "tables/rigorous_calibration_summary.csv": "32ac6519240b024f5e01c3851677d5b490368da6",
+    "docs/data_provenance.md": "d102279738f3eafa0a590e033ae6e449c1ea8687",
+    "docs/repo_freeze_checklist.md": "6503f635e194dfa478fb3f0625b8257f0aed303a",
+    "results/block16_final/block16_full_summary.csv": "04622b8a14a810e0b6adc37f76eacab85e8124aa",
+    "results/block16_final/block16_full_detailed.csv": "34f4e91f51a901d99e107798bcc76299719f5dad",
+    "results/block16_final/block16_verification.json": "bc5a35733ed7bc9262e0a3828fa2c3dba5cf59de",
+    "scripts/15_verify_reproducibility.py": "3784847ebe5f27eb9991bbf32b16cd34253c1b61",
+    "scripts/17_internal_audit.py": "fc1ccb206d196a6864651047da99b93afbf3a6cc",
+    "scripts/53_run_xgb_full_gpu_fixed_v3.py": "17efdd5ba60f2eded1c1b15e24e61927feee62e1",
+    "scripts/54_run_rf_full.py": "6ec4805076a00fba94651e6edd4085fa89e54710",
+    "scripts/63_run_rigorous_calibration.py": "4dc9a6bf91e9ac9dacf0043d0bba2b1ae60312b0",
+    "scripts/64_run_deep_finalist.py": "abb37cd3f79401b4db637dde3e874e87c4c876fd",
+    "src/sc2proj/bridge.py": "8b2a29d2b8119fdaf90c333b59420b5bd77ecf29",
+    "src/sc2proj/parser.py": "a08421ca51a9d3e3f6724d2eb5d6c220e5664f5a",
+    "src/sc2proj/builder.py": "fb10b759b2c820238bc26fd3b7f8c4adac12447b",
+    "data/processed/splits/real_v3_1_fixed_split_seed_42.json": "f3ec473cd02950f8b1d31ca16ce05e9e622ec38d",
+    "data/processed/splits/real_v3_1_fixed_split_seed_43.json": "71f8064996bd4c78de86cfa1278329c9f3487d59",
+    "data/processed/splits/real_v3_1_fixed_split_seed_44.json": "b66a034f4ccffd21fe06a811163e0a16b2e689ac",
+    "results/rf_full/real_v3_1_fixed_fullrf_clean/seed_42/metrics_summary.json": "1825fd9b23d8e05361cf586cf62a90692e677495",
+    "results/rf_full/real_v3_1_fixed_fullrf_clean/seed_43/metrics_summary.json": "1bee4e24cb81d245228acfd5c1a131962da7e168",
+    "results/rf_full/real_v3_1_fixed_fullrf_clean/seed_44/metrics_summary.json": "83b3ba11bb82320d1cf8f3f832f51a32704d3bdc",
+    "results/xgb_full/real_v3_1_fixed_fullgpu_clean/seed_42/metrics_summary.json": "b5a4549368fb848d67b51247ea57c0bcbc425128",
+    "results/xgb_full/real_v3_1_fixed_fullgpu_clean/seed_43/metrics_summary.json": "28311e5368e5e3ce8582112e42c43513e01e9cda",
+    "results/xgb_full/real_v3_1_fixed_fullgpu_clean/seed_44/metrics_summary.json": "3c400261a65c04da8cd4b3bc19ae2cdb8aeba1d3",
+    "results/rf_full/real_v3_2_combatfix_fullrf_clean/seed_42/metrics_summary.json": "1b28a2c8154d738359af7a04ef5328d6567d12cc",
+    "results/rf_full/real_v3_2_combatfix_fullrf_clean/seed_43/metrics_summary.json": "9577df408a179daec4252ceb2629a7653b7cf59a",
+    "results/rf_full/real_v3_2_combatfix_fullrf_clean/seed_44/metrics_summary.json": "ee287a89d27596d51c475cfa74ea0e36b3e9a8bd",
+    "results/xgb_full/real_v3_2_combatfix_fullgpu_clean/seed_42/metrics_summary.json": "4356943d1bfdb1d49fef6aa1e430df619781291a",
+    "results/xgb_full/real_v3_2_combatfix_fullgpu_clean/seed_43/metrics_summary.json": "7528ebfc0e2fc5d0991ca2d74e3ca471513ab37f",
+    "results/xgb_full/real_v3_2_combatfix_fullgpu_clean/seed_44/metrics_summary.json": "694f57c7165c1f41d0ff68dc0157bcacdefde316",
+    "results/deep_final/real_v3_1_fixed/seed_42/metrics_summary.json": "21f1d330c1e7e69912f75a315408e72b73278685",
+    "results/deep_final/real_v3_1_fixed/seed_43/metrics_summary.json": "980c6c9e5bc65fdfc50795e4197b0655de97dd32",
+    "results/deep_final/real_v3_1_fixed/seed_44/metrics_summary.json": "b22345d8d6d05c07754099ecddbdd44695104134",
+    "results/final_calibration/real_v3_1_fixed/rf_no_counter/seed_42/calibration_report.json": "e15edf338d66bb275cab51c2c56ac471f808c21f",
+    "results/final_calibration/real_v3_1_fixed/rf_no_counter/seed_43/calibration_report.json": "18778661fb68a9b91d9b22a587d8700042737632",
+    "results/final_calibration/real_v3_1_fixed/rf_no_counter/seed_44/calibration_report.json": "7d0f262d0a6b88c10c7886bf5e4bc3d516e1a1ea",
+    "results/final_calibration/real_v3_1_fixed/xgb_full/seed_42/calibration_report.json": "5373db3c2d28bdb3e6b7dea409558ddf7051a2ae",
+    "results/final_calibration/real_v3_1_fixed/xgb_full/seed_43/calibration_report.json": "922a793d54cbbafc6825a6809c1cd38a310e5e20",
+    "results/final_calibration/real_v3_1_fixed/xgb_full/seed_44/calibration_report.json": "2535bee290dd1b022eddd3a6ac53b74c5f7b36b8",
+    "data/processed/starcraft_full_dataset_v3_1_fixed.zip": "bb3c5acfcf0b176643d280b4fc298150fadfaa72",
+    "data/processed/starcraft_full_dataset_v3_2_combatfix.zip": "c46552e6aa4c14e993eaa00e2905f896576788c0"
+  },
+  "status": "baseline-recorded-not-certified",
+  "known_open_findings": [
+    "Four published XGB v3_2_combatfix standard deviations differ from source aggregation.",
+    "RF and XGB use different final model-fitting train/validation budgets.",
+    "Deep candidate search computes test predictions before selection completes.",
+    "The clean-room parser does not reproduce all final dataset features and has open corner cases.",
+    "Documentation and validation script paths require harmonization."
+  ],
+  "audit_limits": [
+    "Critical artifact inventory, not a full recursive tree listing.",
+    "Git LFS payloads match previously audited local archives by sha256; clean-clone LFS availability not tested.",
+    "GitHub branch protection and immutable release tag were not configured.",
+    "Source commit SHA, not the correction branch tip, is the definitive baseline reference."
+  ]
+}

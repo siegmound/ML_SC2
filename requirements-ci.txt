@@ -1,0 +1,3 @@
+# Minimal pinned dependency for metadata/artefact CI (not an ML training lock).
+# Full ML dependencies are declared separately in requirements.txt.
+PyYAML==6.0.3

@@ -30,7 +30,7 @@
 \pgfplotsset{compat=1.18}
 \usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit}
 
-\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!60!black,pdftitle={StarCraft II Outcome Prediction: Final Reproducible Paper v6.2},pdfauthor={OpenAI}}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!60!black,pdftitle={StarCraft II Outcome Prediction: Audited Evidence Review},pdfauthor={Jose Luis Pineda Fritas}}
 
 \definecolor{accent}{RGB}{28,56,110}
 \definecolor{softblue}{RGB}{242,246,252}
@@ -42,7 +42,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{StarCraft II Outcome Prediction}
-\fancyhead[R]{Final project paper v6.2}
+\fancyhead[R]{Audited paper (B5)}
 \fancyfoot[C]{\thepage/\pageref{LastPage}}
 \setlength{\headheight}{14pt}
 
@@ -70,18 +70,18 @@
 \vspace{0.45cm}
 {\Huge\bfseries StarCraft II Outcome Prediction\par}
 \vspace{0.3cm}
-{\Large A full reproducible study from replay-derived dataset construction to calibrated final model selection\par}
+{\Large A retrospective outcome-prediction study with explicitly audited evidence\par}
 \vspace{1.1cm}
 \begin{tcolorbox}[width=0.92\textwidth,colback=softblue,colframe=accent,arc=2mm,boxrule=0.8pt]
-This paper presents the final consolidated version of the project as a continuous manuscript. The emphasis is not only on which model performs best, but on how replay files were transformed into a valid supervised-learning dataset, how replay-aware evaluation was enforced, and how staged conclusions were corrected by full multi-seed evidence.
+This audited revision retains the historical experimental evidence and explicitly separates confirmed model metrics from limitations in replay-to-feature provenance, tuning/calibration independence, test reuse, and end-to-end reproducibility. The full-scale revised experimental protocol remains pending.
 \end{tcolorbox}
 \vfill
 \small
 \begin{tabularx}{0.90\textwidth}{@{}>{\raggedleft\arraybackslash}p{0.24\textwidth} Y@{}}
-\textbf{Document type:} & Final project paper, version 6.2 \\
+\textbf{Document type:} & Audited revision B5; historical evidence retained \\
 \textbf{Experimental scope:} & Dataset construction, full multi-seed comparison, calibration, and deep challenger \\
 \textbf{Dataset variants:} & \texttt{v3\_1\_fixed}, \texttt{v3\_2\_combatfix} \\
-\textbf{Final date:} & April 2026 \\
+\textbf{Audit date:} & November 2026 \\
 \end{tabularx}
 \normalsize
 \vfill
@@ -90,9 +90,9 @@ This paper presents the final consolidated version of the project as a continuou
 \section*{Abstract}
 This paper studies match outcome prediction in \emph{StarCraft II} using tabular snapshots extracted from replay files. The project is deliberately framed as a full pipeline problem rather than as a model-only benchmark. The raw replay corpus used for dataset generation consists of 71 replaypacks and 24,057 replays. This corpus is transformed into a time-indexed supervised dataset through a deterministic pipeline that parses raw replay files, aligns per-player state, applies eligibility filtering, emits one row every 15 seconds after an opening exclusion window, and assigns replay-level labels. After the project filters are applied, the final usable replay corpus contains 23,241 replays and yields a tabular dataset of 892,047 rows.
 
-An important contribution of the work is experimental discipline. Because many rows come from the same replay, the evaluation protocol uses replay-aware grouped splits, separates validation from final test usage, and evaluates final claims over three seeds (42, 43, 44). The model comparison ultimately focuses on Random Forest (RF), XGBoost (XGB), and a final deep multilayer perceptron challenger. RF is strongest with the \texttt{no\_counter} profile, while XGB is evaluated on the full feature set.
+An important contribution is replay-aware grouping: multiple rows from the same match do not cross split boundaries. The historical analysis reports three seeds (42, 43, 44), but model-selection and calibration protocols were not uniformly independent and project-level test results had been inspected before this audit. The model comparison ultimately focuses on Random Forest (RF), XGBoost (XGB), and a final deep multilayer perceptron challenger. RF is strongest with the \texttt{no\_counter} profile, while XGB is evaluated on the full feature set.
 
-The final full multi-seed benchmark shows that \texttt{v3\_1\_fixed} is at least as strong as \texttt{v3\_2\_combatfix}. RF and XGB finish nearly tied: RF is marginally stronger on classification-oriented metrics, while XGB is marginally stronger on probability-oriented metrics such as log loss and remains well calibrated without meaningful post-hoc improvement. A final deep challenger is competitive, but does not surpass the tabular finalists. The resulting recommendation therefore depends on the downstream objective: RF + \texttt{v3\_1\_fixed} + \texttt{no\_counter} for classification, and XGB + \texttt{v3\_1\_fixed} + full features for probability quality.
+In the archived three-seed results, \texttt{v3\_1\_fixed} is at least as strong as \texttt{v3\_2\_combatfix}, and RF and XGB have similar measured accuracy. Their historical fitting budgets differ: RF trains on train plus validation, while XGB uses train and validation-based early stopping. A separate retrospective train-only comparison shows similarly small gaps. The deep challenger also remains close, but its archived candidate search evaluated test predictions prematurely. These comparisons motivate conditional practical choices, not a statistically established model winner. Full revised four-way calibration and Deep reruns remain open.
 
 \tableofcontents
 \newpage
@@ -140,7 +140,7 @@ In this project the dataset is not a passive by-product of an existing benchmark
 For this reason, dataset construction is not treated as a short preprocessing note. It is one of the main technical foundations of the paper.
 
 \subsection{Replay-to-snapshot pipeline}
-The final corpus is built from replay archives through a deterministic pipeline that converts each replay into multiple time-indexed supervised rows. The high-level structure is shown in Figure~\ref{fig:pipeline}.
+The historical corpus is documented as replay-derived, and the frozen tables contain multiple time-indexed rows per replay. However, the current clean-room replay parser cannot regenerate all archived final feature columns; a complete raw-to-final transformation and replay exclusion ledger have not yet been recovered. The high-level structure is shown in Figure~\ref{fig:pipeline}.
 
 \begin{figure}[H]
 \centering
@@ -163,20 +163,20 @@ arrow/.style={-{Latex[length=2mm]}, thick, draw=accent}
 \draw[arrow] (s) -- (f);
 \draw[arrow] (f) -- (v);
 \end{tikzpicture}
-\caption{Deterministic replay-to-snapshot pipeline used to build the final supervised dataset, from the raw replay corpus to the filtered replay set and final tabular rows.}
+\caption{Conceptual replay-to-snapshot pipeline underlying the archived dataset. The actual raw-to-final transformation and exclusion reasons are not fully recoverable from the current clean-room implementation.}
 \label{fig:pipeline}
 \end{figure}
 
 The stages are:
 \begin{enumerate}
-    \item \textbf{Replay corpus and eligibility filtering.} The raw project corpus contains 71 replaypacks and 24,057 replays. Before snapshot generation, the pipeline applies project eligibility rules, most importantly the match-duration constraints required by fixed-interval snapshot extraction, yielding 23,241 usable replays.
+    \item \textbf{Replay corpus and eligibility filtering.} The raw project corpus contains 71 replaypacks and 24,057 replays. The final dataset contains 23,241 distinct replay IDs. The difference from the documented 24,057 replay source count is 816; individual exclusion reasons are not traceable without the missing raw-parser audit.
     \item \textbf{Parser and bridge normalization.} Parser and bridge layers normalize field names, align both players into a common row structure, and expose stable variables suitable for feature engineering.
     \item \textbf{Snapshot emission.} The builder emits one row every 15 seconds after the opening exclusion window.
     \item \textbf{Feature generation.} Economy, combat, scouting, composition, and temporal features are assembled into the final tabular observation.
     \item \textbf{Label assignment.} Each row inherits the final replay winner via the binary target \texttt{p1\_wins}, while preserving the grouping key \texttt{replay\_id} and the temporal coordinate \texttt{time\_sec}.
 \end{enumerate}
 
-The raw replay corpus used for dataset generation contains \textbf{71 replaypacks} and \textbf{24,057 replays}. After applying the project eligibility filters, most importantly the minimum/maximum duration constraints required by the snapshot pipeline, the final usable corpus contains \textbf{23,241 replays}. These filtered replays are then converted into the final tabular dataset of \textbf{892,047 rows}. This means that a replay is not represented by a single summary vector, but by a trajectory of supervised observations.
+The source narrative documents \textbf{71 replaypacks} and \textbf{24,057 raw replays}. The frozen v3.1 ZIP has been independently counted and contains \textbf{23,241 distinct replay IDs}. The arithmetic difference of \textbf{816} is documented but cannot be assigned per-replay exclusion reasons from the currently available audit material. These filtered replays are then converted into the final tabular dataset of \textbf{892,047 rows}. This means that a replay is not represented by a single summary vector, but by a trajectory of supervised observations.
 
 \subsection{Temporal sampling policy}
 A replay generates many state updates internally, but using all of them would create an excessively dense and redundant tabular corpus. The project therefore samples snapshots every 15 seconds. This cadence was chosen as a compromise between:
@@ -256,8 +256,8 @@ The final protocol therefore enforces:
 \begin{itemize}
     \item split by \texttt{replay\_id},
     \item no replay may cross train, validation, and test,
-    \item validation is reserved for model selection, early stopping, profile selection, and calibration fitting,
-    \item test is used once for final evaluation.
+    \item historical validation was used for model selection, early stopping, and post-hoc calibration fitting; the revised B2 protocol separates tuning and calibration replay groups,
+    \item test replay groups are disjoint from fitting groups, but a pristine one-shot test claim cannot be made for the historical exploratory experiments.
 \end{itemize}
 
 The final benchmark uses three replay-aware seeds: 42, 43, and 44. This seed-level repetition is not cosmetic. It answers a central question of the project: whether a conclusion survives changes in the train/validation/test assignment or whether it depends on a favorable split.
@@ -300,18 +300,20 @@ This distinction turns out to be essential. A model can be competitive as a clas
 
 \textbf{XGBoost.} XGB is used as the strongest boosted-tree probability model. The final full runner uses histogram tree construction, validation-based early stopping, and full feature inputs. The final GPU runner is evaluated on full replay-aware splits, one seed per output directory, so that the final evidence is easy to inspect and aggregate.
 
-\textbf{Deep MLP challenger.} The deep branch is not used to define the early staged story. Instead, after the tabular finalists stabilize, the project introduces a deep challenger on full \texttt{v3\_1\_fixed}. Candidate selection is performed on validation over a controlled candidate family that varies feature profile, scaler, activation, and architecture. Test is touched only once per chosen candidate.
+\textbf{Comparability caveat.} The historical final RF runner fits on train plus validation after hyperparameter selection, whereas the XGB runner fits on train and uses validation for early stopping. These historical fits therefore have different fitting budgets. An additional retrospective B2 comparison pairs saved train-only RF and XGB runs on identical test replay snapshots across the three seeds; its small differences are descriptive rather than evidence of statistical superiority.
+
+\textbf{Deep MLP challenger.} The deep branch is not used to define the early staged story. Instead, after the tabular finalists stabilize, the project introduces a deep challenger on full \texttt{v3\_1\_fixed}. Candidate selection is performed on validation over a controlled candidate family that varies feature profile, scaler, activation, and architecture. The historical implementation also evaluated test probabilities for every candidate, despite validation-based automatic selection. The corrected B2 runner evaluates test only for the validation-selected winner; archived historical results retain their original provenance.
 
 \subsection{Calibration methodology}
-Calibration is treated as a held-out experiment rather than as descriptive post-processing. For each finalist and seed:
+The archived calibration study fits post-hoc mappings without fitting the calibrator on test labels, but remains a retrospective three-way evaluation. For each finalist and seed:
 \begin{enumerate}
     \item the model produces validation predictions and test predictions;
     \item a calibrator is fit on validation predictions only;
-    \item the calibrated mapping is applied to the untouched test predictions;
+    \item the calibrated mapping is applied to the stored test probabilities;
     \item uncalibrated, Platt-scaled, and isotonic-calibrated outputs are compared on test.
 \end{enumerate}
 
-This makes the calibration conclusion directly comparable to the final model benchmark rather than being artificially inflated by test leakage. It also gives the project a second, more stringent lens on model quality: not only whether a model predicts the correct winner, but whether the confidence attached to that prediction is trustworthy.
+The calibrator is not fitted on test labels. However, the historical XGB runner also uses validation for early stopping, so the calibration set is not independent of tuning, and test data had been inspected during project development. We therefore interpret the archived calibration comparison as retrospective. B2 adds a four-way replay-grouped training/tuning/calibration/test runner; full-scale experiments using that runner remain pending.
 
 
 \section{Experiments}
@@ -394,7 +396,7 @@ The deep branch is intentionally placed after the tabular finalists stabilize. I
 The deep experiment therefore functions as a strong challenger rather than as an exploratory curiosity. It asks whether a flexible non-linear learner, given the same replay-aware protocol and a controlled model-selection procedure, can produce a better final result than the tabular ensembles. This keeps the project from overcommitting too early to trees alone.
 
 \subsection{Calibration experiment}
-The calibration experiment is a final-layer experiment rather than an auxiliary appendix. Once the finalists are fixed, each finalist is re-evaluated through a stricter probability-quality lens. Validation predictions are used to fit post-hoc mappings, and test predictions remain untouched until the final calibrated evaluation. The purpose is to determine whether the finalist that looks strongest on log loss is also the finalist with the most trustworthy probabilities after held-out calibration is taken into account.
+The archived calibration experiment is a retrospective probability-quality comparison. Post-hoc mappings are fitted on validation predictions and compared on test, but historical reuse of validation for XGB early stopping and repeated project-level inspection of test results limit independent-holdout claims. The B2 four-way replay-grouped runner separates tuning from calibration and preserves previous outputs; new full-scale four-way scores are not substituted into the historical tables.
 
 
 \section{Results}
@@ -414,7 +416,7 @@ Dataset & Model & Profile & Accuracy & Bal. Acc. & ROC-AUC & Log Loss \\
 \texttt{v3\_1\_fixed} & RF  & \texttt{no\_counter} & 0.6133 $\pm$ 0.0055 & 0.6111 $\pm$ 0.0051 & 0.6605 $\pm$ 0.0055 & 0.6503 $\pm$ 0.0023 \\
 \texttt{v3\_1\_fixed} & XGB & \texttt{full}        & 0.6128 $\pm$ 0.0054 & 0.6093 $\pm$ 0.0049 & 0.6601 $\pm$ 0.0048 & 0.6484 $\pm$ 0.0025 \\
 \texttt{v3\_2\_combatfix} & RF  & \texttt{no\_counter} & 0.6128 $\pm$ 0.0052 & 0.6107 $\pm$ 0.0048 & 0.6603 $\pm$ 0.0057 & 0.6504 $\pm$ 0.0024 \\
-\texttt{v3\_2\_combatfix} & XGB & \texttt{full}        & 0.6128 $\pm$ 0.0069 & 0.6093 $\pm$ 0.0062 & 0.6597 $\pm$ 0.0059 & 0.6486 $\pm$ 0.0030 \\
+\texttt{v3\_2\_combatfix} & XGB & \texttt{full}        & 0.6128 $\pm$ 0.0056 & 0.6093 $\pm$ 0.0051 & 0.6597 $\pm$ 0.0048 & 0.6486 $\pm$ 0.0024 \\
 \bottomrule
 \end{tabular}%
 }
@@ -490,18 +492,18 @@ The project also examined whether prediction quality shifts across different mat
 
 
 \section{Calibration}
-Calibration was treated as a proper validation-to-test procedure rather than as a descriptive add-on. For each finalist and seed, the model first produced validation predictions and test predictions. Two post-hoc calibrators were then fit on validation only:
+The archived calibration evaluation is a three-way, retrospective validation-to-test analysis. For each finalist and seed, post-hoc calibrators were fitted on validation predictions (not on test labels). The historical XGB model also used this validation set for early stopping, so tuning and calibration were not independent. Two mappings were evaluated:
 \begin{itemize}
     \item Platt scaling,
     \item isotonic regression.
 \end{itemize}
-The learned mappings were finally applied to the untouched test predictions. This protocol matters because calibration can otherwise be made artificially optimistic by leaking information from the final test split into the probability mapping itself. In other words, the calibration step was evaluated under the same held-out discipline as the classifier comparison.
+The mappings were applied to saved test predictions, without fitting the mappings on test labels. The numerical comparison remains informative but cannot certify a pristine test set or independent calibration split. The new B2 four-way runner removes the tuning/calibration overlap for future full-scale reruns.
 
 Table~\ref{tab:calibration} summarizes the aggregated calibration comparison on \texttt{v3\_1\_fixed}. The table is especially useful because it distinguishes two very different probability behaviors. RF starts from a probability output that is already competitive, but still noticeably benefits from post-hoc correction. XGB, by contrast, is already strong in uncalibrated form, and the post-hoc transforms do not produce a meaningful additional gain.
 
 \begin{table}[H]
 \centering
-\caption{Rigorous calibration summary on \texttt{v3\_1\_fixed}. Lower is better for Brier, ECE, and MCE.}
+\caption{Retrospective three-way calibration summary on \texttt{v3\_1\_fixed}. Lower is better for Brier, ECE, and MCE.}
 \label{tab:calibration}
 \begin{tabularx}{\textwidth}{l l c c c c}
 \toprule
@@ -546,7 +548,7 @@ enlarge x limits=0.25
 \label{fig:calibration}
 \end{figure}
 
-The calibration conclusion is therefore very clear:
+The retrospective calibration results suggest the following, subject to the protocol caveats above:
 \begin{itemize}
     \item RF benefits noticeably from post-hoc calibration;
     \item XGB is already well calibrated in uncalibrated form;
@@ -556,7 +558,7 @@ The calibration conclusion is therefore very clear:
 This calibration result sharpens the main project trade-off. RF remains attractive when the downstream objective is hard winner prediction and one is willing to calibrate the probabilities afterward. XGB, however, is the cleaner probability model because its raw probabilities are already stable and well behaved, which makes it the stronger candidate when probability estimates themselves are part of the downstream decision process.
 
 \section{Deep Challenger}
-The deep challenger was evaluated on full \texttt{v3\_1\_fixed} under the same replay-aware full-scale discipline used for the tabular finalists. It was included not as a toy baseline, but as a serious test of whether a flexible neural model could exploit non-linear interactions beyond what RF and XGB already captured. Candidate selection was performed on validation using a controlled family of MLP configurations that varied profile, scaler, activation, and architecture. This design gave the deep branch a fair opportunity to compete while keeping the search space narrow enough to remain interpretable and reproducible.
+The deep challenger was evaluated on full \texttt{v3\_1\_fixed} under the same replay-aware full-scale discipline used for the tabular finalists. It was included not as a toy baseline, but as a serious test of whether a flexible neural model could exploit non-linear interactions beyond what RF and XGB already captured. Candidate selection was performed on validation using a controlled family of MLP configurations that varied profile, scaler, activation, and architecture. The historical implementation produced test probabilities for each candidate during search, even though selection used validation scores. The B2-corrected runner avoids candidate-level test inference, but its full-data rerun has not been completed.
 
 The final deep result is summarized in Table~\ref{tab:deep}.
 
@@ -581,7 +583,47 @@ Dataset & Model & Profile & Accuracy & Bal. Acc. & ROC-AUC & Log Loss \\
 Because Accuracy and ROC-AUC are higher-is-better while Log Loss is lower-is-better, the deep comparison is summarized primarily through Table~\ref{tab:deep} rather than through a mixed-direction aggregate figure. This keeps the interpretation aligned with the metric semantics and avoids overcompressing the comparison into a single visual axis.
 
 
-The deep branch is therefore not a failed branch. It reaches the same performance neighborhood as RF and XGB, which is itself a useful result because it shows that the replay-snapshot dataset contains enough structure for a reasonably tuned neural tabular model to remain competitive. However, it remains slightly below both tabular finalists, so its correct role in the project is \emph{credible challenger} rather than \emph{final winner}. In the final interpretation of the project, the deep result strengthens the confidence that the tabular finalists were not merely the winners by default; they remained the strongest models even after a serious neural challenger was tested under the same held-out discipline.
+In the archived, retrospectively audited benchmark, the deep branch is not a failed branch. It reaches the same performance neighborhood as RF and XGB, which is itself a useful result because it shows that the replay-snapshot dataset contains enough structure for a reasonably tuned neural tabular model to remain competitive. However, it remains slightly below both tabular finalists, so its correct role in the project is \emph{credible challenger} rather than \emph{final winner}. In the final interpretation of the project, the deep result strengthens the confidence that the tabular finalists were not merely the winners by default; they remained slightly stronger in the historical comparison, subject to the acknowledged early test access and different model-selection procedures.
+
+\section{Audit Status and Reproducibility Boundaries}
+\label{sec:b5audit}
+The dataset source narrative identifies 71 replaypacks and 24,057 raw replays.
+The independently audited frozen \texttt{v3\_1\_fixed} archive contains
+892,047 snapshot rows from 23,241 unique replay identifiers. The difference
+of 816 source replays remains unattributed at the individual replay level.
+The current clean-room snapshot builder emits 38 predictive fields; archived
+full-model configurations require 64 fields for \texttt{v3\_1\_fixed} and
+73 fields for \texttt{v3\_2\_combatfix}. A recovered historical
+\texttt{sc2\_parser\_v3\_counter120.py} source defines all 64
+\texttt{v3\_1\_fixed} predictor names, and a 15,000-row numerical
+sample passed 511,034 algebraic checks against its formulas. This is
+additional historical transformation evidence, not raw replay-to-final
+numeric parity, nor an explanation of the 816 missing raw replay IDs.
+The nine added \texttt{v3\_2\_combatfix} formulas also require
+independent historical source and parity verification.
+
+\textbf{Interpretation of benchmark evidence.}
+The final RF comparison historically used train plus validation for fitting,
+whereas XGB fitted train with validation-based early stopping. Recomputed
+paired train-only saved results show a near tie, but this is retrospective
+evidence from previously inspected test partitions, not a new blind holdout.
+Deep candidate-level test access and historical reuse of XGB validation for
+calibration fitting are separately documented; the improved B2 protocol is
+implemented and smoke-tested but full-data reruns are pending. No formal
+statistical significance claim about a global winner is warranted.
+
+\textbf{Reproducibility verification.}
+The B0 inventory preserves the historical metrics and split files. B1
+repairs the archived final table using population standard deviations;
+B2 changes fit/calibration protocol code; B3 guards winner labels and
+tracks historical raw-replay lineage gaps. B4 clean-checkout checks,
+complete frozen Git LFS verification, opt-in full-data GitHub CI,
+and independent FAIR Python/CUDA reconstruction from a SHA-256 hashed
+55-wheel lock have passed. These engineering checks do not substitute
+for B2 full-scale model reruns or B3 original replay-to-feature parity.
+Consequently this document remains an \emph{audited retrospective
+report}, not a fully independently reproduced final release. See the dated audit reports under
+\texttt{docs/audit/} in the project repository.
 
 \section{Conclusions}
 The final project conclusions are more nuanced, and more scientifically trustworthy, than the conclusions suggested by earlier staged runs. A major contribution of the project is not just the final leaderboard, but the way in which that leaderboard was stress-tested across dataset variants, replay-aware seeds, feature-profile changes, probability calibration, and a final deep challenger.
@@ -606,11 +648,16 @@ This leads to two final recommendations.
 \end{itemize}
 
 \section*{Acknowledged Limitations}
-The project is strong as a reproducible tabular benchmark, but several limitations remain:
+The project provides a substantial retrospective tabular benchmark, but full reproducibility is not yet certified and the following limitations remain:
 \begin{itemize}
     \item the winning models consume independent snapshot rows rather than explicit temporal sequences;
     \item the full experiments use engineered replay features rather than raw spatial tensors;
-    \item the POMDP interpretation remains conceptual rather than an explicit solved sequential control model.
+    \item the POMDP interpretation remains conceptual rather than an explicit solved sequential control model;
+    \item the original RF and XGB runners used different fitting budgets;
+    \item the historical Deep candidate search inspected candidate test predictions;
+    \item tuning and calibration reused the same validation data in historical XGB calibration;
+    \item the clean-room parser emits 38 predictors, while the frozen v3.1/v3.2 model schemas use 64/73; a recovered historical parser source and a limited v3.1 algebraic audit improve feature provenance, but raw replay parity and the 816 individual exclusions remain unverified;
+    \item B2 full-scale revised experiments and B3 raw replay-to-feature provenance remain open; B4 engineering environment, LFS and CI verification have passed.
 \end{itemize}
 
 These limitations suggest future extensions toward sequence models, latent-state estimation, and policy-support systems rather than only static outcome prediction.
@@ -649,7 +696,7 @@ The final paper is supported by the following core artifacts in the project repo
     \item full deep-finalist results on \texttt{v3\_1\_fixed};
     \item validation-to-test calibration artifacts for the final RF and XGB candidates.
 \end{itemize}
-Heavy datasets are stored as external zipped artifacts and are expected to be added to the final repository under the canonical paths used by the training scripts.
+The two frozen processed dataset ZIPs are tracked through Git LFS pointers at their canonical repository paths. B0 records their payload SHA-256 digests. A successful full remote download of the v3.2 payload, a complete dependency lock, and real replay-to-feature parity have not yet been certified.
 
 \section{Appendix C: SC2 Snapshot Formulation as a POMDP-like Model}
 \label{app:pomdp}

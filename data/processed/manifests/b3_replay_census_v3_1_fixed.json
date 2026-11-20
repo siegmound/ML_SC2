@@ -1,0 +1,12 @@
+{
+  "snapshot_rows": 892047,
+  "unique_replays": 23241,
+  "p1_winning_replays": 12122,
+  "snapshot_time_min_sec": 135,
+  "snapshot_time_max_sec": 1785,
+  "duplicate_snapshot_keys": 0,
+  "conflicting_replay_labels": 0,
+  "upstream_replay_count_documented_not_raw_verified": 24057,
+  "unattributed_difference_from_documented_upstream": 816,
+  "exclusion_provenance_status": "UNVERIFIED_NO_RAW_AUDIT"
+}

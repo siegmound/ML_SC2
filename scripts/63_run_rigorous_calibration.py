@@ -47,6 +47,28 @@ def metrics(y_true, y_prob):
     }
 
 
+def verify_prediction_partitions(val_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
+    """Reject malformed scores and any replay leakage between val and test."""
+    required = {'replay_id', 'time_sec', 'y_true', 'y_prob'}
+    for name, frame in [('validation', val_df), ('test', test_df)]:
+        missing = required - set(frame.columns)
+        if missing:
+            raise ValueError(f'{name}: missing columns {sorted(missing)}')
+        if frame.empty or frame[list(required)].isna().any().any():
+            raise ValueError(f'{name}: empty frame or missing values')
+        if frame.duplicated(['replay_id', 'time_sec']).any():
+            raise ValueError(f'{name}: duplicated replay snapshots')
+        labels = frame['y_true'].to_numpy()
+        if not np.isin(labels, [0, 1]).all() or np.unique(labels).size != 2:
+            raise ValueError(f'{name}: expected binary labels with both classes')
+        probs = frame['y_prob'].to_numpy(dtype=float)
+        if not np.isfinite(probs).all() or (probs < 0).any() or (probs > 1).any():
+            raise ValueError(f'{name}: invalid probabilities')
+    overlap = set(val_df['replay_id']) & set(test_df['replay_id'])
+    if overlap:
+        raise ValueError(f'Validation/test replay leakage: {len(overlap)} shared replay IDs')
+
+
 def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument('--validation-predictions', required=True)
@@ -65,6 +87,7 @@ def run():
 
     val_df = pd.read_csv(args.validation_predictions)
     test_df = pd.read_csv(args.test_predictions)
+    verify_prediction_partitions(val_df, test_df)
 
     y_val = val_df['y_true'].astype(int).to_numpy()
     p_val = val_df['y_prob'].astype(float).to_numpy()
