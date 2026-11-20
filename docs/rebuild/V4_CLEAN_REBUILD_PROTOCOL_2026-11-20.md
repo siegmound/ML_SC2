@@ -1,0 +1,127 @@
+# SC2 V4: independent clean-room rebuild protocol
+
+Status: INITIAL IMPLEMENTATION, synthetic CI only. Raw FAIR replay build and
+model reruns have NOT yet been executed. This is NOT historical v3.1/v3.2
+raw-to-final parity and does not unblock historical B3 or B5 release gates.
+
+## Scope and explicit validity limits
+
+The source is a NEW raw .SC2Replay directory, not a historical processed
+CSV. A replay's SHA-256 of binary content becomes its replay_id so byte
+duplicates across tournament packs cannot leak between group splits.
+Every source path, SHA-256, accepted replay and exclusion reason goes into
+a new per-replay audit CSV. The builder refuses to overwrite older outputs,
+historical data or a previous V4 report.
+
+The V4 tracker interpretation deduplicates the same unit_id on UnitInit and
+UnitBorn, handles unit type changes/deaths and makes qualitative counter
+direction explicit. UNIT_COUNTERS[target] denotes effective OPPONENT
+counters against the target: own combat penalties use the direct list,
+own counter advantage uses the reversed direction. Numeric coefficients
+are prespecified project heuristics, NOT recovered Blizzard mechanics
+or coefficients selected using historical test outcomes.
+
+The primary CORE feature profile drops all feature names containing
+combat or counter (including temporal derivatives). FULL is an exploratory
+profile containing those heuristic scores. Choose core as primary before
+seeing any new test metrics; full is an ablation only.
+
+Data source limitations: currently FAIR has two SHA-identical copies of
+300 named raw entries, of which 295 are MPQ candidates and five are
+AppleDouble metadata. This is not the 24,057-replay original corpus;
+downloading/scanning all 71 SC2ReSet replaypacks remains a separate
+future data acquisition stage. Actual input count and included replay
+count for V4 must be discovered by running V4 against real raw files.
+
+The model runners are reused with fresh input data: RF and XGB run
+group-disjoint training, tuning, calibration and final test; the MLP
+selects architecture by replay-disjoint validation and evaluates only
+the selected model on test. Seeds 42/43/44 are stability checks, NOT
+three independent previously unseen test sets. The test sets might
+contain replays from the previously inspected 3-replay audit; no claim
+of pristine blindness is authorized.
+
+## FAIR commands: synthetic tests
+
+Run from the existing project checkout; do not discard local changes.
+
+    cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+    git status --short
+    git fetch origin rebuild/sc2-v4-clean-2026-11-20
+    git switch --track origin/rebuild/sc2-v4-clean-2026-11-20
+    export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+    export PYTHONPATH="$PWD/src"
+    "$SC2_PYTHON" -m unittest discover -s tests -p 'test_v4_clean_rebuild.py' -v
+    "$SC2_PYTHON" -m unittest discover -s tests -p 'test_v4_suite.py' -v
+
+If that branch already exists locally, instead switch normally and
+pull --ff-only from origin. Do not reset, clean or switch away from
+uncommitted scientific artifacts.
+
+## Step 1: small raw replay build, 120 SHA-ordered input identities
+
+    "$SC2_PYTHON" scripts/90_v4_build_dataset.py \
+      --raw-root data/raw/replay_subsets \
+      --max-replays 120 \
+      --output-dir results/v4_raw_smoke120_20261120
+
+    cat results/v4_raw_smoke120_20261120/manifest.json
+    head -n 20 results/v4_raw_smoke120_20261120/per_replay_source_audit.csv
+
+The output has a SHA-256-pinned data ZIP, reproducible feature headers,
+full per-source file ledger and machine-readable exclusion reason counts.
+If fewer than 40 unique replay identities are accepted, create a NEW
+output directory for a larger build (up to all available entries).
+
+## Step 2: single-seed RF and XGB CPU protocol smoke
+
+    "$SC2_PYTHON" scripts/91_v4_run_suite.py \
+      --dataset-dir results/v4_raw_smoke120_20261120 \
+      --output-root results/v4_experiments_smoke42_20261120 \
+      --stage smoke --feature-profile core \
+      --models rf xgb --seeds 42 --device cpu --n-jobs 4 --plan
+
+Review the plan. Then run the same command replacing --plan with
+--execute. It refuses to continue or overwrite an existing run directory;
+when troubleshooting failures, preserve logs and choose a NEW root.
+
+## Step 3: all locally available MPQ games, three models / three seeds
+
+    "$SC2_PYTHON" scripts/90_v4_build_dataset.py \
+      --raw-root data/raw/replay_subsets \
+      --output-dir results/v4_raw_all_available_20261120
+
+    "$SC2_PYTHON" scripts/91_v4_run_suite.py \
+      --dataset-dir results/v4_raw_all_available_20261120 \
+      --output-root results/v4_experiments_all_available_20261120 \
+      --stage full --feature-profile core \
+      --models rf xgb deep --seeds 42 43 44 \
+      --device cuda --n-jobs 8 --plan
+
+After validating source coverage and GPU, rerun with --execute to
+train nine independent model/seed configurations, preserving all logs.
+The full stage means all CURRENTLY AVAILABLE raw replay inputs,
+not the historical 23,241/24,057 game corpus.
+
+To compare an exploratory FULL feature profile, use a different
+output-root with the same seed selection, selecting --feature-profile
+full. Report core vs full as prespecified feature ablation. Do not
+choose the winner by looking at the test scores.
+
+## Required gates before calling V4 correct or publishable
+
+1. Confirm real FAIR raw MPQ parsing/metadata and all exclusion reasons.
+2. Audit the tracker unit lifecycle and at least a few detailed replay
+   event traces against sc2reader; synthetic tests alone are insufficient.
+3. Check duplicate match content across packs, including near-duplicate
+   replays whose binary files have different SHA-256 hashes.
+4. Verify code/dependency versions, generated ZIP hashes, split
+   membership, all prediction rows/metrics, no test-driven selection.
+5. Report per-snapshot and per-replay metrics; snapshots from one match
+   are correlated and cannot supply naive independent confidence bounds.
+6. For full-scale scientific comparability, obtain a source-verified
+   complete raw replay corpus from SC2ReSet and rebuild anew. A new
+   final count need not match historical counts without matching filters.
+
+Historical frozen datasets, B2 runs and original paper/presentation stay
+unchanged; historical B3 false and B5 BLOCKED_PENDING_EVIDENCE.
