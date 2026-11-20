@@ -569,3 +569,107 @@ cat results/b3_single_type_counter_decomposition_20261119/summary.json
 **B3 remains open and B5 is not approved**. Do not adjust the frozen
 dataset, unit powers, or parser source because a hypothesis reduces
 discrepancies on previously inspected replays.
+
+## Actual FAIR script-84 single-type decomposition and Git source recovery — 2026-11-20
+
+The FAIR operator ran all four source-only synthetic tests (4/4 PASS)
+and the real script 84 using the unchanged 2026-11-19 frozen-source
+evidence. **234** counter player-snapshot rows were inspected:
+**200** had multiple army unit types, **6** had zero countered-enemy
+fraction, and **28** permitted an effective-weight calculation
+from exactly one known own army type and positive countered fraction.
+All **28/28** differ from the archived reversed-lookup prediction.
+
+| Known own unit | Comparable contexts | Distinct opponent compositions | Archived weight | Implied frozen weight |
+| --- | ---: | ---: | ---: | ---: |
+| Queen | 13 | 7 | 0.8500 | **0.7450** (identical) |
+| Adept | 3 | 2 | 0.8000 | **0.7900** (identical) |
+| Stalker | 12 | 5 | 0.8125 | **0.781–0.795** (varies) |
+
+These are conditional effective weights **assuming that** the
+recorded enemy unit-type counts and counter relations are also those
+used when generating the frozen dataset. They are not independently
+observed generator parameters or evidence that an attempted repair
+is valid. The Queen sample comes from correlated snapshots of one
+source replay, not 13 independent matches.
+
+The archived counter unit weight is
+`0.75 + 0.25 * min(4, power / 20)`.
+For any physically nonnegative unit power this expression is at least
+**0.75**; the Queen conditional weight **0.745** is below this
+minimum. Thus changing only Queen's nonnegative power is mathematically
+insufficient to reconcile this particular isolated Queen evidence
+*if* the opponent denominator/fraction is held fixed. Meanwhile, the
+varying Stalker effective weight indicates that a fixed per-unit
+replacement coefficient alone need not explain all contexts.
+
+### Concrete source-history discovery: Git branch v1.2
+
+GitHub history contains a separate actual version of the project
+source files on historical branch `v1.2`, at immutable commit:
+
+`bd64a32b305cc7203d592c7fc9015a01f962d6f9`.
+
+| Source file | Pinned v1.2 Git blob SHA-1 |
+| --- | --- |
+| `scripts/sc2_parser_v3_counter120.py` | `d839291989936b5867d42f427d419e291f6090da` |
+| `scripts/sc2_bridge_v3_counter120.py` | `7856a1c74a5c475bf7414c97772b3461693cb663` |
+| `scripts/sc2_constants.py` | `0a0a9faf5e5ea07f696084db37e399a5bb06aac3` |
+| `scripts/sc2_counters.py` | `e881ee2513bab91ea8eaaa6852a662c66361e46a` |
+
+The v1.2 constants are **materially different** from the source-only
+freeze ZIP. The v1.2 `UNIT_STATS` use `_mk(...)` definitions with
+explicit `tech_level`, `attack_upg_cats`, `armor_upg_cats` and
+`shield_upgrade`. Its parser's `_get_upgrade_multiplier` reads these
+categories. Thus this is a genuine historical alternative capable
+of generating **nonzero technology levels**; the incomplete archived
+constants cannot do so. Both the parser and counter table have
+different byte identities from the freeze ZIP.
+
+**Important caveat:** v1.2 `_calc_counter_score` still uses the
+direct `UNIT_COUNTERS[own_unit]` lookup, not the reversed relation
+that reduced MAE in the previous descriptive experiment. This revision
+should therefore not be presumed to reproduce the frozen counter
+values, or to be the actual source generator. A later source revision
+or original build variant could still be missing.
+
+### Paired test of a real historical revision, not a guessed patch
+
+New `scripts/85_compare_b3_git_v12_source_parity.py` reads these
+four files from the immutable Git commit and independently verifies
+all four Git blob IDs, then hashes the extracted bytes with SHA-256.
+Using exactly the three seed-42 original replay SHA-256 values and
+the same frozen v3.1 ZIP as script 79, it reruns the historical v1.2
+bridge and compares all snapshot keys, labels and 64 feature values
+at the original 1e-6 tolerances. Baseline identity and replay byte
+checks prevent cherry-picking different input files. No original
+asset or previously saved result is overwritten.
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git pull --ff-only origin audit/sc2-corrections-2026-11-17
+git fetch --no-tags origin v1.2
+
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_git_v12_source_parity.py' -v
+
+"$SC2_PYTHON" scripts/85_compare_b3_git_v12_source_parity.py \
+  --raw-root data/raw/replay_subsets \
+  --inventory-csv results/b3_source_inventory_subset_20261119/identity_reconciliation.csv \
+  --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+  --original-parity-dir results/b3_raw_to_v31_parity_sample3_20261119 \
+  --max-replays 3 --seed 42 \
+  --output-dir results/b3_git_v12_raw_parity_sample3_20261120
+
+cat results/b3_git_v12_raw_parity_sample3_20261120/summary.json
+cat results/b3_git_v12_raw_parity_sample3_20261120/per_replay.csv
+```
+
+This is **not** another ML experiment, a new model-selection
+procedure or evidence that the historical test set was blind.
+The 24,057 vs 23,241 upstream identity gap, full raw corpus
+reconstruction, original build attestation and v3.2 upstream
+feature provenance are still unresolved. **B3 is OPEN and
+B5 is BLOCKED_PENDING_EVIDENCE.**
