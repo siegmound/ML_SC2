@@ -66,6 +66,46 @@ class B3HistoricalDiscoveryTests(unittest.TestCase):
             report, _ = mod.scan([root], set())
             self.assertEqual(report["loose_sc2replay_files"], 1)
 
+    def test_partial_file_scan_preserves_evidence_and_does_not_assert_missing_packs(self):
+        mod = discoverer()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            (first / "alpha.SC2Replay").write_bytes(b"MPQ\x1b" + b"actual data")
+            (first / "beta.SC2Replay").write_bytes(b"MPQ\x1b" + b"second data")
+            (second / "cup.zip").write_bytes(b"not inspected")
+            result, details = mod.scan(
+                [first, second], {"cup.zip"}, max_files=1, on_limit="partial"
+            )
+            self.assertEqual(result["scan_status"], "PARTIAL_INCOMPLETE_LIMIT_REACHED")
+            self.assertFalse(result["scan_complete"])
+            self.assertEqual(result["limit_reached"], "max_files")
+            self.assertEqual(result["n_visited_files"], 1)
+            self.assertEqual(result["loose_mpq_candidates"], 1)
+            self.assertEqual(len(details["raw_files"]), 1)
+            self.assertIsNone(result["catalogued_zenodo_packs_missing"])
+            self.assertEqual(result["roots_not_started_due_to_limit"], [str(second)])
+
+    def test_partial_zip_limit_is_explicit_and_non_exhaustive(self):
+        mod = discoverer()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for name in ("a.zip", "b.zip"):
+                with zipfile.ZipFile(root / name, "w") as z:
+                    z.writestr("example.SC2Replay", b"MPQ\x1b")
+            report, _ = mod.scan(
+                [root], {"a.zip", "b.zip"},
+                max_archives=1, on_limit="partial",
+            )
+            self.assertEqual(report["zip_files_examined"], 1)
+            self.assertEqual(report["catalogued_zenodo_packs_found"], 1)
+            self.assertEqual(report["limit_reached"], "max_archives")
+            self.assertFalse(report["scan_complete"])
+            self.assertIsNone(report["catalogued_zenodo_packs_missing"])
+
     def test_invalid_catalogue_and_limits_rejected(self):
         mod = discoverer()
         with tempfile.TemporaryDirectory() as folder:
