@@ -39,6 +39,31 @@ class V4ExperimentSuiteTests(unittest.TestCase):
             for i in range(n) for sec in (135, 150)
         ])
 
+    def test_prespecified_core_profile_avoids_uncalibrated_heuristics(self):
+        tool = suite()
+        df = self.make_dataset()
+        df["counter_advantage_diff"] = 0.5
+        df["p1_combat"] = 0.2
+        df["delta_combat_p1"] = 1.0
+        df["p1_tech_level"] = 1.0
+        core = tool.feature_profile_columns(df, "core")
+        full = tool.feature_profile_columns(df, "full")
+        self.assertIn("p1_tech_level", core)
+        self.assertIn("counter_advantage_diff", full)
+        self.assertNotIn("counter_advantage_diff", core)
+        self.assertNotIn("p1_combat", core)
+        self.assertNotIn("delta_combat_p1", core)
+        self.assertEqual(core[:3], ["replay_id", "time_sec", "p1_wins"])
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "test.zip"
+            digest1 = tool.deterministic_profile_zip(df, "core", out)
+            self.assertEqual(digest1, tool.digest(out))
+            with zipfile.ZipFile(out) as z:
+                columns = pd.read_csv(z.open("sc2_v4_clean.csv")).columns
+            self.assertEqual(list(columns), core)
+            with self.assertRaises(FileExistsError):
+                tool.deterministic_profile_zip(df, "core", out)
+
     def test_group_split_covers_each_replay_once(self):
         tool = suite()
         df = self.make_dataset()
