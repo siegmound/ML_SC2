@@ -188,7 +188,14 @@ def run(args):
         }).to_csv(output / f'test_predictions_{name}.csv', index=False)
 
     report = {
-        'protocol': 'B2_four_way_replay_disjoint', 'historical_test_previously_inspected': True,
+        'protocol': 'replay_disjoint_four_way',
+        'data_origin': args.data_origin,
+        'historical_test_previously_inspected': args.data_origin == 'historical_frozen',
+        'pristine_blind_test_attested': False,
+        'warning': ('Independent raw rebuilt data; test may overlap historically '
+                    'inspected replay content, so not claimed pristine'
+                    if args.data_origin == 'v4_raw_rebuild'
+                    else 'Historic frozen test was previously inspected'),
         'seed': seed, 'model': args.model, 'dataset_name': args.dataset_name,
         'training': training,
         'partition_rows': {key: len(value) for key, value in parts.items()},
@@ -207,6 +214,8 @@ def parse_args():
     parser.add_argument('--dataset-zip', required=True)
     parser.add_argument('--split-json', required=True)
     parser.add_argument('--dataset-name', required=True)
+    parser.add_argument('--data-origin', choices=('historical_frozen', 'v4_raw_rebuild'),
+                        default='historical_frozen')
     parser.add_argument('--model', choices=['rf', 'xgb'], required=True)
     parser.add_argument('--output-root', default='results/b2_strict_calibration')
     parser.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
