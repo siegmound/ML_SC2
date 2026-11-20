@@ -472,3 +472,30 @@ See [B3_RAW_TO_FROZEN_PARITY_2026-11-19.md]
 (B3_RAW_TO_FROZEN_PARITY_2026-11-19.md) for full counts.
 
 **B3 is OPEN and B5 remains BLOCKED_PENDING_EVIDENCE.**
+
+### Historical original corpus recovery stage — 2026-11-20
+
+The original archived paper explicitly reports **24,057 replays** and
+**approximately 892,048 snapshots**, but the frozen SHA-256-verified
+v3.1 data contain **23,241 replay IDs and exactly 892,047 rows**.
+The 816 difference is an arithmetic discrepancy, not a recovered
+replay-level exclusion log. Uploaded historical freeze archives do
+not contain a 24,057-ID original input manifest or raw files, and the
+later remake's per-replay audit functionality must not be
+misrepresented as historic generator evidence.
+
+The tracked 71-pack Zenodo SC2ReSet inventory is a possible upstream
+source list, but actual full corpus selection and executed original
+combat/counter code remain unproven. A new read-only local recovery
+scanner, `scripts/86_discover_b3_generation_sources.py`, can locate
+older replay input directories, ZIP central-directory replay entries,
+builder logs, original versions of parser/constants/counter scripts
+and any existing per-replay exclusion lists on FAIR without download
+or mutation. It must be run before trying to re-acquire complete
+upstream tournament ZIPs.
+
+See [B3_ORIGINAL_SOURCE_RECOVERY_2026-11-20.md](B3_ORIGINAL_SOURCE_RECOVERY_2026-11-20.md)
+for SHA fingerprints of historic files, source distinctions and
+FAIR commands.
+
+**B3 source-to-final provenance is still OPEN; release remains blocked.**
