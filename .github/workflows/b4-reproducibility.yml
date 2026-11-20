@@ -60,6 +60,7 @@ jobs:
           python -m unittest discover -s tests -p "test_b3_counter_orientation.py" -v
           python -m unittest discover -s tests -p "test_b3_counter_residual_profile.py" -v
           python -m unittest discover -s tests -p "test_b3_single_type_counter_decomposition.py" -v
+          python -m unittest discover -s tests -p "test_b3_git_v12_source_parity.py" -v
           python -m unittest discover -s tests -p "test_b4_freeze.py" -v
 
       - name: Preserve audit reports
