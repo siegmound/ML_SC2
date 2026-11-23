@@ -382,3 +382,40 @@ Do not misclassify the OCTO project use of the term "replay" as
 StarCraft II game data. The original 24,057 input file identities,
 per-file 816 exclusion reasons, and actual v3.1 counter/combat
 generator remain **unresolved**. The release gate does not change.
+
+## 9. Original 24,057-replay source archive recovered on FAIR — 2026-11-23
+
+The operator uploaded the preserved original archive at
+`/home/jlpfritas/HPC-POMDP/ML-SC2/replays.zip` and measured
+SHA-256 `8dcb826aeb17481d592f2d564b8a3af72bcb2f11fba9421bdbd350641970241d`.
+Archive size is reported as 8.5 GiB (roughly 8.8–9.1 decimal GB
+depending on file/member accounting). FAIR has 15 TB of free /home storage.
+
+The read-only central-directory census reports **24,129 files:**
+**24,057 directly accessible `.SC2Replay` entries** under `replays/`,
+**71 embedded tournament `.zip` files**, and **one JSON**.
+All 24,057 replay basenames are distinct; none of the ZIP member
+paths was identified as unsafe by the operator's path scan.
+The declared total uncompressed member size is 9.11 GB.
+These original replay bytes were not present in the smaller historic
+freeze archives; they have now been recovered as a separate input asset.
+
+**Major correction to previous recovery status:** the actual raw
+corpus source count **24,057** is now physically evidenced rather
+than merely asserted by the old paper. However, the arithmetic
+gap 24,057 - 23,241 = 816 still has *unknown per-file causality*.
+Do not assume all 23,241 frozen replay IDs are contained in the
+original archive until their exact basenames have been compared.
+The embedded JSON may contain useful original provenance, but its
+schema is not yet inspected. The 71 embedded ZIPs are separate
+packaged tournament sources and must not be counted again as new
+unique replay inputs.
+
+New read-only script 93, in the independent branch
+`rebuild/sc2-v4-clean-2026-11-20`, is available for a SHA-pinned
+raw-archive vs frozen-ID reconciliation. Script 94 can subsequently
+CRC- and SHA-verify selective extraction of the 24,057 replay
+members, leaving the original outer ZIP and nested ZIPs untouched.
+These tools are not a repair of historical executed code, and
+**historical B3 remains OPEN and B5 remains BLOCKED_PENDING_EVIDENCE**
+pending actual identity reconciliation and raw-to-feature attribution.
