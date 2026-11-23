@@ -155,3 +155,61 @@ or hyperparameter tuning step.
 
 For the all-available-data nine-model-seed suite, use the matching
 dataset/suite paths and a NEW verification output directory.
+
+## Original raw archive fully recovered: 24,057 replay files
+
+FAIR now contains the original outer archive at
+`/home/jlpfritas/HPC-POMDP/ML-SC2/replays.zip`, SHA-256
+`8dcb826aeb17481d592f2d564b8a3af72bcb2f11fba9421bdbd350641970241d`.
+The actual ZIP central directory has **24,057 direct `.SC2Replay`
+members with distinct basenames**, **71 separate tournament ZIPs**
+and **one JSON** (24,129 file entries total). The extra tournament
+ZIPs are not to be extracted/double-counted. The original raw count
+is now physically evidenced, but the source-v3.1 identity relation
+and individual exclusion reasons remain to be verified.
+
+### Read-only raw ZIP to frozen v3.1 ID reconciliation
+
+To get the new scripts when currently on the old audit worktree:
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git fetch origin refs/heads/rebuild/sc2-v4-clean-2026-11-20:refs/remotes/origin/rebuild/sc2-v4-clean-2026-11-20
+git switch -c rebuild/sc2-v4-clean-2026-11-20 --track origin/rebuild/sc2-v4-clean-2026-11-20
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+"$SC2_PYTHON" -m unittest discover -s tests -p 'test_b3_recovered_original_zip.py' -v
+"$SC2_PYTHON" -m unittest discover -s tests -p 'test_v4_original_zip_extraction.py' -v
+
+"$SC2_PYTHON" scripts/93_b3_reconcile_original_replays_zip.py \
+  --raw-zip /home/jlpfritas/HPC-POMDP/ML-SC2/replays.zip \
+  --frozen-v31-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+  --output-dir results/b3_recovered_full_zip_census_20261123
+
+cat results/b3_recovered_full_zip_census_20261123/summary.json
+head -n 16 results/b3_recovered_full_zip_census_20261123/raw_not_in_frozen.csv
+grep '\.json,' results/b3_recovered_full_zip_census_20261123/outer_zip_other_members.csv
+```
+
+Script 93 checks BOTH source and frozen SHA-256, scans 24,057 replay
+member names without decompressing replay bytes and reads only the
+frozen CSV replay_id column in chunks. It reports source-only IDs
+without guessing exclusion causes. The JSON top-level keys are
+recorded to help identify provenance.
+
+### Optional selective extraction only after census
+
+```bash
+"$SC2_PYTHON" scripts/94_v4_extract_original_replays.py \
+  --archive /home/jlpfritas/HPC-POMDP/ML-SC2/replays.zip \
+  --output-dir /home/jlpfritas/HPC-POMDP/ML-SC2/v4_original_replays_extracted \
+  --plan
+```
+
+Repeat with `--extract` after reviewing the plan. It copies only
+replay members into the NEW output root's `replays/` folder, checking
+ZIP CRC and replay SHA-256 and preserving a source-member ledger.
+The 71 ZIPs and original archive remain untouched. Then build an
+independent raw V4 120-replay smoke with script 90 before attempting
+the entire source corpus. Original frozen v3.1/v3.2 datasets are never
+overwritten.
