@@ -419,3 +419,51 @@ members, leaving the original outer ZIP and nested ZIPs untouched.
 These tools are not a repair of historical executed code, and
 **historical B3 remains OPEN and B5 remains BLOCKED_PENDING_EVIDENCE**
 pending actual identity reconciliation and raw-to-feature attribution.
+
+## 10. Actual FAIR source-to-frozen identity reconciliation — 2026-11-23
+
+The FAIR operator successfully ran `scripts/93_b3_reconcile_original_replays_zip.py`
+against immutable source ZIP SHA-256
+`8dcb826aeb17481d592f2d564b8a3af72bcb2f11fba9421bdbd350641970241d`
+and frozen v3.1 ZIP SHA-256
+`65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`.
+**4/4 script-93 synthetic tests PASS** on FAIR; an actual
+read-only ZIP index vs frozen CSV replay-ID column reconciliation completed.
+
+| Observed source | Value |
+| --- | ---: |
+| Original outer ZIP file entries | 24,129 |
+| Direct raw `.SC2Replay` entries, all unique by basename | **24,057** |
+| Nested tournament `.zip` entries (not recursed) | 71 |
+| Other embedded `.json` entries | 1 |
+| Declared uncompressed bytes of direct replay members | **4,568,567,819** |
+| Frozen v3.1 snapshots | **892,047** |
+| Unique frozen v3.1 replay IDs | **23,241** |
+| Original replay basenames also present in frozen v3.1 | **23,241** |
+| Frozen IDs absent from original outer ZIP | **0** |
+| Raw basenames absent from frozen v3.1 | **816** |
+
+The exact identity-level subset relation is now **proved for these two
+SHA-pinned assets**: every frozen v3.1 replay basename is a member of
+the recovered archive's 24,057 distinct replay basenames; the
+816-name set difference is enumerated at
+`results/b3_recovered_full_zip_census_20261123/raw_not_in_frozen.csv`
+on FAIR. The outer ZIP also contains 71 tournament ZIPs but these
+were **not** double-counted. The 4.57-GB uncompressed figure refers
+specifically to directly accessible `.SC2Replay` members, not the
+entire 9.11-GB nested-archive aggregate.
+
+**Resolved:** source inventory identity and exact count discrepancy.
+**Not resolved:** original execution-level exclusion reasons for
+each of the 816, historical parser/bridge/combat-counter source
+attestation or full raw-to-frozen feature parity. File presence
+is not evidence that a particular historical filter rejected it;
+no individual historical exclusion cause is attested. Preserve
+the baseline source/ZIP SHA values and do not retroactively edit
+historical datasets or relabel the original scientific results.
+
+Next: inspect the single embedded JSON in bounded fashion, classify
+the 816 separately by *current observed* MPQ/metadata and duration
+evidence, and verify any proposed explanation using positive control
+replays already in v3.1. Historic B3 overall remains OPEN, B5
+remains `BLOCKED_PENDING_EVIDENCE`.
