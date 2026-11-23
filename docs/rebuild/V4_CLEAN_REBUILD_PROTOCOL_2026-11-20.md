@@ -213,3 +213,76 @@ The 71 ZIPs and original archive remain untouched. Then build an
 independent raw V4 120-replay smoke with script 90 before attempting
 the entire source corpus. Original frozen v3.1/v3.2 datasets are never
 overwritten.
+
+## Verified complete raw-to-frozen source-name reconciliation (2026-11-23)
+
+FAIR executed `scripts/93_b3_reconcile_original_replays_zip.py` against
+the SHA-pinned original ZIP (24,057 direct replay basenames) and frozen
+v3.1 archive (892,047 rows, 23,241 replay IDs). **All 23,241 frozen
+IDs are contained in the recovered raw ZIP and exactly 816 source
+replay basenames are absent from frozen v3.1.** None of the frozen
+IDs are absent from source. The actual 816 list is saved on FAIR at
+`results/b3_recovered_full_zip_census_20261123/raw_not_in_frozen.csv`.
+
+This proves an exact identity-level subset, NOT that the original
+builder excluded all 816 for a particular reason, nor that the
+current source code has historical feature parity. Historical B3
+and B5 gates remain blocked.
+
+### Protect the audit checkout with a separate V4 Git worktree
+
+FAIR still holds many original B2/B3 evidence directories and a
+locally modified `results/logs/reproducibility_check.txt`. Rather
+than trying another checkout inside that worktree, create a separate
+directory for V4 commands (Git worktree reuses the same repository
+history but leaves audit files untouched):
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean
+git fetch origin refs/heads/rebuild/sc2-v4-clean-2026-11-20:refs/remotes/origin/rebuild/sc2-v4-clean-2026-11-20
+GIT_LFS_SKIP_SMUDGE=1 git worktree add --detach \
+  "$HOME/HPC-POMDP/ML-SC2/ML_SC2_v4_rebuild_clean" \
+  origin/rebuild/sc2-v4-clean-2026-11-20
+cd "$HOME/HPC-POMDP/ML-SC2/ML_SC2_v4_rebuild_clean"
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+```
+
+Because the detached V4 checkout can contain Git LFS *pointers*
+in place of frozen payloads, use the **verified absolute location**
+from the existing audit worktree as the historical v3.1 input for
+the metadata diagnostics. Never commit or rewrite the large raw ZIP.
+
+### Observe current metadata conditions for 816 missing source IDs
+
+New `scripts/95_b3_probe_raw_only_replays.py` verifies both frozen
+and raw archive SHA-256, recomputes the complete raw/frozen ID
+census, and temporarily CRC-extracts source replay members one at
+a time. It uses current `sc2reader` to inspect duration, player
+count and winner. It samples matched frozen replay identities as
+**positive controls** to distinguish discriminatory metadata
+conditions from systematic metadata-library limitations.
+
+The first smoke inspects 30 of the 816 unmatched and 15 positive
+controls (seed 42), with a new output folder:
+
+```bash
+"$SC2_PYTHON" -m unittest discover -s tests \
+  -p 'test_b3_raw_only_metadata_diagnostic.py' -v
+"$SC2_PYTHON" scripts/95_b3_probe_raw_only_replays.py \
+  --archive /home/jlpfritas/HPC-POMDP/ML-SC2/replays.zip \
+  --frozen-v31-zip /home/jlpfritas/HPC-POMDP/ML-SC2/ML_SC2_tabular_audit_clean/data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+  --max-raw-only 30 --controls 15 --seed 42 \
+  --output-dir results/b3_raw_only_metadata_smoke30_20261123
+cat results/b3_raw_only_metadata_smoke30_20261123/summary.json
+```
+
+If the control cases are valid and current metadata is interpretable,
+the full diagnostic can inspect all 816 unmatched replay members,
+still one-at-a-time and without persistent extraction, using
+`--max-raw-only 816 --controls 100` and a **new output folder**.
+
+An observed `duration_below_min`, `duration_above_max`,
+`not_one_vs_one`, `winner_not_single_known_player`, or load failure
+is a *contemporary observation*. It does not establish which
+condition caused the historical builder to omit that replay.
