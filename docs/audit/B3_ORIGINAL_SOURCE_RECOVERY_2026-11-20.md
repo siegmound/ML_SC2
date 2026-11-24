@@ -467,3 +467,45 @@ the 816 separately by *current observed* MPQ/metadata and duration
 evidence, and verify any proposed explanation using positive control
 replays already in v3.1. Historic B3 overall remains OPEN, B5
 remains `BLOCKED_PENDING_EVIDENCE`.
+
+## 11. FAIR real replay metadata smoke: 30 unmatched vs 15 matched controls
+
+Operator executed the real `scripts/95_b3_probe_raw_only_replays.py`
+on the verified SHA-pinned 24,057-replay ZIP and v3.1 frozen data.
+All 45 intended source members were inspected; the complete output is
+`results/b3_raw_only_metadata_smoke30_20261123/` in the FAIR V4 worktree
+(not committed). The output `per_replay_diagnostic.csv` SHA-256 is
+`3b86ae84bd9e3c3f12ee3287d7e5d2f8c315c0210016c925ccf0a1afcb92892b`.
+Three synthetic diagnostic tests PASS in the same worktree.
+
+| Category, from CURRENT metadata checks | Count of 30 unmatched |
+| --- | ---: |
+| AppleDouble metadata (not SC2 game replay) | 13 |
+| Duration >1800 s, otherwise no additional tested condition | 11 |
+| Duration >1800 s AND not 1v1 | 1 |
+| Duration <180 s | 3 |
+| Not 1v1, without other tested condition | 1 |
+| None of the tested conditions | **1** |
+| Total | **30** |
+
+Of 15 randomly selected *included-in-v3.1* positive-control replays,
+**15/15 passed** these limited metadata checks. Thus 29/30 sampled
+unmatched have at least one prospective reason for V4/current filtering,
+but the observed sample does NOT prove that 29/30 of the complete
+816 have similar statuses. Moreover these are not original execution
+records or proof of original exclusion causality.
+
+The surviving unmatched example
+`843f17beaef8e0821010aa0738d71890.SC2Replay`
+is a two-player game 1,111 seconds long with a single identifiable
+winner and no current duration/player/winner flag. It requires additional
+parser/feature or other original-filter inspection; it is not evidence
+of historical parser behavior alone. Notably the scan does not inspect
+starting locations, tracker coverage, feature validity or original
+exception logs.
+
+Next staged proof: run the same diagnostic across all 816 unmatched
+with a larger frozen-positive control group (e.g. 100), retain
+individual modern diagnostic statuses, and only then run separate
+provenance-preserving V4 parse/extraction. Historic B3 still open;
+historical B5 status is unchanged (`BLOCKED_PENDING_EVIDENCE`).
