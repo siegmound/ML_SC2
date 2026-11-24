@@ -554,3 +554,46 @@ Next: use a SHA-pinned parser preflight for the 16 survivors and
 sampled frozen-positive controls (new V4 script 96). Then safely
 materialize original replay members (V4 script 94) and execute a
 small raw-to-feature smoke before any full-scale V4 rebuild.
+
+## 13. FAIR V4 full-parser preflight: all 16 metadata survivors parsed successfully
+
+FAIR operator executed V4 script `scripts/96_b3_probe_v4_parser_survivors.py`
+on the exactly SHA-pinned raw ZIP and on the previously recorded
+full-816 metadata diagnostic CSV. All **16/16** raw-only replays that
+passed basic metadata filters returned current V4
+`status=ok` with validated snapshot feature frames. All **15/15**
+random frozen-included positive controls also returned `status=ok`
+and passed the same feature-frame validation. The operator's
+test run `python -m unittest discover -s tests -p
+'test_b3_v4_survivor_preflight.py' -v` passed 3/3.
+
+Output on FAIR, not Git-tracked:
+`ML_SC2_v4_rebuild_clean/results/b3_v4_survivors16_controls15_20261124/`.
+New V4 result CSV SHA-256:
+`6f4f0f8805fa2bf5530451f452f6fb54813e378be1caf461929a36d586ce833b`.
+Raw archive input SHA-256:
+`8dcb826aeb17481d592f2d564b8a3af72bcb2f11fba9421bdbd350641970241d`.
+Metadata diagnostic CSV input SHA-256:
+`0160faec6ccaae5cc95cae4589e06225ee9b5e4e692bb788135494bdf80adf57`.
+
+**Interpretation correction:** The 16 current metadata-survivors
+are not rejected by current V4 snapshot and feature validation.
+Therefore we cannot attribute their *historical* absence from
+frozen v3.1 to the presently tested duration/player/winner/V4
+feature checks. They may reflect different original filtering,
+the unidentified originally executed parser, or historical failures.
+Do NOT silently force their exclusion to match the historical count
+23,241. A clean rebuild may have different included-replay counts.
+
+The operator repeated the identical command and received
+`ValueError: Refusing overwrite of existing output` because the
+first successful run already produced sealed results. This is
+expected evidence-preservation behavior, not a pipeline failure.
+
+Next scientific gate: record a SHA/CRC-verified independent extraction
+of the 24,057 direct raw replay ZIP members, then execute
+`scripts/90_v4_build_dataset.py` on a small reproducible source
+subset and validate the full per-replay inclusion/exclusion ledger.
+Only then attempt full-scale V4 raw build and replay-disjoint ML
+experiments. B3 historical execution/feature parity still NOT
+proven. Preserve `B5=BLOCKED_PENDING_EVIDENCE` unchanged.
