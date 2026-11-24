@@ -509,3 +509,48 @@ with a larger frozen-positive control group (e.g. 100), retain
 individual modern diagnostic statuses, and only then run separate
 provenance-preserving V4 parse/extraction. Historic B3 still open;
 historical B5 status is unchanged (`BLOCKED_PENDING_EVIDENCE`).
+
+## 12. FAIR full 816 raw-only replay diagnostic (100 controls)
+
+The FAIR operator executed `scripts/95_b3_probe_raw_only_replays.py`
+for **all 816 original raw replays absent from v3.1**, plus **100
+random frozen-included positive controls** (seed 42).
+The complete output is preserved on FAIR in
+`ML_SC2_v4_rebuild_clean/results/b3_raw_only_metadata_full816_20261124/`.
+Verified `per_replay_diagnostic.csv` SHA-256 from the run:
+`0160faec6ccaae5cc95cae4589e06225ee9b5e4e692bb788135494bdf80adf57`.
+Raw source archive SHA-256:
+`8dcb826aeb17481d592f2d564b8a3af72bcb2f11fba9421bdbd350641970241d`;
+frozen v3.1 SHA-256:
+`65e402884f43c03bf5450d6975e91db3d61ee7e28edf1a56483a37f15d944517`.
+
+| Mutually exclusive CURRENT metadata diagnostic bucket | Raw-only IDs |
+| --- | ---: |
+| AppleDouble sidecar data (`non_game_appledouble`) | **332** |
+| Duration above 1800 seconds, including combined abnormalities | **301** |
+| Duration below 180 seconds, including combined abnormalities | **164** |
+| Isolated not-one-versus-one | **1** |
+| Contemporary `sc2reader` load `AttributeError` | **2** |
+| No tested metadata anomalies | **16** |
+| **All source-only IDs** | **816** |
+
+Some duration-outside-band IDs also have a non-1v1 or invalid
+single winner flag. Assigning them to duration here prevents
+double-counting. **800/816 = 98.04%** have at least one observed
+metadata-level abnormality, and **100/100** matched-in-v3.1 controls
+pass tested conditions. Only **16 raw-only** currently satisfy all
+tested duration/player/winner checks; the test did not inspect tracker
+start locations or feature computation and cannot explain those 16.
+
+These are observed *contemporary* `sc2reader` diagnostics. They
+are NOT original historical rejection records, and not proof that
+the exact same original parser was used. The two AttributeErrors
+are current load failures, not known original exclusion causes.
+Original raw-to-feature parity remains unattested and B3 overall
+still open; do not modify the original B5 `BLOCKED_PENDING_EVIDENCE`
+gate based on this modern diagnostic.
+
+Next: use a SHA-pinned parser preflight for the 16 survivors and
+sampled frozen-positive controls (new V4 script 96). Then safely
+materialize original replay members (V4 script 94) and execute a
+small raw-to-feature smoke before any full-scale V4 rebuild.
