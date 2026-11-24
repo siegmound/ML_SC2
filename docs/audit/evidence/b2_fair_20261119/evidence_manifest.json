@@ -1,0 +1,56 @@
+{
+  "scope": "B2 full-scale real_v3_1_fixed; historically inspected test replays",
+  "verifier": "PASS: all nine experiments, original replay identities and metrics",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "n_experiments": 9,
+  "n_seed_variant_rows": 21,
+  "sample_sd_ddof": 1,
+  "model_selection_from_test": false,
+  "input_summary_sha256": [
+    {
+      "path": "strict_calibration/real_v3_1_fixed/rf/seed_42/metrics_summary.json",
+      "sha256": "badde6e73a8de3a3c9be8c6ac6baa446be8ff0ca490754827a92e497f7550a9c"
+    },
+    {
+      "path": "strict_calibration/real_v3_1_fixed/xgb/seed_42/metrics_summary.json",
+      "sha256": "eca5dce21a6650242515f3859302edb7731e01c18b6e6243218eb56765e8f3b6"
+    },
+    {
+      "path": "deep_finalist/real_v3_1_fixed/seed_42/metrics_summary.json",
+      "sha256": "da97375ce7b1610f386db9e7b9e04831710b16243632d280700366afcf67a650"
+    },
+    {
+      "path": "strict_calibration/real_v3_1_fixed/rf/seed_43/metrics_summary.json",
+      "sha256": "07493eb0084618839c6756bb04018388a10e9736e40ff4cf338e59673432dc86"
+    },
+    {
+      "path": "strict_calibration/real_v3_1_fixed/xgb/seed_43/metrics_summary.json",
+      "sha256": "cc1ada69417ae5bb9004e60cbe960cb1cc2b996cd27fc2ca36dda24daa062080"
+    },
+    {
+      "path": "deep_finalist/real_v3_1_fixed/seed_43/metrics_summary.json",
+      "sha256": "f6f1d5ee0db35294b9819df97db696f7433eb6f4b37ebb88ad5797f2ad891f5c"
+    },
+    {
+      "path": "strict_calibration/real_v3_1_fixed/rf/seed_44/metrics_summary.json",
+      "sha256": "1d3f96521d74013f2dbce14a857d1b5c606e85a2e8856b2089b02f996dc854f1"
+    },
+    {
+      "path": "strict_calibration/real_v3_1_fixed/xgb/seed_44/metrics_summary.json",
+      "sha256": "556deb847cb1753dd1b73048b5239a706615be2a6a461c331bd6891eed679186"
+    },
+    {
+      "path": "deep_finalist/real_v3_1_fixed/seed_44/metrics_summary.json",
+      "sha256": "abefb809e21e20456b7915dd7646a58f87c7ca00316b1ba5fedfca66d0f10b9f"
+    }
+  ],
+  "files": [
+    "per_seed_metrics.csv",
+    "three_seed_summary.csv",
+    "three_seed_summary.md"
+  ]
+}

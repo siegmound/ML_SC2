@@ -1,13 +1,26 @@
 # Paper artifacts
 
-This directory stores the final delivery artifacts for the repository.
+The canonical deliverables on the ML_SC2 v2.0 line are:
 
-Canonical artifacts:
+- `sc2_outcome_prediction_paper.tex`: editable LaTeX paper source.
+- `sc2_outcome_prediction_paper.pdf`: compiled paper.
+- `sc2_outcome_prediction_presentation.pptx`: final slide deck.
 
-- `final_sc2_remake_paper_v6_2.pdf`: canonical final paper PDF
-- `sc2_project_rigorous_presentation.pptx`: canonical final presentation
-- `final_results_refinement.tex`: supporting refinement snippet for final results wording
+See [README_paper_repo.md](./README_paper_repo.md) for naming and provenance.
 
-Scope note:
-`final_results_refinement.tex` is not the complete source of the full paper.
-The PDF should be treated as the canonical final paper artifact unless a complete LaTeX source tree is added later.
+## B1+B5 source synchronization; binary exports pending review
+
+The editable `.tex` contains the corrected XGB / v3_2_combatfix population
+standard deviations, and now explicitly explains the historical test,
+calibration and replay-lineage limitations found in B2–B4.
+
+**The committed PDF and PowerPoint remain historical exports.** The B5 scripts
+produce *review-only* PDF/PPTX under `dist/b5`; neither the original binaries
+nor the release tag should be replaced until compilation, visual checks,
+full-data protocol evidence and independent LFS/CI checks have passed.
+
+Source-of-truth check:
+
+```bash
+python scripts/58_verify_final_table.py --check
+```

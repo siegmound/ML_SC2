@@ -46,6 +46,10 @@ def collect_paths(repo_root: Path) -> list[Path]:
         if path.is_dir() or should_skip(path):
             continue
         if path.suffix.lower() in TEXT_EXTENSIONS:
+            # Generated prediction CSVs can be multi-GB and have separate schema/
+            # metric checks. Avoid loading them twice for human-readable style.
+            if path.suffix.lower() == ".csv" and path.stat().st_size > 1_048_576:
+                continue
             out.append(path)
     return sorted(out)
 
@@ -59,6 +63,10 @@ def text_is_single_line(path: Path) -> bool:
 
 
 def file_contains_markers(path: Path) -> list[str]:
+    # This module defines the marker vocabulary; do not flag that definition itself.
+    if path.resolve() == Path(__file__).resolve():
+        return []
+
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError:

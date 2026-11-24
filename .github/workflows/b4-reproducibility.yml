@@ -1,0 +1,149 @@
+name: B4 reproducibility checks
+
+'on':
+  push:
+    branches:
+      - audit/sc2-corrections-2026-11-17
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    name: Frozen artifacts, schemas and source checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout (LFS pointers, not large payloads)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install minimal pinned verification dependency
+        run: python -m pip install -r requirements-ci.txt
+
+      - name: Verify baseline immutable Git blobs and LFS pointers
+        run: python scripts/70_verify_freeze.py --mode pointer
+
+      - name: Verify repository, dependency sets, summary and feature lineage
+        run: python scripts/15_verify_reproducibility.py --strict
+
+      - name: Check Python syntax across tracked source tree
+        run: |
+          python -m compileall -q src scripts tests
+          python scripts/17_internal_audit.py
+
+      - name: Validate FAIR B2 full-scale runner shell syntax
+        run: bash -n scripts/74_run_b2_full_fair.sh
+
+      - name: Run stdlib-only regression tests
+        run: |
+          python -m unittest discover -s tests -p "test_block16_publication.py" -v
+          python -m unittest discover -s tests -p "test_b3_feature_lineage.py" -v
+          python -m unittest discover -s tests -p "test_b3_replay_lineage.py" -v
+          python -m unittest discover -s tests -p "test_b3_raw_source_inventory.py" -v
+          python -m unittest discover -s tests -p "test_b3_unmatched_diagnostics.py" -v
+          python -m unittest discover -s tests -p "test_b3_source_constants.py" -v
+          python -m unittest discover -s tests -p "test_b3_counter_orientation.py" -v
+          python -m unittest discover -s tests -p "test_b3_counter_residual_profile.py" -v
+          python -m unittest discover -s tests -p "test_b3_single_type_counter_decomposition.py" -v
+          python -m unittest discover -s tests -p "test_b3_git_v12_source_parity.py" -v
+          python -m unittest discover -s tests -p "test_b3_generation_source_discovery.py" -v
+          python -m unittest discover -s tests -p "test_b4_freeze.py" -v
+
+      - name: Preserve audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b4-metadata-audit
+          if-no-files-found: ignore
+          path: |
+            results/logs/reproducibility_check.json
+            results/logs/reproducibility_check.txt
+            results/logs/internal_audit_report.json
+
+  full-data:
+    name: Opt-in full LFS verification and CPU integration tests
+    # The workflow is absent from default 'main', so manual dispatch cannot
+    # yet be used. One explicit B4 audit PR title marker opts in full-data CI.
+    # Remove the marker after the full job has started; all ordinary PR
+    # updates and pushes skip this expensive workflow.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[b4-full]')) ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[b4-full]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout (do not download all LFS objects)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install project runtime dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -e . --no-deps
+
+      - name: Fetch only two frozen final dataset payloads
+        run: |
+          git lfs version
+          git lfs install --local
+          git lfs pull --include="data/processed/starcraft_full_dataset_v3_1_fixed.zip,data/processed/starcraft_full_dataset_v3_2_combatfix.zip" --exclude=""
+
+      - name: Verify actual payload SHA-256, byte sizes and feature headers
+        run: python scripts/70_verify_freeze.py --mode payload
+
+      - name: Verify frozen dataset headers and replay identity
+        run: |
+          python scripts/68_verify_feature_lineage.py \
+            --zip-v3-1 data/processed/starcraft_full_dataset_v3_1_fixed.zip \
+            --zip-v3-2 data/processed/starcraft_full_dataset_v3_2_combatfix.zip
+          python scripts/69_audit_replay_lineage.py \
+            --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip
+
+      - name: Run full synthetic integration regressions
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Verify original matched-fit retrospective evidence
+        run: python scripts/66_check_matched_train_budget.py --check
+
+      - name: Capture runtime environment
+        if: always()
+        run: |
+          python -m pip freeze > runtime-pip-freeze.txt
+          python -VV > runtime-python.txt
+          git rev-parse HEAD > runtime-git-sha.txt
+
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b4-full-runtime-evidence
+          if-no-files-found: ignore
+          path: |
+            runtime-pip-freeze.txt
+            runtime-python.txt
+            runtime-git-sha.txt

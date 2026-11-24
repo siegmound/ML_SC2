@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import joblib
 import torch
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, roc_auc_score, log_loss, confusion_matrix
 from sklearn.preprocessing import QuantileTransformer, StandardScaler
@@ -33,7 +34,7 @@ def parse_args():
     ap.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
     ap.add_argument('--candidate-set', choices=['strict'], default='strict')
     ap.add_argument('--selection-metric', choices=['neg_log_loss', 'roc_auc'], default='neg_log_loss')
-    ap.add_argument('--output-root', default='results/deep_final')
+    ap.add_argument('--output-root', default='results/b2_deep_strict')
     ap.add_argument('--random-state', type=int, default=42)
     return ap.parse_args()
 
@@ -256,20 +257,17 @@ def make_prediction_frame(df, y_true, y_prob):
     })
 
 
-def run_candidate(train_df, val_df, test_df, candidate, device, selection_metric, seed):
+def run_candidate(train_df, val_df, candidate, device, selection_metric, seed):
     features = select_features(train_df.columns, candidate['profile'])
 
     xtr_raw = train_df[features].to_numpy()
     ytr = train_df[TARGET].astype(np.int64).to_numpy()
     xva_raw = val_df[features].to_numpy()
     yva = val_df[TARGET].astype(np.int64).to_numpy()
-    xte_raw = test_df[features].to_numpy()
-    yte = test_df[TARGET].astype(np.int64).to_numpy()
 
     scaler = make_scaler(candidate['scaler'])
     xtr = scaler.fit_transform(xtr_raw)
     xva = scaler.transform(xva_raw)
-    xte = scaler.transform(xte_raw)
 
     train_loader, val_loader = build_loaders(xtr, ytr, xva, yva, candidate['batch_size'])
     model = MLP(len(features), candidate['hidden_dims'], candidate['dropout'], candidate['activation'], candidate['batch_norm']).to(device)
@@ -337,9 +335,7 @@ def run_candidate(train_df, val_df, test_df, candidate, device, selection_metric
         model.load_state_dict(best_state)
 
     val_prob = predict_prob(model, xva, device)
-    test_prob = predict_prob(model, xte, device)
     val_metrics = metrics_from_probs(yva, val_prob)
-    test_metrics = metrics_from_probs(yte, test_prob)
 
     if selection_metric == 'neg_log_loss':
         selection_score = -val_metrics['log_loss']
@@ -356,28 +352,29 @@ def run_candidate(train_df, val_df, test_df, candidate, device, selection_metric
         'best_model_state': deepcopy(model.state_dict()),
         'selection_score': float(selection_score),
         'validation_metrics': val_metrics,
-        'test_metrics': test_metrics,
         'validation_predictions': (yva, val_prob),
-        'test_predictions': (yte, test_prob),
-        'test_df': test_df[[GROUP, TIME]].copy(),
         'val_df': val_df[[GROUP, TIME]].copy(),
     }
 
 
 def run():
     args = parse_args()
-    set_seed(args.random_state)
     dataset_zip = Path(args.dataset_zip)
     split_json = Path(args.split_json)
 
     with open(split_json, 'r', encoding='utf-8') as f:
         split = json.load(f)
-    seed = split.get('seed', args.random_state)
+    seed = int(split.get('seed', args.random_state))
+    set_seed(seed)
 
     out_dir = Path(args.output_root) / args.dataset_name / f'seed_{seed}'
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    device = torch.device('cuda' if args.device == 'cuda' and torch.cuda.is_available() else 'cpu')
+    # Fail closed: interrupted/previous experiments must never be silently
+    # overwritten, and a requested GPU run must not fall back to CPU.
+    if out_dir.exists():
+        raise FileExistsError(f'Output already exists (refusing overwrite): {out_dir}')
+    if args.device == 'cuda' and not torch.cuda.is_available():
+        raise RuntimeError('CUDA requested but unavailable; refusing silent CPU fallback')
+    device = torch.device(args.device)
 
     print(f'Loading dataset from {dataset_zip} ...')
     df = load_zip_csv(dataset_zip)
@@ -387,11 +384,27 @@ def run():
     train_groups = set(split['train_groups'])
     val_groups = set(split['val_groups'])
     test_groups = set(split['test_groups'])
+    original_counts = [len(split[f'{part}_groups']) for part in ('train', 'val', 'test')]
+    if not all((train_groups, val_groups, test_groups)) or any(
+        count != unique for count, unique in zip(
+            original_counts, map(len, (train_groups, val_groups, test_groups))
+        )
+    ):
+        raise ValueError('Empty or duplicate replay IDs in original split')
+    if train_groups & val_groups or train_groups & test_groups or val_groups & test_groups:
+        raise ValueError('Original train/validation/test replay IDs overlap')
+    if set(df[GROUP].astype(str).unique()) != (train_groups | val_groups | test_groups):
+        raise ValueError('Original replay split does not cover the filtered dataset')
 
     train_df = df[df[GROUP].isin(train_groups)].copy()
     val_df = df[df[GROUP].isin(val_groups)].copy()
     test_df = df[df[GROUP].isin(test_groups)].copy()
+    if any(part.empty or part[TARGET].nunique() != 2
+           for part in (train_df, val_df, test_df)):
+        raise ValueError('Empty or single-class replay partition')
     print(f'Split rows train={len(train_df)} val={len(val_df)} test={len(test_df)} device={device.type}')
+    # Only allocate the new output directory after validating all partitions.
+    out_dir.mkdir(parents=True, exist_ok=False)
 
     candidates = get_candidates()
     rows = []
@@ -399,7 +412,7 @@ def run():
 
     for i, candidate in enumerate(candidates, start=1):
         print(f'Candidate {i}/{len(candidates)}: {candidate}')
-        result = run_candidate(train_df, val_df, test_df, candidate, device, args.selection_metric, seed)
+        result = run_candidate(train_df, val_df, candidate, device, args.selection_metric, seed)
         rows.append({
             'seed': seed,
             'candidate_name': candidate['name'],
@@ -409,10 +422,6 @@ def run():
             'val_balanced_accuracy': result['validation_metrics']['balanced_accuracy'],
             'val_roc_auc': result['validation_metrics']['roc_auc'],
             'val_log_loss': result['validation_metrics']['log_loss'],
-            'test_accuracy': result['test_metrics']['accuracy'],
-            'test_balanced_accuracy': result['test_metrics']['balanced_accuracy'],
-            'test_roc_auc': result['test_metrics']['roc_auc'],
-            'test_log_loss': result['test_metrics']['log_loss'],
             'n_features': len(result['features']),
         })
         if best is None or result['selection_score'] > best['selection_score']:
@@ -424,35 +433,24 @@ def run():
     best_history = pd.DataFrame(best['history'])
     best_history.to_csv(out_dir / 'best_training_history.csv', index=False)
 
+    # The test partition is evaluated only after validation has frozen the winner.
+    # This corrects test peeking in the historical candidate-search implementation.
     val_y, val_prob = best['validation_predictions']
-    test_y, test_prob = best['test_predictions']
+    val_preds = make_prediction_frame(best['val_df'], val_y, val_prob)
 
-    val_preds = make_prediction_frame(
-        pd.concat([best['val_df'], pd.DataFrame({'y_true': val_y, 'y_prob': val_prob})], axis=1),
-        pd.Series(val_y),
-        val_prob,
+    winner = best['candidate']
+    selected_model = MLP(
+        len(best['features']), winner['hidden_dims'], winner['dropout'],
+        winner['activation'], winner['batch_norm'],
+    ).to(device)
+    selected_model.load_state_dict(best['best_model_state'])
+    selected_x_test = best['scaler'].transform(
+        test_df[best['features']].to_numpy()
     )
-    test_preds = make_prediction_frame(
-        pd.concat([best['test_df'], pd.DataFrame({'y_true': test_y, 'y_prob': test_prob})], axis=1),
-        pd.Series(test_y),
-        test_prob,
-    )
-
-    # cleaner prediction frames
-    val_preds = pd.DataFrame({
-        GROUP: best['val_df'][GROUP].values,
-        TIME: best['val_df'][TIME].values,
-        'y_true': val_y,
-        'y_prob': val_prob,
-        'y_pred': (val_prob >= 0.5).astype(np.int32),
-    })
-    test_preds = pd.DataFrame({
-        GROUP: best['test_df'][GROUP].values,
-        TIME: best['test_df'][TIME].values,
-        'y_true': test_y,
-        'y_prob': test_prob,
-        'y_pred': (test_prob >= 0.5).astype(np.int32),
-    })
+    test_y = test_df[TARGET].astype(np.int64).to_numpy()
+    test_prob = predict_prob(selected_model, selected_x_test, device)
+    test_metrics = metrics_from_probs(test_y, test_prob)
+    test_preds = make_prediction_frame(test_df, test_y, test_prob)
 
     summary = {
         'dataset_name': args.dataset_name,
@@ -467,7 +465,8 @@ def run():
         'n_rows_test': int(len(test_df)),
         'n_features': int(len(best['features'])),
         'validation_metrics': best['validation_metrics'],
-        'test_metrics': best['test_metrics'],
+        'test_metrics': test_metrics,
+        'test_evaluation_policy': 'selected_candidate_only',
     }
 
     with open(out_dir / 'metrics_summary.json', 'w', encoding='utf-8') as f:
@@ -476,11 +475,18 @@ def run():
     val_preds.to_csv(out_dir / 'validation_predictions.csv', index=False)
     test_preds.to_csv(out_dir / 'test_predictions.csv', index=False)
 
+    # Save only the validation-selected model, never intermediate test-scored candidates.
+    # Loading is intended for checkpoints produced by this trusted project code.
+    torch.save({name: tensor.detach().cpu() for name, tensor in best['best_model_state'].items()},
+               out_dir / 'selected_model_state.pt')
+    joblib.dump(best['scaler'], out_dir / 'selected_scaler.joblib', compress=3)
+
     with open(out_dir / 'config_used.json', 'w', encoding='utf-8') as f:
         json.dump({
             'best_candidate': best['candidate'],
             'features': best['features'],
             'selection_metric': args.selection_metric,
+            'test_evaluation_policy': 'selected_candidate_only',
         }, f, indent=2)
 
     with open(out_dir / 'artifacts_manifest.json', 'w', encoding='utf-8') as f:
@@ -491,6 +497,8 @@ def run():
             'validation_predictions': str(out_dir / 'validation_predictions.csv'),
             'test_predictions': str(out_dir / 'test_predictions.csv'),
             'config_used': str(out_dir / 'config_used.json'),
+            'selected_model_state': str(out_dir / 'selected_model_state.pt'),
+            'selected_scaler': str(out_dir / 'selected_scaler.joblib'),
         }, f, indent=2)
 
     print(json.dumps(summary, indent=2))

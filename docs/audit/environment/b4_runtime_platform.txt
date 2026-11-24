@@ -1,0 +1,7 @@
+Platform: Linux x86_64
+Python: 3.12.3
+PyTorch: 2.15.0+cu132
+CUDA runtime: 13.2
+GPU driver inventory:
+NVIDIA GeForce RTX 5090, 590.48.01
+NVIDIA GeForce RTX 5090, 590.48.01

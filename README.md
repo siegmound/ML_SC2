@@ -118,13 +118,118 @@ python scripts/17_internal_audit.py --strict-style
 
 ## Paper and delivery artifacts
 
-- final paper PDF: `paper/final_sc2_remake_paper_v6_2.pdf`
-- final presentation: `paper/sc2_project_rigorous_presentation.pptx`
-- refinement snippet: `paper/final_results_refinement.tex`
-- packaging note: `paper/README.md`
+Canonical paths:
+
+- editable paper source: `paper/sc2_outcome_prediction_paper.tex`
+- compiled paper: `paper/sc2_outcome_prediction_paper.pdf`
+- final presentation: `paper/sc2_outcome_prediction_presentation.pptx`
+- paper artifact guide: `paper/README_paper_repo.md`
+
+During the B1 correction branch, the source LaTeX and published CSV/Markdown tables
+were corrected to match the saved Block 16 population standard deviations. The
+existing compiled PDF and PowerPoint remain historical exports until the B5
+regeneration and visual verification; do not cite them as B1-corrected artifacts.
+
+Reproduce and check the table without training:
+
+```bash
+python scripts/58_verify_final_table.py --check
+```
 
 ## Provenance and scope note
 
 The repository documents the upstream replay source and the replaypack inventory visible on the Zenodo `v2.0.0` record.
 
 Exact reconstruction of the locally used subset still depends on project-side filtering choices, parser validity checks, and any replay-level exclusions recorded by the project pipeline.
+
+## B2 methodology corrections (working branch)
+
+The original results remain frozen. The original full tabular comparison is not a controlled equal-training-budget test: RF fits train+validation whereas XGB fits train and uses validation for early stopping.
+
+A separate *retrospective* matched train-only comparison was reproduced from six saved RF/XGB run directories, with replay- and snapshot-level identity checks. Its published table can be validated without training:
+
+```bash
+python scripts/66_check_matched_train_budget.py --check
+```
+
+The corrected Deep MLP runner now evaluates test only for the validation-selected candidate (default output under `results/b2_deep_strict`); historical deep metrics remain archived.
+
+For stricter future calibration, `scripts/67_run_strict_calibration.py` deterministically partitions original validation replay groups into **tuning** and **calibration** subsets. No full-data B2 recalibration or Deep rerun has been claimed; use `docs/audit/B2_METHODS_2026-11-17.md` for exact commands, tests, and scientific caveats. Existing PDF/PPTX exports are awaiting B5 regeneration.
+
+## B3 parser and frozen-dataset provenance
+
+B3 hardens the replay parser: unknown winners are filtered, recent losses follow time-aware live tags, and the builder refuses to overwrite frozen dataset archives or merge distinct replays sharing a basename.
+
+Machine-readable lineage: `data/processed/manifests/b3_feature_lineage_v1.json`.
+
+```bash
+python scripts/68_verify_feature_lineage.py
+python scripts/69_audit_replay_lineage.py --processed-zip data/processed/starcraft_full_dataset_v3_1_fixed.zip
+python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+The feature-lineage checker compares the current clean-room **38** predictors to archived **64** (v3.1) and **73** (v3.2). The original feature-engineering transformations have not all been recovered, so the clean-room replay-to-dataset route is **not a full reproduction of either final dataset**.
+
+The preserved v3.1 dataset was independently scanned: 892,047 snapshots, 23,241 distinct replay IDs, no contradictory winners or duplicate replay/time keys. Original exclusions (24,057 documented upstream vs 23,241 final) cannot be attributed without a source replay audit. See `docs/audit/B3_PARSER_AND_PROVENANCE_2026-11-17.md`.
+
+## B4 verification and Git LFS integrity (correction branch)
+
+The correction branch adds `scripts/70_verify_freeze.py` and
+`.github/workflows/b4-reproducibility.yml`. The checker preserves the
+B0 SHA-1 values of **31 historical Git objects**, and compares the two
+dataset Git LFS pointer OIDs and sizes with the B0 baseline manifest.
+
+A lightweight verification **does not download 563 MB of datasets**:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-ci.txt
+python scripts/70_verify_freeze.py --mode pointer
+python scripts/15_verify_reproducibility.py --strict
+python -m unittest discover -s tests -p "test_b4_freeze.py" -v
+```
+
+For the actual dataset archives, run `git lfs pull` followed by
+`python scripts/70_verify_freeze.py --mode payload`. The latter requires
+both complete dataset ZIPs and validates their SHA-256 values and column
+schemas. The locally supplied v3.2 ZIP was incomplete; **GitHub LFS
+payload integrity has not yet been certified**.
+
+New RF experiments can opt into `--save-model`, which emits
+`model.joblib`; the selected-only Deep MLP runner saves its chosen
+weights and scaler. The full-data opt-in GitHub Actions job performs
+dependency installation, LFS validation and all synthetic tests, but it
+has **not** been reported as passing. The Python package floor is now 3.11;
+`requirements-ci.txt` pins only the lightweight audit dependency. A
+full scientific dependency lock is still required for exact GPU reruns.
+
+See `docs/audit/B4_REPRODUCIBILITY_2026-11-17.md` for commands,
+limitations, and the uncompleted remote checks.
+
+## B5 audited publication and release readiness
+
+The **canonical editable paper source** was updated to reconcile the archived
+Block 16 values and the B2/B3/B4 methodological and provenance caveats. It
+explicitly treats the original RF/XGB/Deep/calibration benchmark as a
+*retrospective study*, not as a newly validated blind-test experiment.
+
+B5 adds an 18-to-19-slide review deck generator, a PDF/PPTX build script,
+source/table/slide consistency checks and a separate publishing workflow:
+
+```bash
+python scripts/72_verify_publication.py
+# On a workstation with latexmk and requirements-publishing.txt installed:
+python scripts/73_build_b5_artifacts.py --output-dir dist/b5
+python scripts/72_verify_publication.py \
+  --deck dist/b5/sc2_outcome_prediction_presentation_B5_REVIEW.pptx
+```
+
+**The PDFs/PPTXs currently committed to `paper/` are still historical binary
+exports** and have not been replaced by audited B5 copies. The build only
+produces ignored review artifacts; an actual remote build and visual inspection
+remain unverified. The release is **BLOCKED_PENDING_EVIDENCE**, as recorded
+in `docs/audit/b5_release_gates_2026-11-17.json`.
+
+No Git tag or merge into `main` is authorized by the source-only audit. See
+`docs/audit/B5_PUBLICATION_AND_RELEASE_2026-11-17.md`.

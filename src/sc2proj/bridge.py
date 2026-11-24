@@ -58,17 +58,42 @@ class ReplayBridge:
         metadata["player_count"] = len(getattr(replay, "players", []))
         if duration_sec < self.min_match_sec:
             metadata["failure_reason"] = "duration_too_short"
+            metadata["parse_status"] = "filtered"
             return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
         if duration_sec > self.max_match_sec:
             metadata["failure_reason"] = "duration_too_long"
+            metadata["parse_status"] = "filtered"
             return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
         if metadata["player_count"] < 2:
             metadata["failure_reason"] = "not_enough_players"
             return ParseResult(replay_id, "failed", metadata["failure_reason"], None, metadata)
+        if metadata["player_count"] != 2:
+            metadata["failure_reason"] = "not_one_vs_one"
+            metadata["parse_status"] = "filtered"
+            return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
 
         p1, p2 = replay.players[0], replay.players[1]
-        winner_pid = replay.winner.players[0].pid if getattr(replay, "winner", None) else None
-        metadata["winner_known"] = winner_pid is not None
+        p1_pid, p2_pid = getattr(p1, "pid", None), getattr(p2, "pid", None)
+        if p1_pid is None or p2_pid is None or p1_pid == p2_pid:
+            metadata["failure_reason"] = "invalid_player_ids"
+            return ParseResult(replay_id, "failed", metadata["failure_reason"], None, metadata)
+
+        winning_team = getattr(replay, "winner", None)
+        winners = getattr(winning_team, "players", None)
+        if not winners:
+            metadata["failure_reason"] = "missing_winner"
+            metadata["parse_status"] = "filtered"
+            return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
+        if len(winners) != 1:
+            metadata["failure_reason"] = "ambiguous_winner"
+            metadata["parse_status"] = "filtered"
+            return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
+        winner_pid = getattr(winners[0], "pid", None)
+        if winner_pid not in (p1_pid, p2_pid):
+            metadata["failure_reason"] = "invalid_winner_pid"
+            metadata["parse_status"] = "filtered"
+            return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
+        metadata["winner_known"] = True
 
         unit_events = [e for e in replay.tracker_events if "Unit" in e.name]
         stats_events = [e for e in replay.tracker_events if e.name == "PlayerStatsEvent"]
@@ -77,11 +102,8 @@ class ReplayBridge:
         camera_events = [e for e in replay.game_events if "Camera" in e.name]
 
         base_locations: Dict[int, Tuple[float, float]] = {}
-        tag_to_owner: Dict[int, int] = {}
         for event in unit_events:
             if event.name in {"UnitBornEvent", "UnitInitEvent"}:
-                if hasattr(event, "unit_id") and hasattr(event, "control_pid"):
-                    tag_to_owner[event.unit_id] = event.control_pid
                 if getattr(event, "unit_type_name", None) in {"SCV", "Probe", "Drone"} and hasattr(event, "location"):
                     if event.control_pid not in base_locations:
                         loc = event.location
@@ -89,8 +111,6 @@ class ReplayBridge:
                             base_locations[event.control_pid] = (float(loc.x), float(loc.y))
                         else:
                             base_locations[event.control_pid] = (float(loc[0]), float(loc[1]))
-                if len(base_locations) == 2:
-                    break
         if len(base_locations) < 2:
             metadata["failure_reason"] = "missing_start_locations"
             return ParseResult(replay_id, "failed", metadata["failure_reason"], None, metadata)
@@ -100,13 +120,11 @@ class ReplayBridge:
         unknown_unit_count = 0
         for second in range(self.snapshot_step_sec, duration_sec, self.snapshot_step_sec):
             loop = int(second * LOOPS_PER_SECOND)
-            inventories, unit_stats = self._inventories_until(unit_events, p1.pid, p2.pid, second)
+            inventories, unit_stats, recent_losses = self._inventories_until(
+                unit_events, p1.pid, p2.pid, second
+            )
             alias_unit_count += unit_stats["alias_unit_count"]
             unknown_unit_count += unit_stats["unknown_unit_count"]
-            recent_losses = {
-                p1.pid: sum(1 for e in unit_events if e.name == "UnitDiedEvent" and tag_to_owner.get(getattr(e, "unit_id", -1)) == p1.pid and (second - self.snapshot_step_sec) < e.second <= second),
-                p2.pid: sum(1 for e in unit_events if e.name == "UnitDiedEvent" and tag_to_owner.get(getattr(e, "unit_id", -1)) == p2.pid and (second - self.snapshot_step_sec) < e.second <= second),
-            }
             resource_stats = {
                 p1.pid: self._resources_at(stats_events, p1.pid, second),
                 p2.pid: self._resources_at(stats_events, p2.pid, second),
@@ -147,6 +165,7 @@ class ReplayBridge:
         df = df[df["time_sec"] > self.early_cut_sec].copy()
         if df.empty:
             metadata["failure_reason"] = "empty_after_early_cut"
+            metadata["parse_status"] = "filtered"
             return ParseResult(replay_id, "filtered", metadata["failure_reason"], None, metadata)
 
         metadata.update({
@@ -163,6 +182,8 @@ class ReplayBridge:
     def _inventories_until(self, events, p1_pid: int, p2_pid: int, second: int):
         inventories = {p1_pid: {}, p2_pid: {}}
         live_tags: Dict[int, tuple[int, str]] = {}
+        recent_losses = {p1_pid: 0, p2_pid: 0}
+        window_start = second - self.snapshot_step_sec
         alias_unit_count = 0
         unknown_unit_count = 0
         for event in events:
@@ -180,13 +201,21 @@ class ReplayBridge:
                 if canonical_name not in UNIT_SPECS:
                     unknown_unit_count += 1
                 inventories[owner][canonical_name] = inventories[owner].get(canonical_name, 0) + 1
-                live_tags[getattr(event, "unit_id", -1)] = (owner, canonical_name)
+                unit_id = getattr(event, "unit_id", None)
+                if unit_id is not None:
+                    live_tags[unit_id] = (owner, canonical_name)
             elif event.name == "UnitDiedEvent":
-                info = live_tags.pop(getattr(event, "unit_id", -1), None)
+                unit_id = getattr(event, "unit_id", None)
+                info = live_tags.pop(unit_id, None) if unit_id is not None else None
                 if info is not None:
                     owner, canonical_name = info
                     inventories[owner][canonical_name] = max(0, inventories[owner].get(canonical_name, 0) - 1)
-        return inventories, {"alias_unit_count": alias_unit_count, "unknown_unit_count": unknown_unit_count}
+                    if window_start < event.second <= second:
+                        recent_losses[owner] += 1
+        return inventories, {
+            "alias_unit_count": alias_unit_count,
+            "unknown_unit_count": unknown_unit_count,
+        }, recent_losses
 
     def _resources_at(self, events, pid: int, second: int):
         last = None

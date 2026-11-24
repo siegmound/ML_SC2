@@ -1,0 +1,33 @@
+{
+  "schema": "ml_sc2.b5.release_gates.v1",
+  "as_of": "2026-11-19",
+  "branch": "audit/sc2-corrections-2026-11-17",
+  "baseline_commit": "33660e2b4fc4bd75df0824bbb7fa7c2096d13831",
+  "release_status": "BLOCKED_PENDING_EVIDENCE",
+  "conditions": {
+    "published_csv_matches_saved_runs": true,
+    "paper_source_corrected_and_audited": true,
+    "presentation_review_source_available": true,
+    "paper_pdf_regenerated_from_canonical_source": true,
+    "presentation_pptx_regenerated_from_canonical_source": true,
+    "pdf_visual_and_metric_inspection_passed": true,
+    "pptx_visual_and_metric_inspection_passed": true,
+    "b2_full_scale_four_way_and_deep_completed": true,
+    "b3_raw_replay_to_final_feature_and_exclusion_provenance_resolved": false,
+    "b4_clean_clone_and_remote_ci_passed": true,
+    "b4_v3_2_full_lfs_payload_verified": true,
+    "b4_full_scientific_environment_locked": true,
+    "release_candidate_review_approved": false
+  },
+  "notes": [
+    "True conditions indicate source/engineering status only, not a release approval.",
+    "Historical metrics and datasets remain frozen; do not silently substitute new scientific results.",
+    "GitHub PDF/PPTX currently contain historical exports and must not be labelled B5-corrected.",
+    "No tag or merge to main until pending gates are verified and documented.",
+    "Full Git LFS v3.1 and v3.2 payloads verified by SHA-256, size, ZIP header and feature schema on FAIR clean checkout, 2026-11-18; B4 scientific reproducibility and release remain pending.",
+    "B4 engineering verification was initially limited to local clean checkout plus lightweight CI; this historical limitation is superseded by full-data Actions run 44420825024 SUCCESS (both jobs), verified v3.1/v3.2 LFS payloads and independently reproduced FAIR runtime. Do not conflate these B4 checks with B2 full-scale numerical training or B3 original raw replay provenance.",
+    "B4 FAIR Linux x86_64 / Python 3.12.3 / PyTorch 2.15.0+cu132 / NVIDIA RTX 5090 driver 590.48.01 environment locked: third clean offline SHA256-hashed wheel installation (55 packages) PASS, pip check PASS, tests exit 0, CUDA tensor PASS. 55-entry hashed lock, manifest, mpyq sdist SHA256 and sanitized platform details committed in 2d5c905 and independently cross-checked via GitHub; wheel binaries retained on FAIR. B4 scope is engineering environment, not historical numerical model rerun.",
+    "2026-11-19 B5 review artifacts generated from tracked canonical .tex and PPTX: GitHub Actions run 44492787980 SUCCESS (source-consistency/build-review). PDF 20 pages, corrected deck 19 slides; output manifest SHA-256 PDF 066a86426564f46ab9723fbbe1d896f725e98b9d16ada749a3cb63af2f84b143, PPTX 2806096ccde7ff2742f0a1d01bfc658c703b188db1bf8795d924218d496745cc. Text/metric checks and LibreOffice/PyMuPDF visual render review (20 PDF pages; deck overview all 19 and detailed slides 8/10/11/13/15/19) passed after shortened titles, shorter cards and misleading rate-chart data labels removed. Original canonical binary artifacts were not overwritten. B2/B3 and explicit release candidate approval remain false.",
+    "2026-11-19 B2 full-scale FAIR training and saved-prediction verification completed: RF/XGB/Deep each seeds 42/43/44, 9/9 PASS, new summary generator 2/2 tests PASS; numeric mean ± sample SD table and retrospective interpretation documented in docs/audit/B2_SCIENTIFIC_RESULTS_2026-11-19.md from operator-provided stdout. This closes only the factual B2 execution-completion gate. FAIR per-seed and SHA-256 summary artifacts still require small-file archival; historically inspected test sets are not newly blind, no significance claim. B3 original raw replay provenance and explicit B5 release-candidate approval remain false; release_status stays BLOCKED_PENDING_EVIDENCE."
+  ]
+}
