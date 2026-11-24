@@ -38,7 +38,7 @@ jobs:
 
       - name: Check clean-room scripts syntax
         run: |
-          python -m compileall -q src/sc2proj/v4.py src/sc2proj/v4_dataset.py scripts/90_v4_build_dataset.py scripts/91_v4_run_suite.py scripts/92_v4_verify_results.py scripts/93_b3_reconcile_original_replays_zip.py scripts/94_v4_extract_original_replays.py scripts/95_b3_probe_raw_only_replays.py tests/test_v4_clean_rebuild.py tests/test_v4_suite.py tests/test_v4_verify_results.py tests/test_b3_recovered_original_zip.py tests/test_v4_original_zip_extraction.py tests/test_b3_raw_only_metadata_diagnostic.py
+          python -m compileall -q src/sc2proj/v4.py src/sc2proj/v4_dataset.py scripts/90_v4_build_dataset.py scripts/91_v4_run_suite.py scripts/92_v4_verify_results.py scripts/93_b3_reconcile_original_replays_zip.py scripts/94_v4_extract_original_replays.py scripts/95_b3_probe_raw_only_replays.py scripts/96_b3_probe_v4_parser_survivors.py tests/test_v4_clean_rebuild.py tests/test_v4_suite.py tests/test_v4_verify_results.py tests/test_b3_recovered_original_zip.py tests/test_v4_original_zip_extraction.py tests/test_b3_raw_only_metadata_diagnostic.py tests/test_b3_v4_survivor_preflight.py
 
       - name: Run synthetic independent-source regressions
         run: |
@@ -48,6 +48,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_b3_recovered_original_zip.py' -v
           python -m unittest discover -s tests -p 'test_v4_original_zip_extraction.py' -v
           python -m unittest discover -s tests -p 'test_b3_raw_only_metadata_diagnostic.py' -v
+          python -m unittest discover -s tests -p 'test_b3_v4_survivor_preflight.py' -v
 
       - name: Keep CI runtime record
         if: always()
