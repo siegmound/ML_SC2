@@ -597,3 +597,52 @@ subset and validate the full per-replay inclusion/exclusion ledger.
 Only then attempt full-scale V4 raw build and replay-disjoint ML
 experiments. B3 historical execution/feature parity still NOT
 proven. Preserve `B5=BLOCKED_PENDING_EVIDENCE` unchanged.
+
+## 14. FAIR complete raw ZIP extraction and independent V4 120-identity smoke
+
+The FAIR operator completed the selective `scripts/94_v4_extract_original_replays.py`
+extraction, preserving the pinned original outer ZIP
+`8dcb826aeb17481d592f2d564b8a3af72bcb2f11fba9421bdbd350641970241d`.
+Extraction status: `EXTRACTED_AND_CRC_VERIFIED`, 24,057/24,057
+direct raw `.SC2Replay` member paths, total 4,568,567,819 uncompressed bytes.
+Nested 71 tournament ZIPs were not extracted. Exactly 23,708 distinct
+raw SHA-256 binary contents and 349 additional duplicate binary
+source paths were recorded. Header counts were 23,725 MPQ candidates
+and 332 AppleDouble sidecars. These categories may overlap with the
+349 duplicate-content count: DO NOT infer 349 repeated *valid games*.
+Extracted replay directory:
+`/home/jlpfritas/HPC-POMDP/ML-SC2/v4_original_replays_extracted/replays`.
+Source extraction manifest CSV SHA-256:
+`9e1fd748d75f5dfefc4254fe53b9e714486d5b10306939d6c7b5e0a383559cdf`.
+
+Operator also completed `scripts/90_v4_build_dataset.py` for
+the FIRST 120 distinct source content hashes, under code commit
+`1b8c1e2acc308a23e504a46f339340afea08964a`.
+The V4 parser accepted 117 replay content identities and excluded
+3: 2 longer than 1800 seconds, 1 not 1v1.
+Produced **4,542 validated snapshot rows and 38 feature columns**,
+time range 135–1635 s, snapshot interval 15 s. 23,937 other
+source paths were marked `max_files_limit` (NOT parser failures).
+
+V4 output SHA-256:
+
+- Source-derived `sc2_v4_clean.csv`:
+  `c8858ffd8ccacb74ea54a832b6423b6bfd984059e805fa371421845d8c276b98`
+- ZIP `sc2_v4_clean.zip`:
+  `e424908cc4b59178c446a183b680944b50fd878f3ac64630a62dffe773b1c9ef`
+- Per-replay source audit CSV:
+  `24a3e2bfe86c15cac720c80d4c6948109bea8bbf926384933064ed2f8e7b6043`
+
+The V4 feature schema has 38 features; older frozen v3.1 has 64
+and v3.2 has 73. This is an **independent new dataset**, not a
+numerically identical reconstruction or validation of historical
+feature parity. A 120-source replay processing smoke establishes
+real-parser function but does NOT establish full 24,057-scale
+reliability, comprehensive combat tracker correctness, or predictive
+model quality. In particular current V4 `build_dataset` retains all
+accepted per-replay DataFrames in memory and writes the output only
+once after processing all source paths; a full-scale run needs
+memory/performance and recoverability checks before deployment.
+
+B3 historical raw-to-frozen feature parity remains OPEN; immutable
+B5 gate remains `BLOCKED_PENDING_EVIDENCE`.
