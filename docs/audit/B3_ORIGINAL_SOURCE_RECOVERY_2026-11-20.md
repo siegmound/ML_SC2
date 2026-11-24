@@ -698,3 +698,35 @@ the full 23,708 unique binary contents; operational fail-safe
 chunking or checkpointing and a larger feature quality check
 should precede an all-source run. None of the above proves
 frozen v3.1/v3.2 raw-to-feature numerical parity.
+
+## 16. FAIR initial RF/XGB V4 core seed42 training succeeded; independent log-loss verification FAILED
+
+FAIR operator completed the independent V4 RF and XGBoost training smoke
+on the 1,000-content-identity source-derived dataset (981 included
+replay content IDs, 37,273 snapshots; 30 prespecified core features).
+The V4 runner `scripts/91_v4_run_suite.py --stage smoke --feature-profile
+core --models rf xgb --seeds 42 --device cpu --n-jobs 4 --execute`
+printed `V4 suite completed` and stored separate training logs in
+`results/v4_models_smoke1000_core42_20261124/logs/` in the FAIR V4 worktree.
+
+The required independent verifier `scripts/92_v4_verify_results.py`
+then **FAILED CLOSED**: `ValueError: Recomputed log_loss disagrees
+with saved metrics`, from `verify_predictions`. Since the verifier
+did not finish, NO `summary.csv` was generated and NO model
+performance metrics are independently attested at this point.
+All original model outputs and the failed verification invocation
+must remain unmodified; diagnose differences on a read-only basis.
+
+Potential explanation requiring empirical confirmation:
+`scripts/67_run_strict_calibration.py` computes saved
+`sklearn.metrics.log_loss` on original prediction arrays, whereas
+`scripts/92_v4_verify_results.py` reloads `test_predictions_*.csv`
+and immediately promotes probabilities to float64. If an original
+XGB or calibrator prediction was float32 and contained endpoint
+probabilities, scikit-learn's dtype-dependent probability clipping
+can produce different log-loss scores even for the same values.
+Do NOT loosen tolerance or silently change metrics to certify results.
+Check original saved float32 vs float64 recomputations for all 6
+model/variant cases and preserve resulting read-only diagnostic
+before deciding any verifier fix. Historical B3 remains open,
+historical B5 still `BLOCKED_PENDING_EVIDENCE`.
