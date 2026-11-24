@@ -1,7 +1,9 @@
 # SC2 V4: independent clean-room rebuild protocol
 
-Status: INITIAL IMPLEMENTATION, synthetic CI only. Raw FAIR replay build and
-model reruns have NOT yet been executed. This is NOT historical v3.1/v3.2
+Status (2026-11-24): COMPLETE raw ZIP recovered and CRC/SHA extracted;
+real FAIR 120- and 1,000-content-identity raw-to-feature V4 builds succeeded.
+RF/XGB/MLP have NOT been retrained in these new V4 experiments yet;
+RF/XGB 120-replay plan checked only. This is NOT historical v3.1/v3.2
 raw-to-final parity and does not unblock historical B3 or B5 release gates.
 
 ## Scope and explicit validity limits
@@ -26,12 +28,12 @@ combat or counter (including temporal derivatives). FULL is an exploratory
 profile containing those heuristic scores. Choose core as primary before
 seeing any new test metrics; full is an ablation only.
 
-Data source limitations: currently FAIR has two SHA-identical copies of
-300 named raw entries, of which 295 are MPQ candidates and five are
-AppleDouble metadata. This is not the 24,057-replay original corpus;
-downloading/scanning all 71 SC2ReSet replaypacks remains a separate
-future data acquisition stage. Actual input count and included replay
-count for V4 must be discovered by running V4 against real raw files.
+Historical data availability note (SUPERSEDED on 2026-11-23): FAIR
+originally had only two SHA-identical 300-file subsets (295 MPQ candidates,
+5 AppleDouble files). The complete original 24,057-member archive was
+subsequently recovered and source/frozen identity reconciled, as documented
+below. Do not seek or re-download another 71 packs or misrepresent that
+small initial subset as the current input corpus.
 
 The model runners are reused with fresh input data: RF and XGB run
 group-disjoint training, tuning, calibration and final test; the MLP
@@ -344,3 +346,68 @@ exclusions. Diagnose the parser compatibility before proceeding
 to full 24,057-source V4 raw-to-feature generation. These new
 V4 statuses NEVER certify historical feature parity or change
 the baseline B3/B5 publication gates.
+
+
+## Actual FAIR 1,000-content-identity V4 smoke and next end-to-end gate (2026-11-24)
+
+The pinned source outer ZIP was extracted safely and SHA/CRC-verified:
+24,057 direct member paths, 23,708 distinct byte contents.
+Detailed classification: MPQ 23,725 paths/23,675 unique binary contents/
+50 extra byte-duplicate paths; AppleDouble 332 paths/33 distinct byte
+contents/299 extra duplicates. The 71 nested tournament ZIPs were not extracted.
+
+The 120-identity real V4 smoke accepted 117 replays (4,542 snapshots,
+38 features). The expanded 1,000-content-identity V4 smoke accepted
+**981 unique replay identities**, with 37,273 snapshot rows and 38 features.
+The sampled input covered 1,003 paths including 3 byte-duplicate paths;
+22 paths were excluded (11 >1800 s, 5 <180 s, 2 not 1v1, 1
+AppleDouble, 3 duplicate-content paths), and 23,054 other paths
+were explicitly marked `max_files_limit` (NOT parser rejections).
+
+The measured 1,000-identity run finished successfully in **6:11.28**
+wall-clock, max RSS **410,408 KiB (~401 MiB)**, exit 0.
+Source code commit: `1b8c1e2acc308a23e504a46f339340afea08964a`.
+Snapshot CSV SHA-256:
+`b94ea23dcddd4ff963b4d87b67aa49b7dc1bb70866ca07ee14840d5e0e4093cf`.
+Dataset ZIP SHA-256:
+`5fedba311db62405e6fcd3bd8d6bcfdd3f2e63e44f838857c799b7f10168c75b`.
+Source per-replay audit CSV SHA-256:
+`bc19459c1d7d2bf5054f50effff5a77b13b573db8986aac56e6ccc2609ed6534`.
+
+### Next: RF and XGB end-to-end smoke using the independently rebuilt 981
+
+The successful prior `--plan` used the 117-replay small build; NO training
+was executed. For a more informative end-to-end smoke, reuse the
+1,000-content-identity dataset (do not rebuild it or edit its SHA)
+and a different empty suite directory:
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_v4_rebuild_clean
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+
+"$SC2_PYTHON" scripts/91_v4_run_suite.py \
+  --dataset-dir results/v4_original_raw_smoke1000_20261124 \
+  --output-root results/v4_models_smoke1000_core42_20261124 \
+  --stage smoke --feature-profile core \
+  --models rf xgb --seeds 42 --device cpu --n-jobs 4 --plan
+```
+
+On successful plan, repeat with `--execute` in place of `--plan`.
+Training creates independent model/split logs in that new output root.
+Then verify test predictions and replay-aggregated metrics with
+`scripts/92_v4_verify_results.py` and a new verification output directory.
+Report smoke accuracy as exploratory development evidence only.
+
+### Full-scale operational safety note
+
+The existing `scripts/90_v4_build_dataset.py` retains all accepted
+replay DataFrames in RAM and writes its output at the END of the run.
+The 1,000-identity ~401 MiB result cannot establish the full corpus
+RAM footprint or ensure recovery from interrupts. Prefer a
+checksum-pinned checkpoint/resumable streaming implementation before
+running >23,000 unique contents, especially if executing on a shared
+HPC login node. Review allocated RAM, scratch quota and job scheduler.
+Do not use the historic 23,241 source inclusion count as a hard V4
+target; the current parser accepts all 16 metadata-surviving
+historical raw-only replays in independently observed tests.
