@@ -286,3 +286,61 @@ An observed `duration_below_min`, `duration_above_max`,
 `not_one_vs_one`, `winner_not_single_known_player`, or load failure
 is a *contemporary observation*. It does not establish which
 condition caused the historical builder to omit that replay.
+
+## Complete 816-of-816 prospective metadata diagnostic and V4 parser survivor preflight
+
+FAIR ran `scripts/95_b3_probe_raw_only_replays.py` on all 816
+original replay ZIP members absent from frozen v3.1, with 100
+seed-42 positive controls. Replay-identity reconciliation is
+already SHA-verified (24,057 direct source members, 23,241 included
+v3.1 IDs). Complete full-run artifact:
+
+`ML_SC2_v4_rebuild_clean/results/b3_raw_only_metadata_full816_20261124/per_replay_diagnostic.csv`
+
+SHA-256: `0160faec6ccaae5cc95cae4589e06225ee9b5e4e692bb788135494bdf80adf57`.
+
+Outcomes across exactly 816 raw-only entries: 332 AppleDouble
+sidecars, 301 above 1800 seconds (including overlaps with player
+and winner flags), 164 below 180 seconds (including overlaps),
+1 otherwise not 1v1, 2 `AttributeError` current load errors,
+and **16 with no tested duration/player/winner anomaly**.
+100/100 sampled positive controls showed no tested anomaly.
+These numbers are present-day sc2reader metadata observations,
+not original executed parser exclusion causes.
+
+### Focused current V4 full-parser preflight
+
+The new `scripts/96_b3_probe_v4_parser_survivors.py`
+runs the current `V4ReplayBridge` on all **16 metadata survivors**
+and a deterministic sample of 15 matched positive controls.
+It verifies the prior full816 CSV SHA-256, pins the raw archive SHA,
+extracts each selected replay only into temporary storage, validates
+V4 feature frames, and produces per-replay reason/status logs.
+The original raw ZIP/frozen dataset are never modified.
+
+Run from an already created clean V4 Git worktree:
+
+```bash
+cd ~/HPC-POMDP/ML-SC2/ML_SC2_v4_rebuild_clean
+export PATH="$HOME/HPC-POMDP/.tools/git-lfs/bin:$PATH"
+git fetch origin refs/heads/rebuild/sc2-v4-clean-2026-11-20:refs/remotes/origin/rebuild/sc2-v4-clean-2026-11-20
+GIT_LFS_SKIP_SMUDGE=1 git switch --detach origin/rebuild/sc2-v4-clean-2026-11-20
+export SC2_PYTHON="$HOME/.venvs/ml-sc2/bin/python"
+export PYTHONPATH="$PWD/src"
+"$SC2_PYTHON" -m unittest discover -s tests -p 'test_b3_v4_survivor_preflight.py' -v
+
+"$SC2_PYTHON" scripts/96_b3_probe_v4_parser_survivors.py \
+  --archive /home/jlpfritas/HPC-POMDP/ML-SC2/replays.zip \
+  --metadata-csv results/b3_raw_only_metadata_full816_20261124/per_replay_diagnostic.csv \
+  --controls 15 --seed 42 \
+  --output-dir results/b3_v4_survivors16_controls15_20261124
+
+cat results/b3_v4_survivors16_controls15_20261124/summary.json
+```
+
+**Interpretation guardrail:** if even the frozen-matched positive
+controls fail, do not treat all V4 failures as genuine replay
+exclusions. Diagnose the parser compatibility before proceeding
+to full 24,057-source V4 raw-to-feature generation. These new
+V4 statuses NEVER certify historical feature parity or change
+the baseline B3/B5 publication gates.
