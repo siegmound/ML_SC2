@@ -646,3 +646,55 @@ memory/performance and recoverability checks before deployment.
 
 B3 historical raw-to-frozen feature parity remains OPEN; immutable
 B5 gate remains `BLOCKED_PENDING_EVIDENCE`.
+
+## 15. FAIR V4 1,000-content-identity parser scalability smoke, source duplicates isolated
+
+Operator's exact replay-hash manifest aggregation separates:
+
+| Raw kind | source paths | unique SHA-256 bytes | extra identical paths |
+| --- | ---: | ---: | ---: |
+| MPQ_CANDIDATE | 23,725 | 23,675 | **50** |
+| APPLEDOUBLE_NOT_GAME | 332 | 33 | **299** |
+| Total | 24,057 | 23,708 | **349** |
+
+The 349 duplicate-path count includes 299 redundant AppleDouble
+metadata paths, not 349 duplicate game replays. This counts
+exact binary equality only and does not exclude distinct binary
+replays representing the same game or event.
+
+FAIR executed a real V4 raw-to-feature smoke on the first
+1,000 deterministic SHA-256 content identities. Output source
+had 24,057 scanned paths; 23,054 skipped only because not sampled
+and 1,003 processed raw paths (including three duplicate-byte
+paths), of which **981 unique game identities were included**.
+Actual observed excluding-reason counts among 1,003 chosen source
+paths: 11 duration_too_long, 5 duration_too_short, 2 not_one_vs_one,
+1 AppleDouble and 3 duplicate_content; **22 total** source exclusions.
+The result contains **37,273 valid snapshots, 38 features**,
+at 15-second steps from 135 to 1785 seconds.
+
+Measured `/usr/bin/time -v` wall-clock **6 min 11.28 s**, CPU user
+377.92 s + system 1.36 s, max RSS **410,408 KiB (~401 MiB)**,
+exit status 0, zero major page faults and zero swaps.
+Runtime Python: 3.12.3, Linux kernel 6.8.0-94-generic.
+Commit pinned to `1b8c1e2acc308a23e504a46f339340afea08964a`.
+New V4 snapshot CSV SHA-256:
+`b94ea23dcddd4ff963b4d87b67aa49b7dc1bb70866ca07ee14840d5e0e4093cf`.
+New V4 ZIP SHA-256:
+`5fedba311db62405e6fcd3bd8d6bcfdd3f2e63e44f838857c799b7f10168c75b`.
+New V4 per-replay audit SHA-256:
+`bc19459c1d7d2bf5054f50effff5a77b13b573db8986aac56e6ccc2609ed6534`.
+
+Additionally `scripts/91_v4_run_suite.py --plan` successfully
+validated group-disjoint 117-identity/4,542-snapshot smoke
+and generated a non-executed RF/XGB four-way protocol for seed 42,
+CORE profile 30 of 38 V4 features. **No model has been retrained
+on either new dataset in this specific evidence sequence**.
+
+**Limit:** The current V4 dataset builder accumulates every accepted
+replay DataFrame and serializes once at the end. The successful
+1,000-input ~401-MiB RSS run does not guarantee completion on
+the full 23,708 unique binary contents; operational fail-safe
+chunking or checkpointing and a larger feature quality check
+should precede an all-source run. None of the above proves
+frozen v3.1/v3.2 raw-to-feature numerical parity.
